@@ -7,7 +7,12 @@ library(cowplot)
 library(tidyverse)
 library(ggalluvial)
 
-CWM <- read.csv("Data/LT_2010-2020_CWMs_short _final.csv")
+# load data
+CWM <- read.csv("Data/LT_2010-2020_CWMs_short.csv")
+
+#text to column function to split the site_code column into 2
+CWM <- CWM %>%
+  separate(site_code, into = c("site_id", "year"), sep = "_")
 
 # calculate means for all traits 
 CWM_Yr_means <- CWM %>% 
@@ -17,6 +22,7 @@ CWM_Yr_means <- CWM %>%
 CWM_Yr_means$year <- factor(CWM_Yr_means$year)
 
 # Remove the year 2019 from all non-within-site analyses
+CWM_Yr_means <- CWM_Yr_means[CWM_Yr_means$year != "2011",] # removes the intercept line from each response variable
 CWM_Yr_means <- CWM_Yr_means[CWM_Yr_means$year != "2019",] # removes the intercept line from each response variable
 
 # create trait groups
@@ -305,7 +311,7 @@ p11 <- ggplot(tachrespir_L, aes(fill = trait, y= meanCWM , x = year)) +
             curve_type = "linear", 
             width = 0.8) +
   geom_bar(position="fill", stat="identity", width = 0.8) +
-  scale_fill_manual(labels=c('Gill', 'Plastron', 'Spiracle (aerial)', 'Tegument', 'Hdrostatic vesicle (aerial)'), values = nice_cols) +
+  scale_fill_manual(labels=c('Gill', 'Plastron', 'Spiracle (aerial)', 'Tegument', 'Hydrostatic vesicle (aerial)'), values = nice_cols) +
   theme_minimal_grid() +
   theme(panel.grid = element_blank(),
         plot.title = element_text(hjust = 0.5),
@@ -327,7 +333,11 @@ p11
                                      align = "hv", axis = "bt", ncol = 3, nrow = 4))
 
 # save plots
-tiff(filename = "Plots/LT_Change_in_traits_new.tiff", width = 20, height = 20, units = 'in', res = 600, compression = 'lzw')
+tiff(filename = "Plots/LT_Change_in_traits_check.tiff", width = 20, height = 20, units = 'in', res = 600, compression = 'lzw')
+CWMs_combined
+dev.off()
+
+svg(filename = "Plots/LT_Change_in_traits.svg", width = 20, height = 20)
 CWMs_combined
 dev.off()
 
