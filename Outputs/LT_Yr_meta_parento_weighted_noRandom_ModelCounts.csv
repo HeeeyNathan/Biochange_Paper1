@@ -1,0 +1,5 @@
+"","spp_richness","spp_rich_rare","ShannonsH","E10","abundance","turnover","F_turnover","FRic","FEve","FDis","FRic.SES","FDis.SES","FEve.SES","FRed","ept_richness","ept_abundance","diptera_richness","diptera_abundance","insect_richness","insect_abundance","mollusc_richness","mollusc_abundance","annelid_richness","annelid_abundance"
+"good[-Inf, 0.5]",40,40,40,41,41,40,41,41,39,41,40,41,41,39,40,40,39,41,41,40,41,39,41,41
+"ok[0.5, 0.7]",0,1,0,0,0,0,0,0,2,0,1,0,0,0,0,1,0,0,0,0,0,2,0,0
+"bad[0.7, 1]",1,0,1,0,0,1,0,0,0,0,0,0,0,1,1,0,0,0,0,1,0,0,0,0
+"verybad[1, Inf]",0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,2,0,0,0,0,0,0,0
