@@ -51,37 +51,6 @@ df_long <- df_long %>%
                          "Oligochaeta" = "Annelid", "Hirudinea" = "Annelid",
                          "Isopoda" = "Crustacea", "Decapoda" = "Crustacea", "Amphipoda" = "Crustacea", "Mysida" = "Crustacea"))
 
-# Calculate the change in abundance and relative abundance
-df_long <- df_long %>%
-  group_by(taxonname) %>%
-  arrange(year) %>%
-  mutate(log_abund_change = round(log_abundance - lag(log_abundance, default = first(log_abundance)), 2)) %>%
-  ungroup()
-
-df_long <- df_long %>%
-  group_by(taxonname) %>%
-  arrange(year) %>%
-  mutate(rel_abund_change = round(relative_abundance - lag(relative_abundance, default = first(relative_abundance)), 2)) %>%
-  ungroup()
-
-# Calculate the change from the first to last year for each taxon
-df_long <- df_long %>%
-  group_by(taxonname) %>%
-  arrange(year) %>%
-  mutate(log_abund_change_first_last = last(log_abundance) - first(log_abundance)) %>%
-  ungroup()
-
-df_long <- df_long %>%
-  group_by(taxonname) %>%
-  arrange(year) %>%
-  mutate(log_rel_abund_change_first_last = last(relative_abundance) - first(relative_abundance)) %>%
-  ungroup()
-
-# centre the change in abundance so that all values are positive and 0 is relative to 0 in the original vector used
-# df_long <- df_long %>%
-#   mutate(centred_log_abund_change_first_last = (log_abund_change_first_last-min(log_abund_change_first_last))/max(log_abund_change_first_last)) %>%
-#   ungroup()
-
 # Create a subset with species belonging to a specific taxonomic group (based on group2)
 df_long_ept <- df_long %>% filter(group2 == "EPT")
 df_long_ephemeroptera <- df_long %>% filter(group == "Ephemeroptera")
@@ -111,11 +80,6 @@ model_outputs <- df_long_ephemeroptera %>%
 df_long_ephemeroptera <- left_join(df_long_ephemeroptera, model_outputs, by = "taxonname")
 
 # Select the five unique species with the highest amount of change from the first to the last year
-# top_species <- df_long_ephemeroptera %>%
-#   group_by(taxonname) %>%
-#   summarise(change_log_abundance = last(log_abundance) - first(log_abundance)) %>%
-#   top_n(5, wt = change_log_abundance)
-
 top_species <- df_long_ephemeroptera %>%
   group_by(taxonname) %>%
   summarise(max_estimate = max(estimate)) %>%
@@ -123,23 +87,12 @@ top_species <- df_long_ephemeroptera %>%
   arrange(desc(max_estimate)) %>% 
   ungroup()
 
-# middle_species <- df_long_ephemeroptera %>%
-#   group_by(taxonname) %>%
-#   summarise(change_log_abundance = last(log_abundance) - first(log_abundance)) %>%
-#   arrange(abs(change_log_abundance)) %>%
-#   slice_head(n = 11) # turn this line off or on as needed
-
 bottom_species <- df_long_ephemeroptera %>%
   group_by(taxonname) %>%
   summarise(max_estimate = max(estimate)) %>%
   top_n(5, wt = -max_estimate) %>%
   arrange(desc(max_estimate)) %>% 
   ungroup()
-
-# bottom_species <- df_long_ephemeroptera %>%
-#   group_by(taxonname) %>%
-#   summarise(change_log_abundance = last(log_abundance) - first(log_abundance)) %>%
-#   top_n(5, wt = -change_log_abundance)
 
 # Join the top and bottom species datasets
 selected_species <- bind_rows(top_species, bottom_species)
@@ -163,7 +116,7 @@ last_years <- df_long_ephemeroptera_filtered %>%
   ungroup()
 
 # Plot abundances by year with line colors grouped by taxonomic order
-tiff(filename = "Plots/Winner_Loser_ephemeroptera(10_taxa).tiff", width = 10, height = 10, units = 'in', res = 600, compression = 'lzw')
+tiff(filename = "Plots/Winner_Loser_ephemeroptera.tiff", width = 10, height = 10, units = 'in', res = 600, compression = 'lzw')
 ggplot(df_long_ephemeroptera_filtered, aes(x = year, y = log_abundance, color = estimate, group = taxonname)) +
   geom_line(linewidth = 0.35, linetype = "dotted") +
   geom_smooth(method = "lm", se = FALSE, aes(linetype = ifelse(p.value < 0.05, "p < 0.05", "p > 0.05"))) +
@@ -172,8 +125,6 @@ ggplot(df_long_ephemeroptera_filtered, aes(x = year, y = log_abundance, color = 
   geom_text_repel(data = last_years, aes(label = taxonname), hjust = 1.1, vjust = 0, nudge_y = 0.075, size = 3) +
   labs(x = "Year", y = "log(Abundance + 1)", color = "Taxonomic Group", shape = "Taxonomic group", linetype = "P value") +
   scale_colour_gradient(low="#f0bb00ff", high="#00ccbaff", aes("lm(log(abundance + 1) ~ year)"))+
-  # scale_colour_gradient2(low="#D55E00", mid="#CC79A7", high="#009E73", midpoint=median(df_long_ephemeroptera$centred_log_abund_change_first_last)) +
-  # scale_color_gradient(low = "#0072B2", high = "#D55E00", aes("Absolute change\nin log(abundance)\nfrom first to last year")) +
   theme_minimal() +
   scale_x_continuous(breaks = seq(min(df_long_ephemeroptera_filtered$year), max(df_long_ephemeroptera_filtered$year), by = 1),
                      labels = seq(min(df_long_ephemeroptera_filtered$year), max(df_long_ephemeroptera_filtered$year), by = 1)) +
@@ -200,11 +151,6 @@ model_outputs <- df_long_plecoptera %>%
 df_long_plecoptera <- left_join(df_long_plecoptera, model_outputs, by = "taxonname")
 
 # Select the five unique species with the highest amount of change from the first to the last year
-# top_species <- df_long_plecoptera %>%
-#   group_by(taxonname) %>%
-#   summarise(change_log_abundance = last(log_abundance) - first(log_abundance)) %>%
-#   top_n(5, wt = change_log_abundance)
-
 top_species <- df_long_plecoptera %>%
   group_by(taxonname) %>%
   summarise(max_estimate = max(estimate)) %>%
@@ -212,23 +158,12 @@ top_species <- df_long_plecoptera %>%
   arrange(desc(max_estimate)) %>% 
   ungroup()
 
-# middle_species <- df_long_plecoptera %>%
-#   group_by(taxonname) %>%
-#   summarise(change_log_abundance = last(log_abundance) - first(log_abundance)) %>%
-#   arrange(abs(change_log_abundance)) %>%
-#   slice_head(n = 11) # turn this line off or on as needed
-
 bottom_species <- df_long_plecoptera %>%
   group_by(taxonname) %>%
   summarise(max_estimate = max(estimate)) %>%
   top_n(5, wt = -max_estimate) %>%
   arrange(desc(max_estimate)) %>% 
   ungroup()
-
-# bottom_species <- df_long_plecoptera %>%
-#   group_by(taxonname) %>%
-#   summarise(change_log_abundance = last(log_abundance) - first(log_abundance)) %>%
-#   top_n(5, wt = -change_log_abundance)
 
 # Join the top and bottom species datasets
 selected_species <- bind_rows(top_species, bottom_species)
@@ -252,7 +187,7 @@ last_years <- df_long_plecoptera_filtered %>%
   ungroup()
 
 # Plot abundances by year with line colors grouped by taxonomic order
-tiff(filename = "Plots/Winner_Loser_plecoptera(10_taxa).tiff", width = 10, height = 10, units = 'in', res = 600, compression = 'lzw')
+tiff(filename = "Plots/Winner_Loser_plecoptera.tiff", width = 10, height = 10, units = 'in', res = 600, compression = 'lzw')
 ggplot(df_long_plecoptera_filtered, aes(x = year, y = log_abundance, color = estimate, group = taxonname)) +
   geom_line(linewidth = 0.35, linetype = "dotted") +
   geom_smooth(method = "lm", se = FALSE, linetype = "dashed") +
@@ -261,8 +196,6 @@ ggplot(df_long_plecoptera_filtered, aes(x = year, y = log_abundance, color = est
   geom_text_repel(data = last_years, aes(label = taxonname), hjust = 1.1, vjust = 0, nudge_y = 0.075, size = 3) +
   labs(x = "Year", y = "log(Abundance + 1)", color = "Taxonomic Group", shape = "Taxonomic group", linetype = "P value") +
   scale_colour_gradient(low="#f0bb00ff", high="#00ccbaff", aes("lm(log(abundance + 1) ~ year)"))+
-  # scale_colour_gradient2(low="#D55E00", mid="#CC79A7", high="#009E73", midpoint=median(df_long_plecoptera$centred_log_abund_change_first_last)) +
-  # scale_color_gradient(low = "#0072B2", high = "#D55E00", aes("Absolute change\nin log(abundance)\nfrom first to last year")) +
   theme_minimal() +
   scale_x_continuous(breaks = seq(min(df_long_plecoptera_filtered$year), max(df_long_plecoptera_filtered$year), by = 1),
                      labels = seq(min(df_long_plecoptera_filtered$year), max(df_long_plecoptera_filtered$year), by = 1)) +
@@ -289,11 +222,6 @@ model_outputs <- df_long_trichoptera %>%
 df_long_trichoptera <- left_join(df_long_trichoptera, model_outputs, by = "taxonname")
 
 # Select the five unique species with the highest amount of change from the first to the last year
-# top_species <- df_long_trichoptera %>%
-#   group_by(taxonname) %>%
-#   summarise(change_log_abundance = last(log_abundance) - first(log_abundance)) %>%
-#   top_n(5, wt = change_log_abundance)
-
 top_species <- df_long_trichoptera %>%
   group_by(taxonname) %>%
   summarise(max_estimate = max(estimate)) %>%
@@ -301,23 +229,12 @@ top_species <- df_long_trichoptera %>%
   arrange(desc(max_estimate)) %>% 
   ungroup()
 
-# middle_species <- df_long_trichoptera %>%
-#   group_by(taxonname) %>%
-#   summarise(change_log_abundance = last(log_abundance) - first(log_abundance)) %>%
-#   arrange(abs(change_log_abundance)) %>%
-#   slice_head(n = 11) # turn this line off or on as needed
-
 bottom_species <- df_long_trichoptera %>%
   group_by(taxonname) %>%
   summarise(max_estimate = max(estimate)) %>%
   top_n(5, wt = -max_estimate) %>%
   arrange(desc(max_estimate)) %>% 
   ungroup()
-
-# bottom_species <- df_long_trichoptera %>%
-#   group_by(taxonname) %>%
-#   summarise(change_log_abundance = last(log_abundance) - first(log_abundance)) %>%
-#   top_n(5, wt = -change_log_abundance)
 
 # Join the top and bottom species datasets
 selected_species <- bind_rows(top_species, bottom_species)
@@ -341,7 +258,7 @@ last_years <- df_long_trichoptera_filtered %>%
   ungroup()
 
 # Plot abundances by year with line colors grouped by taxonomic order
-tiff(filename = "Plots/Winner_Loser_trichoptera(10_taxa).tiff", width = 10, height = 10, units = 'in', res = 600, compression = 'lzw')
+tiff(filename = "Plots/Winner_Loser_trichoptera.tiff", width = 10, height = 10, units = 'in', res = 600, compression = 'lzw')
 ggplot(df_long_trichoptera_filtered, aes(x = year, y = log_abundance, color = estimate, group = taxonname)) +
   geom_line(linewidth = 0.35, linetype = "dotted") +
   geom_smooth(method = "lm", se = FALSE, aes(linetype = ifelse(p.value < 0.05, "p < 0.05", "p > 0.05"))) +
@@ -350,8 +267,6 @@ ggplot(df_long_trichoptera_filtered, aes(x = year, y = log_abundance, color = es
   geom_text_repel(data = last_years, aes(label = taxonname), hjust = 1.1, vjust = 0, nudge_y = 0.075, size = 3) +
   labs(x = "Year", y = "log(Abundance + 1)", color = "Taxonomic Group", shape = "Taxonomic group", linetype = "P value") +
   scale_colour_gradient(low="#f0bb00ff", high="#00ccbaff", aes("lm(log(abundance + 1) ~ year)"))+
-  # scale_colour_gradient2(low="#D55E00", mid="#CC79A7", high="#009E73", midpoint=median(df_long_trichoptera$centred_log_abund_change_first_last)) +
-  # scale_color_gradient(low = "#0072B2", high = "#D55E00", aes("Absolute change\nin log(abundance)\nfrom first to last year")) +
   theme_minimal() +
   scale_x_continuous(breaks = seq(min(df_long_trichoptera_filtered$year), max(df_long_trichoptera_filtered$year), by = 1),
                      labels = seq(min(df_long_trichoptera_filtered$year), max(df_long_trichoptera_filtered$year), by = 1)) +
@@ -378,11 +293,6 @@ model_outputs <- df_long_diptera %>%
 df_long_diptera <- left_join(df_long_diptera, model_outputs, by = "taxonname")
 
 # Select the five unique species with the highest amount of change from the first to the last year
-# top_species <- df_long_diptera %>%
-#   group_by(taxonname) %>%
-#   summarise(change_log_abundance = last(log_abundance) - first(log_abundance)) %>%
-#   top_n(5, wt = change_log_abundance)
-
 top_species <- df_long_diptera %>%
   group_by(taxonname) %>%
   summarise(max_estimate = max(estimate)) %>%
@@ -390,23 +300,12 @@ top_species <- df_long_diptera %>%
   arrange(desc(max_estimate)) %>% 
   ungroup()
 
-# middle_species <- df_long_diptera %>%
-#   group_by(taxonname) %>%
-#   summarise(change_log_abundance = last(log_abundance) - first(log_abundance)) %>%
-#   arrange(abs(change_log_abundance)) %>%
-#   slice_head(n = 11) # turn this line off or on as needed
-
 bottom_species <- df_long_diptera %>%
   group_by(taxonname) %>%
   summarise(max_estimate = max(estimate)) %>%
   top_n(5, wt = -max_estimate) %>%
   arrange(desc(max_estimate)) %>% 
   ungroup()
-
-# bottom_species <- df_long_diptera %>%
-#   group_by(taxonname) %>%
-#   summarise(change_log_abundance = last(log_abundance) - first(log_abundance)) %>%
-#   top_n(5, wt = -change_log_abundance)
 
 # Join the top and bottom species datasets
 selected_species <- bind_rows(top_species, bottom_species)
@@ -430,7 +329,7 @@ last_years <- df_long_diptera_filtered %>%
   ungroup()
 
 # Plot abundances by year with line colors grouped by taxonomic order
-tiff(filename = "Plots/Winner_Loser_diptera(10_taxa).tiff", width = 10, height = 10, units = 'in', res = 600, compression = 'lzw')
+tiff(filename = "Plots/Winner_Loser_diptera.tiff", width = 10, height = 10, units = 'in', res = 600, compression = 'lzw')
 ggplot(df_long_diptera_filtered, aes(x = year, y = log_abundance, color = estimate, group = taxonname)) +
   geom_line(linewidth = 0.35, linetype = "dotted") +
   geom_smooth(method = "lm", se = FALSE, aes(linetype = ifelse(p.value < 0.05, "p < 0.05", "p > 0.05"))) +
@@ -439,8 +338,6 @@ ggplot(df_long_diptera_filtered, aes(x = year, y = log_abundance, color = estima
   geom_text_repel(data = last_years, aes(label = taxonname), hjust = 1.1, vjust = 0, nudge_y = 0.075, size = 3) +
   labs(x = "Year", y = "log(Abundance + 1)", color = "Taxonomic Group", shape = "Taxonomic group", linetype = "P value") +
   scale_colour_gradient(low="#f0bb00ff", high="#00ccbaff", aes("lm(log(abundance + 1) ~ year)"))+
-  # scale_colour_gradient2(low="#D55E00", mid="#CC79A7", high="#009E73", midpoint=median(df_long_diptera$centred_log_abund_change_first_last)) +
-  # scale_color_gradient(low = "#0072B2", high = "#D55E00", aes("Absolute change\nin log(abundance)\nfrom first to last year")) +
   theme_minimal() +
   scale_x_continuous(breaks = seq(min(df_long_diptera_filtered$year), max(df_long_diptera_filtered$year), by = 1),
                      labels = seq(min(df_long_diptera_filtered$year), max(df_long_diptera_filtered$year), by = 1)) +
@@ -467,11 +364,6 @@ model_outputs <- df_long_insect %>%
 df_long_insect <- left_join(df_long_insect, model_outputs, by = "taxonname")
 
 # Select the five unique species with the highest amount of change from the first to the last year
-# top_species <- df_long_insect %>%
-#   group_by(taxonname) %>%
-#   summarise(change_log_abundance = last(log_abundance) - first(log_abundance)) %>%
-#   top_n(5, wt = change_log_abundance)
-
 top_species <- df_long_insect %>%
   group_by(taxonname) %>%
   summarise(max_estimate = max(estimate)) %>%
@@ -479,23 +371,12 @@ top_species <- df_long_insect %>%
   arrange(desc(max_estimate)) %>% 
   ungroup()
 
-# middle_species <- df_long_insect %>%
-#   group_by(taxonname) %>%
-#   summarise(change_log_abundance = last(log_abundance) - first(log_abundance)) %>%
-#   arrange(abs(change_log_abundance)) %>%
-#   slice_head(n = 11) # turn this line off or on as needed
-
 bottom_species <- df_long_insect %>%
   group_by(taxonname) %>%
   summarise(max_estimate = max(estimate)) %>%
   top_n(5, wt = -max_estimate) %>%
   arrange(desc(max_estimate)) %>% 
   ungroup()
-
-# bottom_species <- df_long_insect %>%
-#   group_by(taxonname) %>%
-#   summarise(change_log_abundance = last(log_abundance) - first(log_abundance)) %>%
-#   top_n(5, wt = -change_log_abundance)
 
 # Join the top and bottom species datasets
 selected_species <- bind_rows(top_species, bottom_species)
@@ -519,7 +400,7 @@ last_years <- df_long_insect_filtered %>%
   ungroup()
 
 # Plot abundances by year with line colors grouped by taxonomic order
-tiff(filename = "Plots/Winner_Loser_insect(10_taxa).tiff", width = 10, height = 10, units = 'in', res = 600, compression = 'lzw')
+tiff(filename = "Plots/Winner_Loser_insect.tiff", width = 10, height = 10, units = 'in', res = 600, compression = 'lzw')
 ggplot(df_long_insect_filtered, aes(x = year, y = log_abundance, color = estimate, group = taxonname)) +
   geom_line(linewidth = 0.35, linetype = "dotted") +
   geom_smooth(method = "lm", se = FALSE, aes(linetype = ifelse(p.value < 0.05, "p < 0.05", "p > 0.05"))) +
@@ -528,8 +409,6 @@ ggplot(df_long_insect_filtered, aes(x = year, y = log_abundance, color = estimat
   geom_text_repel(data = last_years, aes(label = taxonname), hjust = 1.1, vjust = 0, nudge_y = 0.075, size = 3) +
   labs(x = "Year", y = "log(Abundance + 1)", color = "Taxonomic Group", shape = "Taxonomic group", linetype = "P value") +
   scale_colour_gradient(low="#f0bb00ff", high="#00ccbaff", aes("lm(log(abundance + 1) ~ year)"))+
-  # scale_colour_gradient2(low="#D55E00", mid="#CC79A7", high="#009E73", midpoint=median(df_long_insect$centred_log_abund_change_first_last)) +
-  # scale_color_gradient(low = "#0072B2", high = "#D55E00", aes("Absolute change\nin log(abundance)\nfrom first to last year")) +
   theme_minimal() +
   scale_x_continuous(breaks = seq(min(df_long_insect_filtered$year), max(df_long_insect_filtered$year), by = 1),
                      labels = seq(min(df_long_insect_filtered$year), max(df_long_insect_filtered$year), by = 1)) +
@@ -556,11 +435,6 @@ model_outputs <- df_long_crustacea %>%
 df_long_crustacea <- left_join(df_long_crustacea, model_outputs, by = "taxonname")
 
 # Select the five unique species with the highest amount of change from the first to the last year
-# top_species <- df_long_crustacea %>%
-#   group_by(taxonname) %>%
-#   summarise(change_log_abundance = last(log_abundance) - first(log_abundance)) %>%
-#   top_n(5, wt = change_log_abundance)
-
 top_species <- df_long_crustacea %>%
   group_by(taxonname) %>%
   summarise(max_estimate = max(estimate)) %>%
@@ -568,23 +442,12 @@ top_species <- df_long_crustacea %>%
   arrange(desc(max_estimate)) %>% 
   ungroup()
 
-# middle_species <- df_long_crustacea %>%
-#   group_by(taxonname) %>%
-#   summarise(change_log_abundance = last(log_abundance) - first(log_abundance)) %>%
-#   arrange(abs(change_log_abundance)) %>%
-#   slice_head(n = 11) # turn this line off or on as needed
-
 bottom_species <- df_long_crustacea %>%
   group_by(taxonname) %>%
   summarise(max_estimate = max(estimate)) %>%
   top_n(5, wt = -max_estimate) %>%
   arrange(desc(max_estimate)) %>% 
   ungroup()
-
-# bottom_species <- df_long_crustacea %>%
-#   group_by(taxonname) %>%
-#   summarise(change_log_abundance = last(log_abundance) - first(log_abundance)) %>%
-#   top_n(5, wt = -change_log_abundance)
 
 # Join the top and bottom species datasets
 selected_species <- bind_rows(top_species, bottom_species)
@@ -608,7 +471,7 @@ last_years <- df_long_crustacea_filtered %>%
   ungroup()
 
 # Plot abundances by year with line colors grouped by taxonomic order
-tiff(filename = "Plots/Winner_Loser_crustacea(10_taxa).tiff", width = 10, height = 10, units = 'in', res = 600, compression = 'lzw')
+tiff(filename = "Plots/Winner_Loser_crustacea.tiff", width = 10, height = 10, units = 'in', res = 600, compression = 'lzw')
 ggplot(df_long_crustacea_filtered, aes(x = year, y = log_abundance, color = estimate, group = taxonname)) +
   geom_line(linewidth = 0.35, linetype = "dotted") +
   geom_smooth(method = "lm", se = FALSE, aes(linetype = ifelse(p.value < 0.05, "p < 0.05", "p > 0.05"))) +
@@ -617,8 +480,6 @@ ggplot(df_long_crustacea_filtered, aes(x = year, y = log_abundance, color = esti
   geom_text_repel(data = last_years, aes(label = taxonname), hjust = 1.1, vjust = 0, nudge_y = 0.075, size = 3) +
   labs(x = "Year", y = "log(Abundance + 1)", color = "Taxonomic Group", shape = "Taxonomic group", linetype = "P value") +
   scale_colour_gradient(low="#f0bb00ff", high="#00ccbaff", aes("lm(log(abundance + 1) ~ year)"))+
-  # scale_colour_gradient2(low="#D55E00", mid="#CC79A7", high="#009E73", midpoint=median(df_long_crustacea$centred_log_abund_change_first_last)) +
-  # scale_color_gradient(low = "#0072B2", high = "#D55E00", aes("Absolute change\nin log(abundance)\nfrom first to last year")) +
   theme_minimal() +
   scale_x_continuous(breaks = seq(min(df_long_crustacea_filtered$year), max(df_long_crustacea_filtered$year), by = 1),
                      labels = seq(min(df_long_crustacea_filtered$year), max(df_long_crustacea_filtered$year), by = 1)) +
@@ -645,11 +506,6 @@ model_outputs <- df_long_mollusc %>%
 df_long_mollusc <- left_join(df_long_mollusc, model_outputs, by = "taxonname")
 
 # Select the five unique species with the highest amount of change from the first to the last year
-# top_species <- df_long_mollusc %>%
-#   group_by(taxonname) %>%
-#   summarise(change_log_abundance = last(log_abundance) - first(log_abundance)) %>%
-#   top_n(5, wt = change_log_abundance)
-
 top_species <- df_long_mollusc %>%
   group_by(taxonname) %>%
   summarise(max_estimate = max(estimate)) %>%
@@ -657,23 +513,12 @@ top_species <- df_long_mollusc %>%
   arrange(desc(max_estimate)) %>% 
   ungroup()
 
-# middle_species <- df_long_mollusc %>%
-#   group_by(taxonname) %>%
-#   summarise(change_log_abundance = last(log_abundance) - first(log_abundance)) %>%
-#   arrange(abs(change_log_abundance)) %>%
-#   slice_head(n = 11) # turn this line off or on as needed
-
 bottom_species <- df_long_mollusc %>%
   group_by(taxonname) %>%
   summarise(max_estimate = max(estimate)) %>%
   top_n(5, wt = -max_estimate) %>%
   arrange(desc(max_estimate)) %>% 
   ungroup()
-
-# bottom_species <- df_long_mollusc %>%
-#   group_by(taxonname) %>%
-#   summarise(change_log_abundance = last(log_abundance) - first(log_abundance)) %>%
-#   top_n(5, wt = -change_log_abundance)
 
 # Join the top and bottom species datasets
 selected_species <- bind_rows(top_species, bottom_species)
@@ -697,7 +542,7 @@ last_years <- df_long_mollusc_filtered %>%
   ungroup()
 
 # Plot abundances by year with line colors grouped by taxonomic order
-tiff(filename = "Plots/Winner_Loser_mollusc(10_taxa).tiff", width = 10, height = 10, units = 'in', res = 600, compression = 'lzw')
+tiff(filename = "Plots/Winner_Loser_mollusc.tiff", width = 10, height = 10, units = 'in', res = 600, compression = 'lzw')
 ggplot(df_long_mollusc_filtered, aes(x = year, y = log_abundance, color = estimate, group = taxonname)) +
   geom_line(linewidth = 0.35, linetype = "dotted") +
   geom_smooth(method = "lm", se = FALSE, aes(linetype = ifelse(p.value < 0.05, "p < 0.05", "p > 0.05"))) +
@@ -706,8 +551,6 @@ ggplot(df_long_mollusc_filtered, aes(x = year, y = log_abundance, color = estima
   geom_text_repel(data = last_years, aes(label = taxonname), hjust = 1.1, vjust = 0, nudge_y = 0.075, size = 3) +
   labs(x = "Year", y = "log(Abundance + 1)", color = "Taxonomic Group", shape = "Taxonomic group", linetype = "P value") +
   scale_colour_gradient(low="#f0bb00ff", high="#00ccbaff", aes("lm(log(abundance + 1) ~ year)"))+
-  # scale_colour_gradient2(low="#D55E00", mid="#CC79A7", high="#009E73", midpoint=median(df_long_mollusc$centred_log_abund_change_first_last)) +
-  # scale_color_gradient(low = "#0072B2", high = "#D55E00", aes("Absolute change\nin log(abundance)\nfrom first to last year")) +
   theme_minimal() +
   scale_x_continuous(breaks = seq(min(df_long_mollusc_filtered$year), max(df_long_mollusc_filtered$year), by = 1),
                      labels = seq(min(df_long_mollusc_filtered$year), max(df_long_mollusc_filtered$year), by = 1)) +
@@ -734,11 +577,6 @@ model_outputs <- df_long_annelid %>%
 df_long_annelid <- left_join(df_long_annelid, model_outputs, by = "taxonname")
 
 # Select the five unique species with the highest amount of change from the first to the last year
-# top_species <- df_long_annelid %>%
-#   group_by(taxonname) %>%
-#   summarise(change_log_abundance = last(log_abundance) - first(log_abundance)) %>%
-#   top_n(5, wt = change_log_abundance)
-
 top_species <- df_long_annelid %>%
   group_by(taxonname) %>%
   summarise(max_estimate = max(estimate)) %>%
@@ -746,23 +584,12 @@ top_species <- df_long_annelid %>%
   arrange(desc(max_estimate)) %>% 
   ungroup()
 
-# middle_species <- df_long_annelid %>%
-#   group_by(taxonname) %>%
-#   summarise(change_log_abundance = last(log_abundance) - first(log_abundance)) %>%
-#   arrange(abs(change_log_abundance)) %>%
-#   slice_head(n = 11) # turn this line off or on as needed
-
 bottom_species <- df_long_annelid %>%
   group_by(taxonname) %>%
   summarise(max_estimate = max(estimate)) %>%
   top_n(5, wt = -max_estimate) %>%
   arrange(desc(max_estimate)) %>% 
   ungroup()
-
-# bottom_species <- df_long_annelid %>%
-#   group_by(taxonname) %>%
-#   summarise(change_log_abundance = last(log_abundance) - first(log_abundance)) %>%
-#   top_n(5, wt = -change_log_abundance)
 
 # Join the top and bottom species datasets
 selected_species <- bind_rows(top_species, bottom_species)
@@ -786,7 +613,7 @@ last_years <- df_long_annelid_filtered %>%
   ungroup()
 
 # Plot abundances by year with line colors grouped by taxonomic order
-tiff(filename = "Plots/Winner_Loser_annelid(10_taxa).tiff", width = 10, height = 10, units = 'in', res = 600, compression = 'lzw')
+tiff(filename = "Plots/Winner_Loser_annelid.tiff", width = 10, height = 10, units = 'in', res = 600, compression = 'lzw')
 ggplot(df_long_annelid_filtered, aes(x = year, y = log_abundance, color = estimate, group = taxonname)) +
   geom_line(linewidth = 0.35, linetype = "dotted") +
   geom_smooth(method = "lm", se = FALSE, linetype = "dashed") +
@@ -795,8 +622,6 @@ ggplot(df_long_annelid_filtered, aes(x = year, y = log_abundance, color = estima
   geom_text_repel(data = last_years, aes(label = taxonname), hjust = 1.1, vjust = 0, nudge_y = 0.075, size = 3) +
   labs(x = "Year", y = "log(Abundance + 1)", color = "Taxonomic Group", shape = "Taxonomic group", linetype = "P value") +
   scale_colour_gradient(low="#f0bb00ff", high="#00ccbaff", aes("lm(log(abundance + 1) ~ year)"))+
-  # scale_colour_gradient2(low="#D55E00", mid="#CC79A7", high="#009E73", midpoint=median(df_long_annelid$centred_log_abund_change_first_last)) +
-  # scale_color_gradient(low = "#0072B2", high = "#D55E00", aes("Absolute change\nin log(abundance)\nfrom first to last year")) +
   theme_minimal() +
   scale_x_continuous(breaks = seq(min(df_long_annelid_filtered$year), max(df_long_annelid_filtered$year), by = 1),
                      labels = seq(min(df_long_annelid_filtered$year), max(df_long_annelid_filtered$year), by = 1)) +
@@ -823,11 +648,6 @@ model_outputs <- df_long_other %>%
 df_long_other <- left_join(df_long_other, model_outputs, by = "taxonname")
 
 # Select the five unique species with the highest amount of change from the first to the last year
-# top_species <- df_long_other %>%
-#   group_by(taxonname) %>%
-#   summarise(change_log_abundance = last(log_abundance) - first(log_abundance)) %>%
-#   top_n(5, wt = change_log_abundance)
-
 top_species <- df_long_other %>%
   group_by(taxonname) %>%
   summarise(max_estimate = max(estimate)) %>%
@@ -835,23 +655,12 @@ top_species <- df_long_other %>%
   arrange(desc(max_estimate)) %>% 
   ungroup()
 
-# middle_species <- df_long_other %>%
-#   group_by(taxonname) %>%
-#   summarise(change_log_abundance = last(log_abundance) - first(log_abundance)) %>%
-#   arrange(abs(change_log_abundance)) %>%
-#   slice_head(n = 11) # turn this line off or on as needed
-
 bottom_species <- df_long_other %>%
   group_by(taxonname) %>%
   summarise(max_estimate = max(estimate)) %>%
   top_n(5, wt = -max_estimate) %>%
   arrange(desc(max_estimate)) %>% 
   ungroup()
-
-# bottom_species <- df_long_other %>%
-#   group_by(taxonname) %>%
-#   summarise(change_log_abundance = last(log_abundance) - first(log_abundance)) %>%
-#   top_n(5, wt = -change_log_abundance)
 
 # Join the top and bottom species datasets
 selected_species <- bind_rows(top_species, bottom_species)
@@ -875,7 +684,7 @@ last_years <- df_long_other_filtered %>%
   ungroup()
 
 # Plot abundances by year with line colors grouped by taxonomic order
-tiff(filename = "Plots/Winner_Loser_other(10_taxa).tiff", width = 10, height = 10, units = 'in', res = 600, compression = 'lzw')
+tiff(filename = "Plots/Winner_Loser_other.tiff", width = 10, height = 10, units = 'in', res = 600, compression = 'lzw')
 ggplot(df_long_other_filtered, aes(x = year, y = log_abundance, color = estimate, group = taxonname)) +
   geom_line(linewidth = 0.35, linetype = "dotted") +
   geom_smooth(method = "lm", se = FALSE, aes(linetype = ifelse(p.value < 0.05, "p < 0.05", "p > 0.05"))) +
@@ -884,8 +693,6 @@ ggplot(df_long_other_filtered, aes(x = year, y = log_abundance, color = estimate
   geom_text_repel(data = last_years, aes(label = taxonname), hjust = 1.1, vjust = 0, nudge_y = 0.075, size = 3) +
   labs(x = "Year", y = "log(Abundance + 1)", color = "Taxonomic Group", shape = "Taxonomic group", linetype = "P value") +
   scale_colour_gradient(low="#f0bb00ff", high="#00ccbaff", aes("lm(log(abundance + 1) ~ year)"))+
-  # scale_colour_gradient2(low="#D55E00", mid="#CC79A7", high="#009E73", midpoint=median(df_long_other$centred_log_abund_change_first_last)) +
-  # scale_color_gradient(low = "#0072B2", high = "#D55E00", aes("Absolute change\nin log(abundance)\nfrom first to last year")) +
   theme_minimal() +
   scale_x_continuous(breaks = seq(min(df_long_other_filtered$year), max(df_long_other_filtered$year), by = 1),
                      labels = seq(min(df_long_other_filtered$year), max(df_long_other_filtered$year), by = 1)) +
@@ -894,49 +701,6 @@ ggplot(df_long_other_filtered, aes(x = year, y = log_abundance, color = estimate
   ggtitle("Change in other invertebrate abundances through time") + 
   theme(plot.title = element_text(hjust = 0.5, face = "bold"))
 dev.off()
-
-# # ephemeroptera
-# # remove rare species (are likely not dominant species)
-# df_long_ephemeroptera <- df_long_ephemeroptera %>%
-#   filter(abundance >= 10)
-# 
-# # Filter the dataset, only keeping species present in at least 5 years
-# df_long_ephemeroptera <- df_long_ephemeroptera %>%
-#   group_by(taxonname) %>%
-#   filter(n_distinct(year) >= 4) %>% # represents half of the time series
-#   ungroup()
-# 
-# # Determine the taxonnames to display for the first and last year
-# first_years <- df_long_ephemeroptera %>%
-#   group_by(taxonname) %>%
-#   filter(year == min(year)) %>%
-#   ungroup()
-# 
-# last_years <- df_long_ephemeroptera %>%
-#   group_by(taxonname) %>%
-#   filter(n() > 1) %>%
-#   filter(year == max(year)) %>%
-#   ungroup()
-# 
-# # Plot abundances by year with line colors grouped by taxonomic order
-# tiff(filename = "Plots/Winner_Loser_ephemeroptera.tiff", width = 10, height = 10, units = 'in', res = 600, compression = 'lzw')
-# ggplot(df_long_ephemeroptera, aes(x = year, y = log_abundance, color = log_abund_change_first_last, group = taxonname)) +
-#   geom_line(size = 0.05, linetype = "dashed") +
-#   geom_smooth(method = "lm", se = FALSE) +
-#   geom_point(size = 2, aes(shape = group)) +
-#   geom_text_repel(data = first_years, aes(label = taxonname), hjust = -0.1, vjust = 0, nudge_y = 0.01, size = 3) +
-#   geom_text_repel(data = last_years, aes(label = taxonname), hjust = 1.1, vjust = 0, nudge_y = 0.075, size = 3) +
-#   labs(x = "Year", y = "log(Abundance + 1)", color = "Taxonomic Group", shape = "Taxonomic group") +
-#   # scale_colour_gradient2(low="#D55E00", mid="#CC79A7", high="#0072B2", midpoint=median(df_long_ephemeroptera$log_abund_change_first_last)) +
-#   # scale_colour_gradient2(low="#D55E00", mid="#CC79A7", high="#009E73", midpoint=median(df_long_ephemeroptera$centred_log_abund_change_first_last)) +
-#   scale_color_gradient(low = "#0072B2", high = "#D55E00", aes("Absolute change\nin log(abundance)\nfrom first to last year")) +
-#   theme_minimal() +
-#   scale_shape_manual(values = c(16, 17, 15, 3, 2, 8, 7, 6, 5, 4, 1, 0, 18, 9, 10, 11, 12)) +
-#   scale_x_continuous(breaks = seq(min(df_long_ephemeroptera$year), max(df_long_ephemeroptera$year), by = 1),
-#                      labels = seq(min(df_long_ephemeroptera$year), max(df_long_ephemeroptera$year), by = 1)) +
-#   theme(legend.position = "right", 
-#         panel.border = element_rect(color = "grey80", fill = NA))
-# dev.off()
 
 ##### CLEAN UP --------------------
 library(pacman)
