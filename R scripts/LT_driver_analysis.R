@@ -111,6 +111,12 @@ allYrs$river_type[allYrs$river_type == 3] <- "type3"
 allYrs$river_type[allYrs$river_type == 4] <- "type4"
 allYrs$river_type[allYrs$river_type == 5] <- "type5"
 
+# change EQC variable names
+allYrs$EQC[allYrs$EQC == "Poor"] <- "1Poor"
+allYrs$EQC[allYrs$EQC == "Moderate"] <- "2Moderate"
+allYrs$EQC[allYrs$EQC == "Good"] <- "3Good"
+allYrs$EQC[allYrs$EQC == "Very good"] <- "3High"
+
 # make factors
 allYrs$fYear <- factor(allYrs$year_wMissing)
 allYrs$fmodified <- as.factor(allYrs$Heavily_modified)
@@ -409,6 +415,11 @@ PlotEffects <- function(name, summs, label.y=TRUE, title=TRUE, removeInt=FALSE) 
 
 PlotRiverTypes <- function(wh, mod) {
   AbundEsts <- mod[[wh]]
+  names(AbundEsts)[1] <- "1"
+  names(AbundEsts)[2] <- "2"
+  names(AbundEsts)[3] <- "3"
+  names(AbundEsts)[4] <- "4"
+  names(AbundEsts)[5] <- "5"
   PlotEffects(name=names(AbundEsts)[1], summs=AbundEsts, 
               label.y=TRUE, title=TRUE, removeInt = TRUE)
   sapply(names(AbundEsts)[-1], PlotEffects, summs=AbundEsts, 
@@ -608,6 +619,7 @@ PlotEffects2 <- function(name, summs, label.y=TRUE, title=TRUE, removeInt=FALSE)
 
 PlotModified <- function(wh, mod) {
   AbundEsts <- mod[[wh]]
+  
   PlotEffects(name=names(AbundEsts)[1], summs=AbundEsts, 
               label.y=TRUE, title=TRUE, removeInt = TRUE)
   sapply(names(AbundEsts)[-1], PlotEffects, summs=AbundEsts, 
@@ -808,16 +820,22 @@ PlotEffects3 <- function(name, summs, label.y=TRUE, title=TRUE, removeInt=FALSE)
 
 PlotEQCs <- function(wh, mod) {
   AbundEsts <- mod[[wh]]
-  PlotEffects(name=names(AbundEsts)[1], summs=AbundEsts, 
+  names(AbundEsts)[1] <- "Poor"
+  names(AbundEsts)[2] <- "Moderate"
+  names(AbundEsts)[3] <- "Good"
+  names(AbundEsts)[4] <- "High"
+  # Define the desired order of plotting columns
+  PlotEffects3(name=names(AbundEsts)[1], summs=AbundEsts, 
               label.y=TRUE, title=TRUE, removeInt = TRUE)
   sapply(names(AbundEsts)[-1], PlotEffects3, summs=AbundEsts, 
          label.y=FALSE, title=TRUE, removeInt = TRUE)
   mtext(wh, 4, outer=FALSE, line=2)
 }
 
+
 # all taxon indices
 VarToPlot <- (1:6)
-par(mfrow=c(length(VarToPlot),4), mar=c(2,2,2,2), oma=c(2,4,2,2))
+par(mfrow=c(length(VarToPlot), 4), mar=c(2,2,2,2), oma=c(2,4,2,2))
 sapply(names(Models.lme3)[VarToPlot], PlotEQCs, mod=Models.lme3)
 mtext("Ecological Quality Class", 3, outer=TRUE, font = 2)
 mtext("Estimate", 1, outer = TRUE, line = 1)
