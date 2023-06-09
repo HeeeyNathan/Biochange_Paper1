@@ -56,7 +56,8 @@ df_long_ept <- df_long %>% filter(group2 == "EPT")
 df_long_ephemeroptera <- df_long %>% filter(group == "Ephemeroptera")
 df_long_plecoptera <- df_long %>% filter(group == "Plecoptera")
 df_long_trichoptera <- df_long %>% filter(group == "Trichoptera")
-df_long_diptera <- df_long %>% filter(group2 == "Diptera")
+df_long_diptera <- df_long %>% filter(group == "Diptera")
+df_long_coleoptera <- df_long %>% filter(group == "Coleoptera")
 df_long_insect <- df_long %>% filter(group3 == "Insect")
 df_long_mollusc <- df_long %>% filter(group2 == "Mollusc")
 df_long_annelid <- df_long %>% filter(group2 == "Annelid")
@@ -344,6 +345,77 @@ ggplot(df_long_diptera_filtered, aes(x = year, y = log_abundance, color = estima
   scale_y_continuous(expand = c(0.01, 0.01)) +
   theme(legend.position = "right", panel.border = element_rect(color = "grey80", fill = NA)) +
   ggtitle("Change in Dipteran abundance through time") + 
+  theme(plot.title = element_text(hjust = 0.5, face = "bold"))
+dev.off()
+
+# coleoptera
+# Filter the dataset, only keeping species present in at least 2 years
+df_long_coleoptera <- df_long_coleoptera %>%
+  group_by(taxonname) %>%
+  filter(n_distinct(year) >= 2) %>%
+  ungroup()
+
+# Group the data by species and fit linear regression model for each group
+model_outputs <- df_long_coleoptera %>%
+  group_by(taxonname) %>%
+  do(tidy(lm(log_abundance ~ year, data = .))) %>%
+  filter(term != "(Intercept)") %>%
+  ungroup()
+
+df_long_coleoptera <- left_join(df_long_coleoptera, model_outputs, by = "taxonname")
+
+# Select the five unique species with the highest amount of change from the first to the last year
+top_species <- df_long_coleoptera %>%
+  group_by(taxonname) %>%
+  summarise(max_estimate = max(estimate)) %>%
+  top_n(5, wt = max_estimate) %>%
+  arrange(desc(max_estimate)) %>% 
+  ungroup()
+
+bottom_species <- df_long_coleoptera %>%
+  group_by(taxonname) %>%
+  summarise(max_estimate = max(estimate)) %>%
+  top_n(5, wt = -max_estimate) %>%
+  arrange(desc(max_estimate)) %>% 
+  ungroup()
+
+# Join the top and bottom species datasets
+selected_species <- bind_rows(top_species, bottom_species)
+
+# Filter df_long to include only the rows for the selected species
+df_long_coleoptera_filtered <- df_long_coleoptera %>%
+  semi_join(selected_species, by = "taxonname")
+
+unique(df_long_coleoptera_filtered$taxonname)
+
+# Determine the taxonnames to display for the first and last year
+first_years <- df_long_coleoptera_filtered %>%
+  group_by(taxonname) %>%
+  filter(year == min(year)) %>%
+  ungroup()
+
+last_years <- df_long_coleoptera_filtered %>%
+  group_by(taxonname) %>%
+  filter(n() > 1) %>%
+  filter(year == max(year)) %>%
+  ungroup()
+
+# Plot abundances by year with line colors grouped by taxonomic order
+tiff(filename = "Plots/Winner_Loser_coleoptera.tiff", width = 10, height = 10, units = 'in', res = 600, compression = 'lzw')
+ggplot(df_long_coleoptera_filtered, aes(x = year, y = log_abundance, color = estimate, group = taxonname)) +
+  geom_line(linewidth = 0.35, linetype = "dotted") +
+  geom_smooth(method = "lm", se = FALSE, aes(linetype = ifelse(p.value < 0.05, "p < 0.05", "p > 0.05"))) +
+  geom_point(size = 2, aes(shape = group)) +
+  geom_text_repel(data = first_years, aes(label = taxonname), hjust = -0.1, vjust = 0, nudge_y = 0.01, size = 3) +
+  geom_text_repel(data = last_years, aes(label = taxonname), hjust = 1.1, vjust = 0, nudge_y = 0.075, size = 3) +
+  labs(x = "Year", y = "log(Abundance + 1)", color = "Taxonomic Group", shape = "Taxonomic group", linetype = "P value") +
+  scale_colour_gradient(low="#f0bb00ff", high="#00ccbaff", aes("lm(log(abundance + 1) ~ year)"))+
+  theme_minimal() +
+  scale_x_continuous(breaks = seq(min(df_long_coleoptera_filtered$year), max(df_long_coleoptera_filtered$year), by = 1),
+                     labels = seq(min(df_long_coleoptera_filtered$year), max(df_long_coleoptera_filtered$year), by = 1)) +
+  scale_y_continuous(expand = c(0.01, 0.01)) +
+  theme(legend.position = "right", panel.border = element_rect(color = "grey80", fill = NA)) +
+  ggtitle("Change in coleopteran abundance through time") + 
   theme(plot.title = element_text(hjust = 0.5, face = "bold"))
 dev.off()
 
@@ -701,6 +773,42 @@ ggplot(df_long_other_filtered, aes(x = year, y = log_abundance, color = estimate
   ggtitle("Change in other invertebrate abundances through time") + 
   theme(plot.title = element_text(hjust = 0.5, face = "bold"))
 dev.off()
+
+### create combined dataset of winners and losers
+df_long_ept <- df_long %>% filter(group2 == "EPT")
+df_long_ephemeroptera <- df_long %>% filter(group == "Ephemeroptera")
+df_long_plecoptera <- df_long %>% filter(group == "Plecoptera")
+df_long_trichoptera <- df_long %>% filter(group == "Trichoptera")
+df_long_diptera <- df_long %>% filter(group == "Diptera")
+df_long_coleoptera <- df_long %>% filter(group == "Coleoptera")
+df_long_insect <- df_long %>% filter(group3 == "Insect")
+df_long_mollusc <- df_long %>% filter(group2 == "Mollusc")
+df_long_annelid <- df_long %>% filter(group2 == "Annelid")
+df_long_crustacea <- df_long %>% filter(group2 == "Crustacea")
+df_long_other <- df_long %>% filter(group2 == "Other")
+
+# create combined table of all winners and losers
+winners_losers <- bind_rows(df_long_ephemeroptera_filtered,
+                            df_long_plecoptera_filtered,
+                            df_long_trichoptera_filtered,
+                            df_long_diptera_filtered,
+                            df_long_coleoptera_filtered,
+                            df_long_insect_filtered,
+                            df_long_mollusc_filtered,
+                            df_long_annelid_filtered,
+                            df_long_crustacea_filtered,
+                            df_long_other_filtered)
+
+# make better looking table
+# removing duplicate rows (some species are covered by two or more datasets e.g., ephemeroptera and insect)
+winners_losers <- distinct(winners_losers)
+# remove unnecessary columns
+winners_losers <- winners_losers %>%
+  select(-year, -abundance, -relative_abundance, -log_abundance, -term)
+# remove species duplicates (the information is the same in every line)
+winners_losers <- distinct(winners_losers, taxonname, .keep_all = TRUE)
+# save the final table
+write.csv(winners_losers, "Outputs/LT_2010-2020_winners_losers.csv", row.names = F)
 
 ##### CLEAN UP --------------------
 library(pacman)

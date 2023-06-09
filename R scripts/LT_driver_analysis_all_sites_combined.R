@@ -175,12 +175,35 @@ rownames(summ) <- (1:5)
 
 CI <- confint(fit1)
 summ <- cbind(summ, CI[4:8,])
+summ
 
 # check residuals
 residuals <- resid(fit1)
 plot(predict(fit1), residuals)
 abline(0, 0)
 hist(residuals)
+qqnorm(residuals)
+qqline(residuals, col = "red")
+
+# ### run model with factors as fixed effects###
+# fit2 <- lmer(Response ~ sflow + stemp + PC_axis1 + PC_axis2 + ftype + fmodified + fEQC + (1|site_id) + (1|year), data = response_lmer)
+# 
+# summ <- summary(fit2)$coefficients
+# summ <- data.frame(summ)
+# summ$covariate <- rownames(summ)
+# rownames(summ) <- (1:13)
+# 
+# CI <- confint(fit2)
+# summ <- cbind(summ, CI[4:16,])
+# rownames(summ) <- summ$covariate
+# 
+# # check residuals
+# residuals <- resid(fit2)
+# plot(predict(fit2), residuals)
+# abline(0, 0)
+# hist(residuals)
+# qqnorm(residuals)
+# qqline(residuals, col = "red")
 
 # #### save output ###
 # 
@@ -190,11 +213,11 @@ saveRDS(summ, file=paste0("Outputs/Drivers_all_sites/drivers__",myResponse,"__Li
 ##### CLEAN UP --------------------
 library(pacman)
 # Clear data
-# rm(list = ls())  # Removes all objects from environment
+rm(list = ls())  # Removes all objects from environment
 # Clear packages
-# p_unload(all)  # Remove all contributed packages
+p_unload(all)  # Remove all contributed packages
 # Clear plots
-# graphics.off()  # Clears plots, closes all graphics devices
+graphics.off()  # Clears plots, closes all graphics devices
 # Clear console
-# cat("\014")  # Mimics ctrl+L
+cat("\014")  # Mimics ctrl+L
 # Clear mind :)
