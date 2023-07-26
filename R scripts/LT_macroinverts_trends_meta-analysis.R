@@ -3,7 +3,7 @@
 ### get response for this task ######
 
 TaskID <- read.csv("Data/LT_ResponseTrends_TaskIDs.csv",as.is=T)
-task.id = as.integer(Sys.getenv("SLURM_ARRAY_TASK_ID", "2"))
+task.id = as.integer(Sys.getenv("SLURM_ARRAY_TASK_ID", "1"))
 myResponse <- TaskID$Response[which(TaskID$TaskID==task.id)]
 
 ### get site-level values for this response ####
