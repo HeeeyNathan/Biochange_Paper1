@@ -51,13 +51,13 @@ polygon(x=c(stand_ept_SppRich$Q10, stand_ept_SppRich$Q10, stand_ept_SppRich$Q90,
 legend(x=-31.25, y=(4/4*(b-a)+a), legend=("a, EPT richness"), bty="n", cex=1.3)
 legend(x=16.8, y=(4/4*(b-a)+a), legend=expression(paste("+2.80% ",y^-1, sep = "")), bty="n", cex=1.3)
 
-#### Diptera SPP rich #####
+#### insect SPP rich #####
 # sqrt(x)
-diptera_SppRich <- subset(response_gls, Response == "diptera_spp_richness")
-diptera_SppRich <- diptera_SppRich$estimate[!is.na(diptera_SppRich$estimate)]
-mean(allYrs$diptera_spp_richness, na.rm = T)
-ave_diptera_SppRich <- mean(allYrs$diptera_spp_richness, na.rm = T)
-percChange_perYr <- ((diptera_SppRich*2)/sqrt(ave_diptera_SppRich))*100
+insect_SppRich <- subset(response_gls, Response == "insect_spp_richness")
+insect_SppRich <- insect_SppRich$estimate[!is.na(insect_SppRich$estimate)]
+mean(allYrs$insect_spp_richness, na.rm = T)
+ave_insect_SppRich <- mean(allYrs$insect_spp_richness, na.rm = T)
+percChange_perYr <- ((insect_SppRich*2)/sqrt(ave_insect_SppRich))*100
 d <- density(percChange_perYr)
 a <- (max(d$y)+(max(d$y)/10))*-3
 b <- (max(d$y)+(max(d$y)/10))*2
@@ -69,29 +69,29 @@ polygon(c(d$x[d$x >= 0 ], 0),
 polygon(c(d$x[d$x <= 0 ], 0),
         c(d$y[d$x <= 0 ], 0),
         col = "#f2cc84", border = "#f2cc84", lwd =2)
-diptera_SppRich_Est <- subset(Ests, Response == "diptera_richness")
-stand_diptera_SppRich <- lapply(diptera_SppRich_Est[,2:11], function(x) ((x*2) / sqrt(ave_diptera_SppRich))*100) # this must be the same as how you calculated the percChange_perYr
+insect_SppRich_Est <- subset(Ests, Response == "insect_richness")
+stand_insect_SppRich <- lapply(insect_SppRich_Est[,2:11], function(x) ((x*2) / sqrt(ave_insect_SppRich))*100) # this must be the same as how you calculated the percChange_perYr
 yy <- (2.55/4*(b-a)+a)
-points(x=stand_diptera_SppRich$Estimate, y=yy, lwd=2,pch="|",cex=2)
-polygon(x=c(stand_diptera_SppRich$Q2.5, stand_diptera_SppRich$Q2.5, stand_diptera_SppRich$Q97.5, stand_diptera_SppRich$Q97.5),
+points(x=stand_insect_SppRich$Estimate, y=yy, lwd=2,pch="|",cex=2)
+polygon(x=c(stand_insect_SppRich$Q2.5, stand_insect_SppRich$Q2.5, stand_insect_SppRich$Q97.5, stand_insect_SppRich$Q97.5),
         y=c((yy-yy/18),(yy+yy/18),(yy+yy/18),(yy-yy/18)),
         col = 1,border = 0,lwd = 1)
-polygon(x=c(stand_diptera_SppRich$Q5, stand_diptera_SppRich$Q5, stand_diptera_SppRich$Q95, stand_diptera_SppRich$Q95),
+polygon(x=c(stand_insect_SppRich$Q5, stand_insect_SppRich$Q5, stand_insect_SppRich$Q95, stand_insect_SppRich$Q95),
         y=c((yy-yy/10),(yy+yy/10),(yy+yy/10),(yy-yy/10)),
         col = 1,border = 0,lwd =1)
-polygon(x=c(stand_diptera_SppRich$Q10, stand_diptera_SppRich$Q10, stand_diptera_SppRich$Q90, stand_diptera_SppRich$Q90),
+polygon(x=c(stand_insect_SppRich$Q10, stand_insect_SppRich$Q10, stand_insect_SppRich$Q90, stand_insect_SppRich$Q90),
         y=c((yy-yy/6),(yy+yy/6),(yy+yy/6),(yy-yy/6)),
         col = 1,border = 0,lwd =1)
-legend(x=-31.25, y=(3.2/4*(b-a)+a), legend=("b, Diptera richness"), bty="n", cex=1.3)
-legend(x=16.8, y=(3.2/4*(b-a)+a), legend=expression(paste("+2.99% ",y^-1, sep = "")), bty="n", cex=1.3)
+legend(x=-31.25, y=(3.2/4*(b-a)+a), legend=("b, Insect richness"), bty="n", cex=1.3)
+legend(x=16.8, y=(3.2/4*(b-a)+a), legend=expression(paste("+1.70% ",y^-1, sep = "")), bty="n", cex=1.3)
 
-#### Insect richness #####
+#### crustacea richness #####
 # sqrt(x)
-insect_SppRich <- subset(response_gls, Response == "insect_spp_richness")
-insect_SppRich <- insect_SppRich$estimate[!is.na(insect_SppRich$estimate)]
-mean(allYrs$insect_spp_richness)
-ave_insect_SppRich <- mean(allYrs$insect_spp_richness)
-percChange_perYr <- ((insect_SppRich*2)/sqrt(ave_insect_SppRich))*100
+crustacea_SppRich <- subset(response_gls, Response == "crustacea_spp_richness")
+crustacea_SppRich <- crustacea_SppRich$estimate[!is.na(crustacea_SppRich$estimate)]
+mean(allYrs$crustacea_spp_richness)
+ave_crustacea_SppRich <- mean(allYrs$crustacea_spp_richness)
+percChange_perYr <- ((crustacea_SppRich*2)/sqrt(ave_crustacea_SppRich))*100
 d <- density(percChange_perYr)
 a <- (max(d$y)+(max(d$y)/10))*-2
 b <- (max(d$y)+(max(d$y)/10))*3
@@ -105,21 +105,21 @@ polygon(c(d$x[d$x >= 0 ], 0),
 polygon(c(d$x[d$x <= 0 ], 0),
         c(d$y[d$x <= 0 ], 0),
         col = "#f2cc84", border = "#f2cc84", lwd =2)
-insect_SppRich_Est <- subset(Ests, Response == "insect_richness")
-stand_insect_SppRich <- lapply(insect_SppRich_Est[,2:11], function(x) ((x*2) / sqrt(ave_insect_SppRich))*100) # this must be the same as how you calculated the percChange_perYr
+crustacea_SppRich_Est <- subset(Ests, Response == "crustacea_richness")
+stand_crustacea_SppRich <- lapply(crustacea_SppRich_Est[,2:11], function(x) ((x*2) / sqrt(ave_crustacea_SppRich))*100) # this must be the same as how you calculated the percChange_perYr
 yy <- (1.75/4*(b-a)+a)
-points(x=stand_insect_SppRich$Estimate, y=yy, lwd=2,pch="|",cex=2)
-polygon(x=c(stand_insect_SppRich$Q2.5, stand_insect_SppRich$Q2.5, stand_insect_SppRich$Q97.5, stand_insect_SppRich$Q97.5),
+points(x=stand_crustacea_SppRich$Estimate, y=yy, lwd=2,pch="|",cex=2)
+polygon(x=c(stand_crustacea_SppRich$Q2.5, stand_crustacea_SppRich$Q2.5, stand_crustacea_SppRich$Q97.5, stand_crustacea_SppRich$Q97.5),
         y=c((yy-yy/18),(yy+yy/18),(yy+yy/18),(yy-yy/18)),
         col = 1,border = 0,lwd = 1)
-polygon(x=c(stand_insect_SppRich$Q5, stand_insect_SppRich$Q5, stand_insect_SppRich$Q95, stand_insect_SppRich$Q95),
+polygon(x=c(stand_crustacea_SppRich$Q5, stand_crustacea_SppRich$Q5, stand_crustacea_SppRich$Q95, stand_crustacea_SppRich$Q95),
         y=c((yy-yy/10),(yy+yy/10),(yy+yy/10),(yy-yy/10)),
         col = 1,border = 0,lwd =1)
-polygon(x=c(stand_insect_SppRich$Q10, stand_insect_SppRich$Q10, stand_insect_SppRich$Q90, stand_insect_SppRich$Q90),
+polygon(x=c(stand_crustacea_SppRich$Q10, stand_crustacea_SppRich$Q10, stand_crustacea_SppRich$Q90, stand_crustacea_SppRich$Q90),
         y=c((yy-yy/6),(yy+yy/6),(yy+yy/6),(yy-yy/6)),
         col = 1,border = 0,lwd =1)
-legend(x=-31.25, y=(2.4/4*(b-a)+a), legend=("c, Insect richness"), bty="n", cex=1.3)
-legend(x=16.8, y=(2.4/4*(b-a)+a), legend=expression(paste("+1.70% ",y^-1, sep = "")), bty="n", cex=1.3)
+legend(x=-31.25, y=(2.4/4*(b-a)+a), legend=("c, Crustacea richness"), bty="n", cex=1.3)
+legend(x=16.8, y=(2.4/4*(b-a)+a), legend=expression(paste("+4.30% ",y^-1, sep = "")), bty="n", cex=1.3)
 
 #### Mollusc richness #####
 # sqrt(x)
@@ -234,13 +234,13 @@ polygon(x=c(stand_ept_abund$Q10, stand_ept_abund$Q10, stand_ept_abund$Q90, stand
 legend(x=-50, y=(4/4*(b-a)+a), legend=("f, EPT abundance"), bty="n", cex=1.3)
 legend(x=25, y=(4/4*(b-a)+a), legend=expression(paste("+2.94% ",y^-1, sep = "")), bty="n", cex=1.3)
 
-#### Diptera abundance #####
+#### insect abundance #####
 # log10(x + 1)
-diptera_abund <- subset(response_gls, Response == "diptera_abundance")
-diptera_abund <- diptera_abund$estimate[!is.na(diptera_abund$estimate)]
-mean(allYrs$diptera_abundance)
-ave_diptera_abund <- mean(allYrs$diptera_abundance)
-percChange_perYr <- (10^diptera_abund-1)*100
+insect_abund <- subset(response_gls, Response == "insect_abundance")
+insect_abund <- insect_abund$estimate[!is.na(insect_abund$estimate)]
+mean(allYrs$insect_abundance)
+ave_insect_abund <- mean(allYrs$insect_abundance)
+percChange_perYr <- (10^insect_abund-1)*100
 d <- density(percChange_perYr)
 a <- (max(d$y)+(max(d$y)/10)) *-3
 b <- (max(d$y)+(max(d$y)/10))*2
@@ -252,45 +252,9 @@ polygon(c(d$x[d$x >= 0 ], 0),
 polygon(c(d$x[d$x <= 0 ], 0),
         c(d$y[d$x <= 0 ], 0),
         col = "#f2cc84", border = "#f2cc84", lwd =2)
-diptera_abund_Est <- subset(Ests, Response == "diptera_abundance")
-stand_diptera_abund <- lapply(diptera_abund_Est[,2:11], function(x) (10^x - 1)*100) # this must be the same as how you calculated the percChange_perYr
-yy <- (2.55/4*(b-a)+a)
-points(x=stand_diptera_abund$Estimate, y=yy, lwd=2,pch="|",cex=2)
-polygon(x=c(stand_diptera_abund$Q2.5, stand_diptera_abund$Q2.5, stand_diptera_abund$Q97.5, stand_diptera_abund$Q97.5),
-        y=c((yy-yy/18),(yy+yy/18),(yy+yy/18),(yy-yy/18)),
-        col = 1,border = 0,lwd = 1)
-polygon(x=c(stand_diptera_abund$Q5, stand_diptera_abund$Q5, stand_diptera_abund$Q95, stand_diptera_abund$Q95),
-        y=c((yy-yy/10),(yy+yy/10),(yy+yy/10),(yy-yy/10)),
-        col = 1,border = 0,lwd =1)
-polygon(x=c(stand_diptera_abund$Q10, stand_diptera_abund$Q10, stand_diptera_abund$Q90, stand_diptera_abund$Q90),
-        y=c((yy-yy/6),(yy+yy/6),(yy+yy/6),(yy-yy/6)),
-        col = 1,border = 0,lwd =1)
-legend(x=-50, y=(3.2/4*(b-a)+a), legend=("g, Diptera abundance"), bty="n", cex=1.3)
-legend(x=25, y=(3.2/4*(b-a)+a), legend=expression(paste("1.69% ",y^-1, sep = "")), bty="n", cex=1.3)
-
-#### Insect abundance #####
-# log(x + 1)
-insect_abund <- subset(response_gls, Response == "insect_abundance")
-insect_abund <- insect_abund$estimate[!is.na(insect_abund$estimate)]
-mean(allYrs$insect_abundance)
-ave_insect_abund <- mean(allYrs$insect_abundance)
-percChange_perYr <- (10^insect_abund-1)*100
-d <- density(percChange_perYr)
-a <- (max(d$y)+(max(d$y)/10)) *-2
-b <- (max(d$y)+(max(d$y)/10))*3
-par(new=TRUE)
-plot(d, main="",ylab="",xlab="",cex.lab=2,xlim=c(-40,60),ylim=c(a,b),col="white",yaxt='n',xaxt='n',yaxs="i")
-#axis(2, at=0, labels="insect_abund", las=1,cex.axis=1.3)
-##
-polygon(c(d$x[d$x >= 0 ], 0),
-        c(d$y[d$x >= 0 ], 0),
-        col = "#95ccba", border = "#95ccba", lwd =2)
-polygon(c(d$x[d$x <= 0 ], 0),
-        c(d$y[d$x <= 0 ], 0),
-        col = "#f2cc84", border = "#f2cc84", lwd =2)
 insect_abund_Est <- subset(Ests, Response == "insect_abundance")
 stand_insect_abund <- lapply(insect_abund_Est[,2:11], function(x) (10^x - 1)*100) # this must be the same as how you calculated the percChange_perYr
-yy <- (1.75/4*(b-a)+a)
+yy <- (2.55/4*(b-a)+a)
 points(x=stand_insect_abund$Estimate, y=yy, lwd=2,pch="|",cex=2)
 polygon(x=c(stand_insect_abund$Q2.5, stand_insect_abund$Q2.5, stand_insect_abund$Q97.5, stand_insect_abund$Q97.5),
         y=c((yy-yy/18),(yy+yy/18),(yy+yy/18),(yy-yy/18)),
@@ -301,8 +265,44 @@ polygon(x=c(stand_insect_abund$Q5, stand_insect_abund$Q5, stand_insect_abund$Q95
 polygon(x=c(stand_insect_abund$Q10, stand_insect_abund$Q10, stand_insect_abund$Q90, stand_insect_abund$Q90),
         y=c((yy-yy/6),(yy+yy/6),(yy+yy/6),(yy-yy/6)),
         col = 1,border = 0,lwd =1)
-legend(x=-50, y=(2.4/4*(b-a)+a), legend=("h, Insect abundance"), bty="n", cex=1.3)
-legend(x=25, y=(2.4/4*(b-a)+a), legend=expression(paste("-0.33% ",y^-1, sep = "")), bty="n", cex=1.3)
+legend(x=-50, y=(3.2/4*(b-a)+a), legend=("g, Insect abundance"), bty="n", cex=1.3)
+legend(x=25, y=(3.2/4*(b-a)+a), legend=expression(paste("-0.33% ",y^-1, sep = "")), bty="n", cex=1.3)
+
+#### crustacea abundance #####
+# log(x + 1)
+crustacea_abund <- subset(response_gls, Response == "crustacea_abundance")
+crustacea_abund <- crustacea_abund$estimate[!is.na(crustacea_abund$estimate)]
+mean(allYrs$crustacea_abundance)
+ave_crustacea_abund <- mean(allYrs$crustacea_abundance)
+percChange_perYr <- (10^crustacea_abund-1)*100
+d <- density(percChange_perYr)
+a <- (max(d$y)+(max(d$y)/10)) *-2
+b <- (max(d$y)+(max(d$y)/10))*3
+par(new=TRUE)
+plot(d, main="",ylab="",xlab="",cex.lab=2,xlim=c(-40,60),ylim=c(a,b),col="white",yaxt='n',xaxt='n',yaxs="i")
+#axis(2, at=0, labels="crustacea_abund", las=1,cex.axis=1.3)
+##
+polygon(c(d$x[d$x >= 0 ], 0),
+        c(d$y[d$x >= 0 ], 0),
+        col = "#95ccba", border = "#95ccba", lwd =2)
+polygon(c(d$x[d$x <= 0 ], 0),
+        c(d$y[d$x <= 0 ], 0),
+        col = "#f2cc84", border = "#f2cc84", lwd =2)
+crustacea_abund_Est <- subset(Ests, Response == "crustacea_abundance")
+stand_crustacea_abund <- lapply(crustacea_abund_Est[,2:11], function(x) (10^x - 1)*100) # this must be the same as how you calculated the percChange_perYr
+yy <- (1.75/4*(b-a)+a)
+points(x=stand_crustacea_abund$Estimate, y=yy, lwd=2,pch="|",cex=2)
+polygon(x=c(stand_crustacea_abund$Q2.5, stand_crustacea_abund$Q2.5, stand_crustacea_abund$Q97.5, stand_crustacea_abund$Q97.5),
+        y=c((yy-yy/18),(yy+yy/18),(yy+yy/18),(yy-yy/18)),
+        col = 1,border = 0,lwd = 1)
+polygon(x=c(stand_crustacea_abund$Q5, stand_crustacea_abund$Q5, stand_crustacea_abund$Q95, stand_crustacea_abund$Q95),
+        y=c((yy-yy/10),(yy+yy/10),(yy+yy/10),(yy-yy/10)),
+        col = 1,border = 0,lwd =1)
+polygon(x=c(stand_crustacea_abund$Q10, stand_crustacea_abund$Q10, stand_crustacea_abund$Q90, stand_crustacea_abund$Q90),
+        y=c((yy-yy/6),(yy+yy/6),(yy+yy/6),(yy-yy/6)),
+        col = 1,border = 0,lwd =1)
+legend(x=-50, y=(2.4/4*(b-a)+a), legend=("h, Crustacea abundance"), bty="n", cex=1.3)
+legend(x=25, y=(2.4/4*(b-a)+a), legend=expression(paste("+12.40% ",y^-1, sep = "")), bty="n", cex=1.3)
 
 #### Mollusc abundance #####
 # log10(x + 1)

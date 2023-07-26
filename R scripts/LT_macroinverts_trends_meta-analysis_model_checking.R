@@ -859,6 +859,64 @@ annelid_abund_fixed <- list(Response="annelid_abundance", annelid_abund_fixed_99
 annelid_abund_fixed <-data.frame(lapply(annelid_abund_fixed, function(x) t(data.frame(x))))
 annelid_abund_fixed
 
+#### crustacea_richness ####
+fit <- readRDS("Outputs/Metaanalysis_trends/metaanalysis_noRandom_crustacea_spp_richness.rds")
+#fit <- readRDS("Outputs/Metaanalysis_trends/Unweighted_wRandom/metaanalysis_unweighted_richness.rds")
+#fit <- readRDS("Outputs/Metaanalysis_trends/Weighted_wRandom/metaanalysis_richness.rds")
+
+#prob of trend
+crustacea_sr_prob <- getTrendProbability(fit)
+crustacea_sr_prob <- data.frame(Response="crustacea_richness", crustacea_sr_prob[,1:2])
+crustacea_sr_prob
+
+#check model
+plot(fit)
+crustacea_sr_loo <- loo(fit, cores = getOption("mc.cores", 1))
+crustacea_sr_loo
+crustacea_sr_parento <- as.list(pareto_k_table(crustacea_sr_loo))
+Count_crustacea_sr <- rbind(crustacea_sr_parento[[1]],crustacea_sr_parento[[2]],crustacea_sr_parento[[3]],crustacea_sr_parento[[4]])
+colnames(Count_crustacea_sr) <- "crustacea_richness"
+pp_check(fit, ndraws = 100)
+
+#pull out fixed effects
+crustacea_sr_fixed_995 <- fixef(fit, probs = c(0.005, 0.995))
+crustacea_sr_fixed_975 <- fixef(fit, probs = c(0.025, 0.975))
+crustacea_sr_fixed_95 <- fixef(fit, probs = c(0.05, 0.95))
+crustacea_sr_fixed_90 <- fixef(fit, probs = c(0.1, 0.9))
+crustacea_sr_fixed <- list(Response="crustacea_richness", crustacea_sr_fixed_995[,1:4], crustacea_sr_fixed_975[,3:4],
+                         crustacea_sr_fixed_95[,3:4],crustacea_sr_fixed_90[,3:4])
+crustacea_sr_fixed <-data.frame(lapply(crustacea_sr_fixed, function(x) t(data.frame(x))))
+crustacea_sr_fixed
+
+#### crustacea_abundance ####
+fit <- readRDS("Outputs/Metaanalysis_trends/metaanalysis_noRandom_crustacea_abundance.rds")
+#fit <- readRDS("Outputs/Metaanalysis_trends/Unweighted_wRandom/metaanalysis_unweighted_abundance.rds")
+#fit <- readRDS("Outputs/Metaanalysis_trends/Weighted_wRandom/metaanalysis_abundance.rds")
+
+#prob of trend
+crustacea_ab_prob <- getTrendProbability(fit)
+crustacea_ab_prob <- data.frame(Response="crustacea_abundance", crustacea_ab_prob[,1:2])
+crustacea_ab_prob
+
+#check model
+plot(fit)
+crustacea_ab_loo <- loo(fit, cores = getOption("mc.cores", 1))
+crustacea_ab_loo
+crustacea_ab_parento <- as.list(pareto_k_table(crustacea_ab_loo))
+Count_crustacea_ab <- rbind(crustacea_ab_parento[[1]],crustacea_ab_parento[[2]],crustacea_ab_parento[[3]],crustacea_ab_parento[[4]])
+colnames(Count_crustacea_ab) <- "crustacea_abundance"
+pp_check(fit, ndraws = 100)
+
+#pull out fixed effects
+crustacea_abund_fixed_995 <- fixef(fit, probs = c(0.005, 0.995))
+crustacea_abund_fixed_975 <- fixef(fit, probs = c(0.025, 0.975))
+crustacea_abund_fixed_95 <- fixef(fit, probs = c(0.05, 0.95))
+crustacea_abund_fixed_90 <- fixef(fit, probs = c(0.1, 0.9))
+crustacea_abund_fixed <- list(Response="crustacea_abundance", crustacea_abund_fixed_995[,1:4], crustacea_abund_fixed_975[,3:4],
+                            crustacea_abund_fixed_95[,3:4],crustacea_abund_fixed_90[,3:4])
+crustacea_abund_fixed <-data.frame(lapply(crustacea_abund_fixed, function(x) t(data.frame(x))))
+crustacea_abund_fixed
+
 #### assemble all model estimates from meta-analysis models #####
 
 Yr_metaanaly_Ests <- rbind(sr_fixed, srr_fixed, shH_fixed, e10_fixed, abund_fixed, turn_fixed, 
@@ -867,8 +925,9 @@ Yr_metaanaly_Ests <- rbind(sr_fixed, srr_fixed, shH_fixed, e10_fixed, abund_fixe
                            diptera_sr_fixed, diptera_abund_fixed, 
                            insect_sr_fixed, insect_abund_fixed, 
                            mollusc_sr_fixed, mollusc_abund_fixed,
-                           annelid_sr_fixed, annelid_abund_fixed)
-rownames(Yr_metaanaly_Ests) <- 1:24
+                           annelid_sr_fixed, annelid_abund_fixed,
+                           crustacea_sr_fixed, crustacea_abund_fixed)
+rownames(Yr_metaanaly_Ests) <- 1:26
 write.csv(Yr_metaanaly_Ests, "Outputs/LT_Yr_metaanaly_Ests.csv")
 
 #### assemble all probabilities of increases/decreases from meta-analysis models #####
@@ -879,7 +938,8 @@ Yr_metaanaly_probs <- rbind(sr_prob, srr_prob, shH_prob, e10_prob, ab_prob, turn
                             diptera_sr_prob, diptera_ab_prob,
                             insect_sr_prob, insect_ab_prob,
                             mollusc_sr_prob, mollusc_ab_prob,
-                            annelid_sr_prob, annelid_ab_prob)
+                            annelid_sr_prob, annelid_ab_prob,
+                            crustacea_sr_prob, crustacea_ab_prob)
 write.csv(Yr_metaanaly_probs, "Outputs/LT_Yr_metaanaly_probabilities.csv")
 
 #### assemble model counts from Parento k diagnostic values from meta-analysis models #####
@@ -890,7 +950,8 @@ Yr_metaanaly_parento <- cbind(Count_sr, Count_srr, Count_shH, Count_e10, Count_a
                               Count_diptera_sr, Count_diptera_ab,
                               Count_insect_sr, Count_insect_ab,
                               Count_mollusc_sr, Count_mollusc_ab,
-                              Count_annelid_sr, Count_annelid_ab)
+                              Count_annelid_sr, Count_annelid_ab,
+                              Count_crustacea_sr, Count_crustacea_ab)
 rownames(Yr_metaanaly_parento) <- c("good[-Inf, 0.5]","ok[0.5, 0.7]","bad[0.7, 1]","verybad[1, Inf]")
 write.csv(Yr_metaanaly_parento, "Outputs/LT_Yr_meta_parento_ModelCounts.csv")
 

@@ -3,7 +3,7 @@
 "2","spp_rich_rare",1,0
 "3","shannonsH",1,0
 "4","E10",0,1
-"5","abundance",0.9892,0.0108
+"5","abundance",0.985,0.015
 "6","turnover",1,0
 "7","F_turnover",0.189,0.811
 "8","FRic",1,0
@@ -23,3 +23,5 @@
 "22","mollusc_abundance",1,0
 "23","annelid_richness",1,0
 "24","annelid_abundance",1,0
+"25","crustacea_richness",1,0
+"26","crustacea_abundance",1,0
