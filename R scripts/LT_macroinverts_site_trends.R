@@ -20,7 +20,7 @@ allYrs <- d1[!is.na(d1$site_id_wMissing),]
 
 # choose which country for this task
 TaskID <- read.csv("Data/LT_ResponseTrends_TaskIDs.csv", as.is = T)
-task.id = as.integer(Sys.getenv("SLURM_ARRAY_TASK_ID", "2"))
+task.id = as.integer(Sys.getenv("SLURM_ARRAY_TASK_ID", "1"))
 myCountry <- TaskID$country[which(TaskID$TaskID==task.id)]
 
 #choose which response for this task
@@ -270,6 +270,38 @@ trends
 
 saveRDS(trends, file=paste0("Outputs/Site_trends/trends__",myResponse,"__",myCountry,".RDS"))
 #write.csv(trends, file=paste0("outputs/trends__",myResponse,"__",myCountry,".csv"))
+
+# # ONLY USE FOR CRUSTACEA
+# ## Crustacea were not found at all sites and there was an issue with model convergence because of this. 
+# ## Thus, use this code for crustacea only
+# 
+# # make new vector for crustacea because of convergence issues
+# library(dplyr)
+# allsites_cru <- allsites[!allsites %in% c("LTR1319", "LTR133", "LTR327")] # these sites had no crustacea
+# 
+# # calculate site trends
+# trends <- lapply(allsites_cru, function(x){
+#   fitGLSModel(subset(allYrs, site_id == x))
+# })
+# 
+# trends <- data.frame(do.call(rbind, trends))
+# trends$siteID <- allsites_cru
+# rownames(trends) <- 1:38
+# trends
+# 
+# # add missing sites to trends dataframe
+# missing_sites <- data.frame(
+#   estimate = rep(NA, 3),
+#   se = rep(NA, 3),
+#   pval = rep(NA, 3),
+#   siteID = c("LTR1319", "LTR133", "LTR327")
+# )
+# trends <- rbind(trends, missing_sites) # combine dataframes
+# trends <- trends[order(trends$siteID), ] # reorder site_id
+# rownames(trends) <- NULL # reset rownames
+# trends
+# 
+# saveRDS(trends, file=paste0("Outputs/Site_trends/trends__",myResponse,"__",myCountry,".RDS"))
 
 ##### CLEAN UP --------------------
 library(pacman)
