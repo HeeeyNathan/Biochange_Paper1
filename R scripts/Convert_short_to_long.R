@@ -1,5 +1,5 @@
 # Import SHORT data
-LT_taxa_SF <- read.csv("Data/LT_taxalist_2010-2020_short_final.csv", sep = ",", header = T, stringsAsFactors = F)
+LT_taxa_SF <- read.csv("Data/LT_taxalist_2010-2020_short.csv", sep = ",", header = T, stringsAsFactors = F)
 LT_CWM_SF <- read.csv("Data/LT_2010-2020_CWMs_short.csv", sep = ",", header = T, stringsAsFactors = F)
 LT_Groups_SF <- read.csv("Data/LT_taxalist_2010-2020_pie_chart_SF_perc.csv", sep = ",", header = T, stringsAsFactors = F)
 
@@ -8,7 +8,7 @@ library(reshape2) #used to reshape the data
 
 # Convert from SHORT to LONG form data
 attach(LT_taxa_SF)
-LT_taxa_LF <- melt(LT_taxa_SF, id = c("taxon_code", "taxon_name", "taxon_id", "ept", "epto", "coleoptera", "diptera", "insect", "mollusc", "group", "group2"))
+LT_taxa_LF <- melt(LT_taxa_SF, id = c("taxon_code", "taxon_name", "taxon_id", "ept", "epto", "coleoptera", "diptera", "insect", "mollusc", "annelid", "crustacea", "group", "group2"))
 
 attach(LT_CWM_SF)
 LT_CWM_LF <- melt(LT_CWM_SF, id = c("sample_id"))

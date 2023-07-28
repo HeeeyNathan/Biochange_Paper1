@@ -6,22 +6,11 @@ library(pacman)
 source("HighstatLibV10.R")
 
 #load data
-d1 <- read.csv("Data/LT_siteYr_AllData_wNAs_modified.csv", header=T) 
-allYrs <- d1[!is.na(d1$site_id_wMissing),]
-# write.csv(allYrs, "Data/LT_siteYr_AllData_noNAs.csv", row.names = F)
-
-# #explore data
-# colnames(allYrs)
-# pairs(allYrs[, c(11, 22)], lower.panel = panel.smooth2, upper.panel = panel.cor, diag.panel = panel.hist) # abundance
-# pairs(allYrs[, c(11, 21, 19, 27, 17, 24)], lower.panel = panel.smooth2, upper.panel = panel.cor, diag.panel = panel.hist) # taxonomic indices
-# pairs(allYrs[, c(11, 46, 47, 48, 49, 50, 52, 54, 56)], lower.panel = panel.smooth2, upper.panel = panel.cor, diag.panel = panel.hist) # functional indices indices
-# pairs(allYrs[, c(17, 27, 46, 50, 21, 47, 52, 19, 48, 54, 24, 56)], lower.panel = panel.smooth2, upper.panel = panel.cor, diag.panel = panel.hist) # taxonomic vs functional indices
-# pairs(allYrs[, c(28, 34, 37, 40, 43)], lower.panel = panel.smooth2, upper.panel = panel.cor, diag.panel = panel.hist) # taxonomic group spp_richness
-# pairs(allYrs[, c(29, 35, 38, 41, 44)], lower.panel = panel.smooth2, upper.panel = panel.cor, diag.panel = panel.hist) # taxonomic group abundance
+allYrs <- read.csv("Sensitivity/Data/LT_siteYr_AllData_sensitivity.csv", header=T)
 
 # choose which country for this task
-TaskID <- read.csv("Data/LT_ResponseTrends_TaskIDs.csv", as.is = T)
-task.id = as.integer(Sys.getenv("SLURM_ARRAY_TASK_ID", "1"))
+TaskID <- read.csv("Sensitivity/Data/LT_ResponseTrends_TaskIDs_sensitivity.csv", as.is = T)
+task.id = as.integer(Sys.getenv("SLURM_ARRAY_TASK_ID", "18"))
 myCountry <- TaskID$country[which(TaskID$TaskID==task.id)]
 
 #choose which response for this task
@@ -36,21 +25,6 @@ hist(log10(allYrs$abundance+1))
 
 hist(allYrs$E10)
 
-hist(allYrs$F_turnover)
-hist(log10(allYrs$F_turnover+0.01))
-
-hist(allYrs$FDis)
-hist(allYrs$FDis^3)
-
-hist(allYrs$FEve)
-hist(allYrs$FEve^2)
-
-hist(allYrs$FRed)
-
-hist(allYrs$FRic)
-summary(allYrs$FRic)
-hist(log10(allYrs$FRic + 0.28))
-
 hist(allYrs$shannonsH)
 
 hist(allYrs$spp_rich_rare)
@@ -61,10 +35,6 @@ hist(sqrt(allYrs$spp_richness))
 
 hist(allYrs$turnover)
 hist(allYrs$turnover^3)
-
-hist(allYrs$FRic.SES)
-hist(allYrs$FEve.SES)
-hist(allYrs$FDis.SES)
 
 # taxonomic level responses
 hist(allYrs$ept_spp_richness)
@@ -103,82 +73,14 @@ hist(sqrt(allYrs$crustacea_spp_richness))
 hist(allYrs$crustacea_abundance)
 hist(log10(allYrs$crustacea_abundance + 1))
 
-# transform variables that are right-skewed
-# first run transformation
-# if(myResponse %in% c("abundance", "spp_richness", "spp_rich_rare",
-#                      "ept_spp_richness", "ept_abundance",
-#                      "diptera_spp_richness", "diptera_abundance",
-#                      "insect_spp_richness", "insect_abundance",
-#                      "mollusc_spp_richness", "mollusc_abundance",
-#                      "annelid_spp_richness", "annelid_abundance")){
-#   
-#   allYrs$Response <- log10(allYrs$Response + 1)
-#   
-# }else if(myResponse %in% c("E10","F_turnover", "FRed", "FRic")){
-#   
-#   allYrs$Response <- log10(allYrs$Response + 0.01)
-#   
-# }else if(myResponse %in% c("FDis", "turnover")){
-#   
-#   allYrs$Response <- allYrs$Response^2
-#   
-# }
-
-# # second run transformation
-# if(myResponse %in% c("abundance", "ept_abundance", "diptera_abundance", "insect_abundance", "mollusc_abundance", "annelid_abundance",
-#                      "annelid_spp_richness")){
-#   
-#   allYrs$Response <- log10(allYrs$Response + 1)
-#   
-# }else if(myResponse %in% c("F_turnover", "FRic")){
-#   
-#   allYrs$Response <- log10(allYrs$Response + 0.01)
-#   
-# }else if(myResponse %in% c("FDis", "turnover")){
-#   
-#   allYrs$Response <- allYrs$Response^2
-#   
-# }
-
-# # third run transformation
-# if(myResponse %in% c("abundance", "ept_abundance", "diptera_abundance", "insect_abundance", "mollusc_abundance", "annelid_abundance")){
-#   
-#   allYrs$Response <- log10(allYrs$Response + 1)
-#   
-# }else if(myResponse %in% c("F_turnover", "FRic")){
-#   
-#   allYrs$Response <- log10(allYrs$Response + 0.01)
-#   
-# }else if(myResponse %in% c("FDis", "turnover")){
-#   
-#   allYrs$Response <- allYrs$Response^2
-#   
-# }else if(myResponse %in% c("ept_spp_richness", "diptera_spp_richness", "insect_spp_richness", "mollusc_spp_richness", "annelid_spp_richness")){
-#   
-#   allYrs$Response <- sqrt(allYrs$Response)
-#   
-# }
-
-# fourth run transformation
+# run transformation
 if(myResponse %in% c("abundance", "ept_abundance", "diptera_abundance", 
                      "insect_abundance", "mollusc_abundance", 
                      "annelid_abundance", "crustacea_abundance")){
   
   allYrs$Response <- log10(allYrs$Response + 1)
-  
-}else if(myResponse %in% "F_turnover"){
-  
-  allYrs$Response <- log10(allYrs$Response + 0.01)
-  
-}else if(myResponse %in% "FRic") {
-  
-  allYrs$Response <- log10(allYrs$Response + 0.28)
-  
-}else if(myResponse %in% "FEve"){
-  
-  allYrs$Response <- allYrs$Response^2
-  
-}else if(myResponse %in% c("FDis", "turnover")){
+
+}else if(myResponse %in% "turnover"){
   
   allYrs$Response <- allYrs$Response^3
   
@@ -191,16 +93,10 @@ if(myResponse %in% c("abundance", "ept_abundance", "diptera_abundance",
   
 }
 
-#not transformed: FEve, shannonH, FRic.SES, FEve.SES, FDis.SES
+#not transformed: shannonH
 hist(allYrs$Response)
 
 #### two-stage models ####
-# # write a function similar to the bf funciton in brms but for gls
-# gls_formula <- function (formula, ..., correlation) 
-# {
-#   gls(formula, ..., correlation = correlation)
-# }
-
 ### fitting gls #####
 library(nlme)
 library(mgcv)
@@ -209,10 +105,10 @@ library(mgcv)
 fitGLSModel <- function(my_data){
   
   #centre Year - helps model convergence to center variables for the model
-  my_data$cYear <- my_data$year_wMissing - median(my_data$year_wMissing)
+  my_data$cYear <- my_data$year - median(my_data$year)
   
   #or just have as an index starting from 1
-  my_data$iYear <- my_data$year_wMissing - min(my_data$year_wMissing)+1
+  my_data$iYear <- my_data$year - min(my_data$year)+1
   
   #scale day of year
   my_data$cday_of_year <- (my_data$day_of_year - mean(my_data$day_of_year))/sd(my_data$day_of_year)
@@ -220,14 +116,7 @@ fitGLSModel <- function(my_data){
   #if sampling occurs in more than one month include a seasonal term in the model
   maxDiffDays = max(my_data$day_of_year)-min(my_data$day_of_year)
   
-#   #Response sum
-#   positiveData <- subset(my_data, !is.na(my_data$Response)|my_data$Response!=0)
-#   sumResponse = sum(my_data$Response)
-#   nuYears = length(unique(positiveData$year_wMissing))
-#   
-#   if(all(is.na(my_data$Response))|sumResponse==0|nuYears==1) { # from Ellen's paper
-  
-  if(length(my_data$Response[is.na(my_data$Response)])>0) { # code made with Francesca
+  if(length(my_data$Response[is.na(my_data$Response)])>0) {
     my_data <- subset(my_data, !is.na(Response))
   } else { 
     my_data <- my_data
@@ -251,7 +140,6 @@ fitGLSModel <- function(my_data){
   return(modelFits)
 }
 
-
 #the model is called in the function below
 #apply function to an example dataset
 est <- fitGLSModel(allYrs[which(allYrs$site_id=="LTR1"),])
@@ -269,15 +157,16 @@ trends$siteID <- allsites
 rownames(trends) <- 1:41
 trends
 
-saveRDS(trends, file=paste0("Outputs/Site_trends/trends__",myResponse,"__",myCountry,".RDS"))
+saveRDS(trends, file=paste0("Sensitivity/Outputs/Site_trends/trends__",myResponse,"__",myCountry,".RDS"))
 #write.csv(trends, file=paste0("outputs/trends__",myResponse,"__",myCountry,".csv"))
 
 # # ONLY USE FOR CRUSTACEA
-# ## Crustacea were not found at all sites and there was an issue with model convergence because of this. 
+# ## Crustacea were not found at all sites and there was an issue with model convergence because of this.
 # ## Thus, use this code for crustacea only
 # 
 # # make new vector for crustacea because of convergence issues
 # library(dplyr)
+# allsites <- sort(unique(allYrs$site_id))
 # allsites_cru <- allsites[!allsites %in% c("LTR1319", "LTR133", "LTR327")] # these sites had no crustacea
 # 
 # # calculate site trends
@@ -302,7 +191,7 @@ saveRDS(trends, file=paste0("Outputs/Site_trends/trends__",myResponse,"__",myCou
 # rownames(trends) <- NULL # reset rownames
 # trends
 # 
-# saveRDS(trends, file=paste0("Outputs/Site_trends/trends__",myResponse,"__",myCountry,".RDS"))
+# saveRDS(trends, file=paste0("Sensitivity/Outputs/Site_trends/trends__",myResponse,"__",myCountry,".RDS"))
 
 ##### CLEAN UP --------------------
 library(pacman)
