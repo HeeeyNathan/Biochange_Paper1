@@ -226,7 +226,7 @@ LTR1_2020_5.10.2020,LTR1,LTR1_2020,5,10,2020,Peregriana_peregra;5919,Peregriana_
 LTR1_2020_5.10.2020,LTR1,LTR1_2020,5,10,2020,Pisidium_sp.;6425,Pisidium_sp.,6425,20,NA,NA,NA,Yes,NA,NA,Bivalvia
 LTR1_2020_5.10.2020,LTR1,LTR1_2020,5,10,2020,Planorbarius_corneus;6431,Planorbarius_corneus,6431,6,NA,NA,NA,Yes,NA,NA,Gastropoda
 LTR1_2020_5.10.2020,LTR1,LTR1_2020,5,10,2020,Platycnemis_sp.;9156,Platycnemis_sp.,9156,7,NA,NA,Yes,NA,NA,NA,Odonata
-LTR1_2020_5.10.2020,LTR1,LTR1_2020,5,10,2020,Plea_minutissima_ssp.;,Plea_minutissima_ssp.,19392,1,NA,NA,Yes,NA,NA,NA,Hemiptera
+LTR1_2020_5.10.2020,LTR1,LTR1_2020,5,10,2020,Plea_minutissima_ssp.;19392,Plea_minutissima_ssp.,19392,1,NA,NA,Yes,NA,NA,NA,Hemiptera
 LTR1_2020_5.10.2020,LTR1,LTR1_2020,5,10,2020,Polycentropus_sp.;6472,Polycentropus_sp.,6472,8,Yes,NA,Yes,NA,NA,NA,Trichoptera
 LTR1_2020_5.10.2020,LTR1,LTR1_2020,5,10,2020,Radix_sp.;6673,Radix_sp.,6673,23,NA,NA,NA,Yes,NA,NA,Gastropoda
 LTR1_2020_5.10.2020,LTR1,LTR1_2020,5,10,2020,Sphaerium_sp.;6886,Sphaerium_sp.,6886,31,NA,NA,NA,Yes,NA,NA,Bivalvia
@@ -402,7 +402,7 @@ LTR105_2016_26.9.2016,LTR105,LTR105_2016,26,9,2016,Parapoynx_stratiotata;9461,Pa
 LTR105_2016_26.9.2016,LTR105,LTR105_2016,26,9,2016,Physa_sp.;9146,Physa_sp.,9146,37,NA,NA,NA,Yes,NA,NA,Gastropoda
 LTR105_2016_26.9.2016,LTR105,LTR105_2016,26,9,2016,Piscicola_geometra;6408,Piscicola_geometra,6408,1,NA,NA,NA,NA,Yes,NA,Hirudinea
 LTR105_2016_26.9.2016,LTR105,LTR105_2016,26,9,2016,Platycnemis_sp.;9156,Platycnemis_sp.,9156,8,NA,NA,Yes,NA,NA,NA,Odonata
-LTR105_2016_26.9.2016,LTR105,LTR105_2016,26,9,2016,Plea_minutissima_ssp.;,Plea_minutissima_ssp.,19392,8,NA,NA,Yes,NA,NA,NA,Hemiptera
+LTR105_2016_26.9.2016,LTR105,LTR105_2016,26,9,2016,Plea_minutissima_ssp.;19392,Plea_minutissima_ssp.,19392,8,NA,NA,Yes,NA,NA,NA,Hemiptera
 LTR105_2016_26.9.2016,LTR105,LTR105_2016,26,9,2016,Polycentropus_sp.;6472,Polycentropus_sp.,6472,12,Yes,NA,Yes,NA,NA,NA,Trichoptera
 LTR105_2016_26.9.2016,LTR105,LTR105_2016,26,9,2016,Radix_sp.;6673,Radix_sp.,6673,6,NA,NA,NA,Yes,NA,NA,Gastropoda
 LTR105_2016_26.9.2016,LTR105,LTR105_2016,26,9,2016,Tubifex_sp.;7115,Tubifex_sp.,7115,12,NA,NA,NA,NA,Yes,NA,Oligochaeta
@@ -2100,7 +2100,7 @@ LTR137_2020_8.10.2020,LTR137,LTR137_2020,8,10,2020,Sphaerium_sp.;6886,Sphaerium_
 LTR137_2020_8.10.2020,LTR137,LTR137_2020,8,10,2020,Synurella_ambulans;6960,Synurella_ambulans,6960,1,NA,NA,NA,NA,NA,Yes,Crustacea
 LTR1438_2010_7.10.2010,LTR1438,LTR1438_2010,7,10,2010,Ancylus_fluviatilis;4310,Ancylus_fluviatilis,4310,1,NA,NA,NA,Yes,NA,NA,Gastropoda
 LTR1438_2010_7.10.2010,LTR1438,LTR1438_2010,7,10,2010,Baetidae_Gen._sp.;4380,Baetidae_Gen._sp.,4380,2,Yes,NA,Yes,NA,NA,NA,Ephemeroptera
-LTR1438_2010_7.10.2010,LTR1438,LTR1438_2010,7,10,2010,Brachycentrus_sp.;4480,Brachycentrus_sp.,4480,1,Yes,NA,Yes,NA,NA,NA,Trichoptera
+LTR1438_2010_7.10.2010,LTR1438,LTR1438_2010,7,10,2010,Brachycercus_harrisella;4482,Brachycercus_harrisella,4482,1,Yes,NA,NA,Yes,NA,NA,Ephemeroptera
 LTR1438_2010_7.10.2010,LTR1438,LTR1438_2010,7,10,2010,Calopteryx_sp.;4531,Calopteryx_sp.,4531,4,NA,NA,Yes,NA,NA,NA,Odonata
 LTR1438_2010_7.10.2010,LTR1438,LTR1438_2010,7,10,2010,Chironomidae_Gen._sp.;4642,Chironomidae_Gen._sp.,4642,3,NA,Yes,Yes,NA,NA,NA,Diptera
 LTR1438_2010_7.10.2010,LTR1438,LTR1438_2010,7,10,2010,Elmis_sp._Ad.;12072,Elmis_sp._Ad.,12072,4,NA,NA,Yes,NA,NA,NA,Coleoptera
@@ -4270,7 +4270,8 @@ LTR327_2012_24.9.2012,LTR327,LTR327_2012,24,9,2012,Aphelocheirus_aestivalis;4335
 LTR327_2012_24.9.2012,LTR327,LTR327_2012,24,9,2012,Atrichops_sp.;10667,Atrichops_sp.,10667,5,NA,Yes,Yes,NA,NA,NA,Diptera
 LTR327_2012_24.9.2012,LTR327,LTR327_2012,24,9,2012,Baetis_sp.;4419,Baetis_sp.,4419,38,Yes,NA,Yes,NA,NA,NA,Ephemeroptera
 LTR327_2012_24.9.2012,LTR327,LTR327_2012,24,9,2012,Bithynia_tentaculata;4462,Bithynia_tentaculata,4462,17,NA,NA,NA,Yes,NA,NA,Gastropoda
-LTR327_2012_24.9.2012,LTR327,LTR327_2012,24,9,2012,Brachycentrus_sp.;4480,Brachycentrus_sp.,4480,7,Yes,NA,Yes,NA,NA,NA,Trichoptera
+LTR327_2012_24.9.2012,LTR327,LTR327_2012,24,9,2012,Brachycentrus_sp.;4480,Brachycentrus_sp.,4480,6,Yes,NA,Yes,NA,NA,NA,Trichoptera
+LTR327_2012_24.9.2012,LTR327,LTR327_2012,24,9,2012,Brachycercus_harrisella;4482,Brachycercus_harrisella,4482,1,Yes,NA,NA,Yes,NA,NA,Ephemeroptera
 LTR327_2012_24.9.2012,LTR327,LTR327_2012,24,9,2012,Caenis_sp.;4528,Caenis_sp.,4528,1,Yes,NA,Yes,NA,NA,NA,Ephemeroptera
 LTR327_2012_24.9.2012,LTR327,LTR327_2012,24,9,2012,Calopteryx_sp.;4531,Calopteryx_sp.,4531,16,NA,NA,Yes,NA,NA,NA,Odonata
 LTR327_2012_24.9.2012,LTR327,LTR327_2012,24,9,2012,Corixidae_Gen._sp.;8491,Corixidae_Gen._sp.,8491,1,NA,NA,Yes,NA,NA,NA,Hemiptera
@@ -5256,7 +5257,8 @@ LTR41_2014_6.10.2014,LTR41,LTR41_2014,6,10,2014,Baetis_sp.;4419,Baetis_sp.,4419,
 LTR41_2014_6.10.2014,LTR41,LTR41_2014,6,10,2014,Bithynia_leachii_ssp.;19308,Bithynia_leachii_ssp.,19308,20,NA,NA,NA,Yes,NA,NA,Gastropoda
 LTR41_2014_6.10.2014,LTR41,LTR41_2014,6,10,2014,Bithynia_tentaculata;4462,Bithynia_tentaculata,4462,76,NA,NA,NA,Yes,NA,NA,Gastropoda
 LTR41_2014_6.10.2014,LTR41,LTR41_2014,6,10,2014,Borysthenia_naticina;4471,Borysthenia_naticina,4471,55,NA,NA,NA,Yes,NA,NA,Gastropoda
-LTR41_2014_6.10.2014,LTR41,LTR41_2014,6,10,2014,Brachycentrus_sp.;4480,Brachycentrus_sp.,4480,156,Yes,NA,Yes,NA,NA,NA,Trichoptera
+LTR41_2014_6.10.2014,LTR41,LTR41_2014,6,10,2014,Brachycentrus_sp.;4480,Brachycentrus_sp.,4480,135,Yes,NA,Yes,NA,NA,NA,Trichoptera
+LTR41_2014_6.10.2014,LTR41,LTR41_2014,6,10,2014,Brachycercus_harrisella;4482,Brachycercus_harrisella,4482,21,Yes,NA,NA,Yes,NA,NA,Ephemeroptera
 LTR41_2014_6.10.2014,LTR41,LTR41_2014,6,10,2014,Caenis_sp.;4528,Caenis_sp.,4528,204,Yes,NA,Yes,NA,NA,NA,Ephemeroptera
 LTR41_2014_6.10.2014,LTR41,LTR41_2014,6,10,2014,Calopteryx_sp.;4531,Calopteryx_sp.,4531,8,NA,NA,Yes,NA,NA,NA,Odonata
 LTR41_2014_6.10.2014,LTR41,LTR41_2014,6,10,2014,Centroptilum_luteolum;8850,Centroptilum_luteolum,8850,67,Yes,NA,Yes,NA,NA,NA,Ephemeroptera
@@ -6729,7 +6731,7 @@ LTR78_2010_12.10.2010,LTR78,LTR78_2010,12,10,2010,Notonecta_sp.;6139,Notonecta_s
 LTR78_2010_12.10.2010,LTR78,LTR78_2010,12,10,2010,Oligochaeta_Gen._sp.;8736,Oligochaeta_Gen._sp.,8736,7,NA,NA,NA,NA,Yes,NA,Oligochaeta
 LTR78_2010_12.10.2010,LTR78,LTR78_2010,12,10,2010,Physa_sp.;9146,Physa_sp.,9146,2,NA,NA,NA,Yes,NA,NA,Gastropoda
 LTR78_2010_12.10.2010,LTR78,LTR78_2010,12,10,2010,Platambus_maculatus_Ad.;11746,Platambus_maculatus_Ad.,11746,1,NA,NA,Yes,NA,NA,NA,Coleoptera
-LTR78_2010_12.10.2010,LTR78,LTR78_2010,12,10,2010,Plea_minutissima_ssp.;,Plea_minutissima_ssp.,19392,1,NA,NA,Yes,NA,NA,NA,Hemiptera
+LTR78_2010_12.10.2010,LTR78,LTR78_2010,12,10,2010,Plea_minutissima_ssp.;19392,Plea_minutissima_ssp.,19392,1,NA,NA,Yes,NA,NA,NA,Hemiptera
 LTR78_2010_12.10.2010,LTR78,LTR78_2010,12,10,2010,Plectrocnemia_sp.;6447,Plectrocnemia_sp.,6447,1,Yes,NA,Yes,NA,NA,NA,Trichoptera
 LTR78_2010_12.10.2010,LTR78,LTR78_2010,12,10,2010,Sialis_sp.;6823,Sialis_sp.,6823,4,NA,NA,Yes,NA,NA,NA,Megaloptera
 LTR78_2010_12.10.2010,LTR78,LTR78_2010,12,10,2010,Sphaeriidae_Gen._sp.;8429,Sphaeriidae_Gen._sp.,8429,7,NA,NA,NA,Yes,NA,NA,Bivalvia
@@ -6814,7 +6816,7 @@ LTR78_2014_14.10.2014,LTR78,LTR78_2014,14,10,2014,Microtendipes_chloris;6030,Mic
 LTR78_2014_14.10.2014,LTR78,LTR78_2014,14,10,2014,Phryganea_bipunctata;6391,Phryganea_bipunctata,6391,7,Yes,NA,Yes,NA,NA,NA,Trichoptera
 LTR78_2014_14.10.2014,LTR78,LTR78_2014,14,10,2014,Physa_sp.;9146,Physa_sp.,9146,15,NA,NA,NA,Yes,NA,NA,Gastropoda
 LTR78_2014_14.10.2014,LTR78,LTR78_2014,14,10,2014,Platambus_maculatus_Ad.;11746,Platambus_maculatus_Ad.,11746,1,NA,NA,Yes,NA,NA,NA,Coleoptera
-LTR78_2014_14.10.2014,LTR78,LTR78_2014,14,10,2014,Plea_minutissima_ssp.;,Plea_minutissima_ssp.,19392,4,NA,NA,Yes,NA,NA,NA,Hemiptera
+LTR78_2014_14.10.2014,LTR78,LTR78_2014,14,10,2014,Plea_minutissima_ssp.;19392,Plea_minutissima_ssp.,19392,4,NA,NA,Yes,NA,NA,NA,Hemiptera
 LTR78_2014_14.10.2014,LTR78,LTR78_2014,14,10,2014,Polycentropus_sp.;6472,Polycentropus_sp.,6472,3,Yes,NA,Yes,NA,NA,NA,Trichoptera
 LTR78_2014_14.10.2014,LTR78,LTR78_2014,14,10,2014,Sialis_sp.;6823,Sialis_sp.,6823,6,NA,NA,Yes,NA,NA,NA,Megaloptera
 LTR78_2014_14.10.2014,LTR78,LTR78_2014,14,10,2014,Sigara_sp.;6829,Sigara_sp.,6829,2,NA,NA,Yes,NA,NA,NA,Hemiptera
@@ -7050,7 +7052,8 @@ LTR787_2014_25.9.2014,LTR787,LTR787_2014,25,9,2014,Athripsodes_sp.;4371,Athripso
 LTR787_2014_25.9.2014,LTR787,LTR787_2014,25,9,2014,Baetis_sp.;4419,Baetis_sp.,4419,145,Yes,NA,Yes,NA,NA,NA,Ephemeroptera
 LTR787_2014_25.9.2014,LTR787,LTR787_2014,25,9,2014,Bithynia_leachii_ssp.;19308,Bithynia_leachii_ssp.,19308,87,NA,NA,NA,Yes,NA,NA,Gastropoda
 LTR787_2014_25.9.2014,LTR787,LTR787_2014,25,9,2014,Bithynia_tentaculata;4462,Bithynia_tentaculata,4462,172,NA,NA,NA,Yes,NA,NA,Gastropoda
-LTR787_2014_25.9.2014,LTR787,LTR787_2014,25,9,2014,Brachycentrus_sp.;4480,Brachycentrus_sp.,4480,682,Yes,NA,Yes,NA,NA,NA,Trichoptera
+LTR787_2014_25.9.2014,LTR787,LTR787_2014,25,9,2014,Brachycentrus_sp.;4480,Brachycentrus_sp.,4480,486,Yes,NA,Yes,NA,NA,NA,Trichoptera
+LTR787_2014_25.9.2014,LTR787,LTR787_2014,25,9,2014,Brachycercus_harrisella;4482,Brachycercus_harrisella,4482,196,Yes,NA,NA,Yes,NA,NA,Ephemeroptera
 LTR787_2014_25.9.2014,LTR787,LTR787_2014,25,9,2014,Caenis_sp.;4528,Caenis_sp.,4528,128,Yes,NA,Yes,NA,NA,NA,Ephemeroptera
 LTR787_2014_25.9.2014,LTR787,LTR787_2014,25,9,2014,Cataclysta_lemnata;9456,Cataclysta_lemnata,9456,38,NA,NA,Yes,NA,NA,NA,Lepidoptera
 LTR787_2014_25.9.2014,LTR787,LTR787_2014,25,9,2014,Centroptilum_luteolum;8850,Centroptilum_luteolum,8850,128,Yes,NA,Yes,NA,NA,NA,Ephemeroptera

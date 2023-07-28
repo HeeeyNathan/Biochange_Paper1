@@ -10,7 +10,7 @@ allYrs <- read.csv("Sensitivity/Data/LT_siteYr_AllData_sensitivity.csv", header=
 
 # choose which country for this task
 TaskID <- read.csv("Sensitivity/Data/LT_ResponseTrends_TaskIDs_sensitivity.csv", as.is = T)
-task.id = as.integer(Sys.getenv("SLURM_ARRAY_TASK_ID", "18"))
+task.id = as.integer(Sys.getenv("SLURM_ARRAY_TASK_ID", "1"))
 myCountry <- TaskID$country[which(TaskID$TaskID==task.id)]
 
 #choose which response for this task

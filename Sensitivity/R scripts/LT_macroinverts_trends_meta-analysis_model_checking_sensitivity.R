@@ -31,7 +31,6 @@ head(d1)
 siteData <- unique(d1[,c("site_id","study_id","Country","season","TaxonomicRes", "Year_count", "Starting_year","Ending_year", "Sampling_years","River_type", "Heavily_modified", "Heavily_modified_code", "River_type_fact", "Heavily_modified_fact")])
 response_gls_pivot <- merge(siteData,response_gls_pivot,by="site_id")
 head(response_gls_pivot)
-#write.csv(response_gls_pivot,"Outputs/LT_site_trends.csv")
 
 summaryData <- response_gls_pivot %>%
   group_by(River_type_fact, Heavily_modified_fact, Sampling_years, Year_count) %>%
@@ -45,114 +44,6 @@ ggplot(summaryData)+
 ggplot(summaryData)+
   geom_boxplot(aes(x=Heavily_modified_fact, y =medTrends),size=2)+
   theme_classic()
-
-qplot(Year_count, medTrends, data=summaryData)
-
-qplot(Sampling_years, medTrends, data=summaryData)
-
-t_col <- function(color, percent = 50, name = NULL) {
-  #      color = color name
-  #    percent = % transparency
-  #       name = an optional name for the color
-  
-  ## Get RGB values for named color
-  rgb.val <- col2rgb(color)
-  
-  ## Make new color using input color as base and alpha set by transparency
-  t.col <- rgb(rgb.val[1], rgb.val[2], rgb.val[3],
-               max = 255,
-               alpha = (100 - percent) * 255 / 100,
-               names = name)
-  
-  ## Save the color
-  invisible(t.col)
-}
-mycol <- t_col("pink", perc = 20, name = "lt.pink")
-
-#####################################################
-## effect of sampling years sampled on trend estimates
-# tiff(filename = "Plots/Sampling_years_TrendEsts.tiff", width = 7, height = 6, units = 'in', res = 600, compression = 'lzw')
-
-par(mfrow=c(2,2),mar=c(4,4,0.4,0.4))
-x1 <- response_gls_pivot$Sampling_years
-y1 <- response_gls_pivot$spp_richness
-mod <- lm(y1 ~ x1)
-summary(mod)
-newx <- seq(min(x1), max(x1), length.out=54)
-preds <- predict(mod, newdata = data.frame(x1=newx), interval = 'confidence')
-# plot
-plot(x=x1,y=y1,type="n",xlab="Years sampled", ylab="Taxon richness estimate")
-polygon(x = c(1, -0.1, 2040, 2040), y = c(-100, 0, 0, -100), col ="grey80", border = NA)
-box(lwd=2)
-points(y1~x1)
-# add fill
-polygon(c(rev(newx), newx), c(rev(preds[ ,3]), preds[ ,2]), col =mycol, border = NA) #col = 'grey80'
-# model
-abline(mod,lty=1,lwd=2,col=2)
-# intervals
-lines(newx, preds[ ,3], lty = 'dashed', col = 2)
-lines(newx, preds[ ,2], lty = 'dashed', col = 2)
-
-x1 <- response_gls_pivot$Sampling_years
-y1 <- response_gls_pivot$abundance
-mod <- lm(y1 ~ x1)
-summary(mod)
-newx <- seq(min(x1), max(x1), length.out=54)
-preds <- predict(mod, newdata = data.frame(x1=newx), interval = 'confidence')
-# plot
-plot(x=x1,y=y1,type="n",xlab="Years sampled", ylab="Abundance estimate")
-polygon(x = c(1, -0.1, 2040, 2040), y = c(-100, 0, 0, -100), col ="grey80", border = NA)
-box(lwd=2)
-points(y1~x1)
-# add fill
-polygon(c(rev(newx), newx), c(rev(preds[ ,3]), preds[ ,2]), col =mycol, border = NA) #col = 'grey80'
-# model
-abline(mod,lty=1,lwd=2,col=2)
-# intervals
-lines(newx, preds[ ,3], lty = 'dashed', col = 2)
-lines(newx, preds[ ,2], lty = 'dashed', col = 2)
-
-x1 <- response_gls_pivot$Sampling_years
-y1 <- response_gls_pivot$FRic
-mod <- lm(y1 ~ x1)
-summary(mod)
-newx <- seq(min(x1), max(x1), length.out=54)
-preds <- predict(mod, newdata = data.frame(x1=newx), interval = 'confidence')
-# plot
-plot(x=x1,y=y1,type="n",xlab="Years sampled", ylab="Functional richness estimate")
-polygon(x = c(1, -0.1, 2040, 2040), y = c(-100, 0, 0, -100), col ="grey80", border = NA)
-box(lwd=2)
-points(y1~x1)
-# add fill
-polygon(c(rev(newx), newx), c(rev(preds[ ,3]), preds[ ,2]), col =mycol, border = NA) #col = 'grey80'
-# model
-abline(mod,lty=1,lwd=2,col=2)
-# intervals
-lines(newx, preds[ ,3], lty = 'dashed', col = 2)
-lines(newx, preds[ ,2], lty = 'dashed', col = 2)
-
-x1 <- response_gls_pivot$Sampling_years
-y1 <- response_gls_pivot$FRed
-mod <- lm(y1 ~ x1)
-summary(mod)
-newx <- seq(min(x1), max(x1), length.out=54)
-preds <- predict(mod, newdata = data.frame(x1=newx), interval = 'confidence')
-# plot
-plot(x=x1,y=y1,type="n",xlab="Years sampled", ylab="Functional redundancy estimate")
-polygon(x = c(1, -0.1, 2040, 2040), y = c(-100, 0, 0, -100), col ="grey80", border = NA)
-box(lwd=2)
-points(y1~x1)
-# add fill
-polygon(c(rev(newx), newx), c(rev(preds[ ,3]), preds[ ,2]), col =mycol, border = NA) #col = 'grey80'
-# model
-abline(mod,lty=1,lwd=2,col=2)
-# intervals
-lines(newx, preds[ ,3], lty = 'dashed', col = 2)
-lines(newx, preds[ ,2], lty = 'dashed', col = 2)
-
-##
-# dev.off()
-##############################################################################
 
 ### meta-analysis ####
 getwd()
