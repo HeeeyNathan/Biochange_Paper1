@@ -71,7 +71,7 @@ nrow(Group3)
 Group3$Response
 fResponse3 <- data.frame(fResponse = factor(c(rep("Annelid richness", 4), rep("Crustacea richness", 4), rep("EPT richness", 4), rep("Insect richness", 4), rep("Mollusc richness", 4))))
 Group3 <- cbind(Group3, fResponse3)
-Group3$fResponse <- factor(Group3$fResponse, levels=c("EPT richness", "Crustacea richness", "Insect richness", "Mollusc richness", "Annelid richness"), ordered = T)
+Group3$fResponse <- factor(Group3$fResponse, levels=c("EPT richness", "Insect richness", "Crustacea richness", "Mollusc richness", "Annelid richness"), ordered = T)
 
 # Create plot
 p3 <- ggplot(Group3, aes(x=Estimate, y=fDriver)) +
@@ -95,7 +95,7 @@ nrow(Group4)
 Group4$Response
 fResponse4 <- data.frame(fResponse = factor(c(rep("Annelid abundance", 4), rep("Crustacea abundance", 4), rep("EPT abundance", 4), rep("Insect abundance", 4), rep("Mollusc abundance", 4))))
 Group4 <- cbind(Group4, fResponse4)
-Group4$fResponse <- factor(Group4$fResponse, levels=c("EPT abundance", "Crustacea abundance", "Insect abundance", "Mollusc abundance", "Annelid abundance"), ordered = T)
+Group4$fResponse <- factor(Group4$fResponse, levels=c("EPT abundance", "Insect abundance", "Crustacea abundance", "Mollusc abundance", "Annelid abundance"), ordered = T)
 
 # Create plot
 p4 <- ggplot(Group4, aes(x=Estimate, y=fDriver)) +
