@@ -85,7 +85,7 @@ if(myResponse %in% c("abundance", "ept_abundance", "diptera_abundance",
   allYrs$Response <- allYrs$Response^3
   
 }else if(myResponse %in% c("spp_richness", "spp_rich_rare", 
-                           "insect_spp_richness","ept_spp_richness", 
+                           "ept_spp_richness", #"insect_spp_richness",
                            "diptera_spp_richness", "mollusc_spp_richness", 
                            "annelid_spp_richness", "crustacea_spp_richness")){
   

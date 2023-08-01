@@ -14,8 +14,8 @@
 "13","ept_abundance",0.9801,0.0199
 "14","diptera_richness",0.9999,1e-04
 "15","diptera_abundance",0.7566,0.2434
-"16","insect_richness",1,0
-"17","insect_abundance",0.9653,0.0347
+"16","insect_richness",0.9992,8e-04
+"17","insect_abundance",0.7218,0.2782
 "18","mollusc_richness",1,0
 "19","mollusc_abundance",1,0
 "20","annelid_richness",1,0
