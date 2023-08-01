@@ -83,7 +83,7 @@ polygon(x=c(stand_insect_SppRich$Q10, stand_insect_SppRich$Q10, stand_insect_Spp
         y=c((yy-yy/6),(yy+yy/6),(yy+yy/6),(yy-yy/6)),
         col = 1,border = 0,lwd =1)
 legend(x=-31.25, y=(3.2/4*(b-a)+a), legend=("b, Insect richness"), bty="n", cex=1.3)
-legend(x=16.8, y=(3.2/4*(b-a)+a), legend=expression(paste("+1.70% ",y^-1, sep = "")), bty="n", cex=1.3)
+legend(x=16.8, y=(3.2/4*(b-a)+a), legend=expression(paste("+2.33% ",y^-1, sep = "")), bty="n", cex=1.3)
 
 #### crustacea richness #####
 # sqrt(x)
@@ -266,7 +266,7 @@ polygon(x=c(stand_insect_abund$Q10, stand_insect_abund$Q10, stand_insect_abund$Q
         y=c((yy-yy/6),(yy+yy/6),(yy+yy/6),(yy-yy/6)),
         col = 1,border = 0,lwd =1)
 legend(x=-50, y=(3.2/4*(b-a)+a), legend=("g, Insect abundance"), bty="n", cex=1.3)
-legend(x=25, y=(3.2/4*(b-a)+a), legend=expression(paste("-0.33% ",y^-1, sep = "")), bty="n", cex=1.3)
+legend(x=25, y=(3.2/4*(b-a)+a), legend=expression(paste("+1.01% ",y^-1, sep = "")), bty="n", cex=1.3)
 
 #### crustacea abundance #####
 # log(x + 1)

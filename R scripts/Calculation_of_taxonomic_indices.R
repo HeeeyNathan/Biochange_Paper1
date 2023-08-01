@@ -116,7 +116,7 @@ for(i in unique(sub_lf$site_id)){
 
 colnames(MOL_TD) <- c("site_code", "mollusc_spp_richness", "mollusc_abundance")
 
-#### create subset for Insects
+#### create subset for Insects minus EPT
 # Note: I will remove EPT from insects to reduce trend overlap
 head(all_lf)
 sub_lf <- subset(all_lf, insect == "Yes")
