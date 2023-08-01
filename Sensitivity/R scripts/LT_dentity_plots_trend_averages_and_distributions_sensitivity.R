@@ -9,7 +9,7 @@ Ests <- Ests[, -1]
 
 allYrs <- read.csv("Sensitivity/Data/LT_siteYr_AllData_sensitivity.csv", header=T) 
 
-tiff(filename = "Sensitivity/Plots/LT_slopeDistributions_sensitivity.tiff", width = 12, height = 10, units = 'in', res = 600, compression = 'lzw')
+tiff(filename = "Sensitivity/Plots/LT_slopeDistributions_sensitivity_new.tiff", width = 12, height = 10, units = 'in', res = 600, compression = 'lzw')
 
 par(mar=c(4,0.4,0.4,0.4), mfrow=c(1,2))
 
@@ -234,12 +234,12 @@ legend(x=-31.25, y=(4/4*(b-a)+a), legend=("f, EPT richness"), bty="n", cex=1.3)
 legend(x=16.8, y=(4/4*(b-a)+a), legend=expression(paste("+7.99% ",y^-1, sep = "")), bty="n", cex=1.3)
 
 #### insect SPP rich #####
-# sqrt(x)
+# none
 insect_SppRich <- subset(response_gls, Response == "insect_spp_richness")
 insect_SppRich <- insect_SppRich$estimate[!is.na(insect_SppRich$estimate)]
 mean(allYrs$insect_spp_richness, na.rm = T)
 ave_insect_SppRich <- mean(allYrs$insect_spp_richness, na.rm = T)
-percChange_perYr <- ((insect_SppRich*2)/sqrt(ave_insect_SppRich))*100
+percChange_perYr <- (insect_SppRich/ave_insect_SppRich)*100
 d <- density(percChange_perYr)
 a <- (max(d$y)+(max(d$y)/10))*-3
 b <- (max(d$y)+(max(d$y)/10))*2
@@ -252,7 +252,7 @@ polygon(c(d$x[d$x <= 0 ], 0),
         c(d$y[d$x <= 0 ], 0),
         col = "#f2cc84", border = "#f2cc84", lwd =2)
 insect_SppRich_Est <- subset(Ests, Response == "insect_richness")
-(stand_insect_SppRich <- lapply(insect_SppRich_Est[,2:11], function(x) ((x*2) / sqrt(ave_insect_SppRich))*100)) # this must be the same as how you calculated the percChange_perYr
+(stand_insect_SppRich <- lapply(insect_SppRich_Est[,2:11],"*",100/ave_insect_SppRich)) # this must be the same as how you calculated the percChange_perYr
 yy <- (2.55/4*(b-a)+a)
 points(x=stand_insect_SppRich$Estimate, y=yy, lwd=2,pch="|",cex=2)
 polygon(x=c(stand_insect_SppRich$Q2.5, stand_insect_SppRich$Q2.5, stand_insect_SppRich$Q97.5, stand_insect_SppRich$Q97.5),
@@ -265,7 +265,7 @@ polygon(x=c(stand_insect_SppRich$Q10, stand_insect_SppRich$Q10, stand_insect_Spp
         y=c((yy-yy/6),(yy+yy/6),(yy+yy/6),(yy-yy/6)),
         col = 1,border = 0,lwd =1)
 legend(x=-31.25, y=(3.2/4*(b-a)+a), legend=("g, Insect richness"), bty="n", cex=1.3)
-legend(x=16.8, y=(3.2/4*(b-a)+a), legend=expression(paste("+2.70% ",y^-1, sep = "")), bty="n", cex=1.3)
+legend(x=16.8, y=(3.2/4*(b-a)+a), legend=expression(paste("+2.27% ",y^-1, sep = "")), bty="n", cex=1.3)
 
 #### crustacea richness #####
 # sqrt(x)

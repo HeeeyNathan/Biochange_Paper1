@@ -35,6 +35,8 @@ hist(allYrs$FEve.SES)
 hist(allYrs$FDis.SES)
 hist(allYrs$ept_spp_richness)
 hist(allYrs$ept_abundance)
+hist(allYrs$crustacea_spp_richness)
+hist(allYrs$crustacea_abundance)
 hist(allYrs$diptera_spp_richness)
 hist(allYrs$diptera_abundance)
 hist(allYrs$insect_spp_richness)
@@ -48,6 +50,7 @@ hist(allYrs$annelid_abundance)
 allYrs$abundance <- log10(allYrs$abundance + 1)
 allYrs$ept_abundance <- log10(allYrs$ept_abundance + 1)
 allYrs$diptera_abundance <- log10(allYrs$diptera_abundance + 1)
+allYrs$crustacea_abundance <- log10(allYrs$crustacea_abundance + 1)
 allYrs$insect_abundance <- log10(allYrs$insect_abundance + 1)
 allYrs$mollusc_abundance <- log10(allYrs$mollusc_abundance + 1)
 allYrs$annelid_abundance <- log10(allYrs$annelid_abundance + 1)
@@ -56,6 +59,7 @@ allYrs$spp_richness <- sqrt(allYrs$spp_richness)
 allYrs$spp_rich_rare <- sqrt(allYrs$spp_rich_rare)
 allYrs$ept_spp_richness <- sqrt(allYrs$ept_spp_richness)
 allYrs$diptera_spp_richness <- sqrt(allYrs$diptera_spp_richness)
+allYrs$crustacea_spp_richness <- sqrt(allYrs$crustacea_spp_richness)
 allYrs$insect_spp_richness <- sqrt(allYrs$insect_spp_richness)
 allYrs$mollusc_spp_richness <- sqrt(allYrs$mollusc_spp_richness)
 allYrs$annelid_spp_richness <- sqrt(allYrs$annelid_spp_richness)
@@ -99,6 +103,8 @@ hist(allYrs$diptera_spp_richness)
 hist(allYrs$diptera_abundance)
 hist(allYrs$insect_spp_richness)
 hist(allYrs$insect_abundance)
+hist(allYrs$crustacea_spp_richness)
+hist(allYrs$crustacea_abundance)
 hist(allYrs$mollusc_spp_richness)
 hist(allYrs$mollusc_abundance)
 hist(allYrs$annelid_spp_richness)
@@ -187,7 +193,8 @@ AllResponses <- c("abundance", "spp_richness", "shannonsH", "E10", "turnover", "
                   "FRic", "FEve", "FDis", "FRed", "F_turnover",
                   "FRic.SES", "FEve.SES", "FDis.SES", 
                   "ept_spp_richness", "ept_abundance", 
-                  "diptera_spp_richness", "diptera_abundance", 
+#                  "diptera_spp_richness", "diptera_abundance", 
+                  "crustacea_spp_richness", "crustacea_abundance", 
                   "insect_spp_richness", "insect_abundance", 
                   "mollusc_spp_richness", "mollusc_abundance", 
                   "annelid_spp_richness", "annelid_abundance")
@@ -201,7 +208,8 @@ VarToFit <- c("abundance", "spp_richness", "shannonsH", "E10", "turnover", "spp_
               "FRic", "FEve", "FDis", "FRed", "F_turnover", 
               "FRic.SES", "FEve.SES", "FDis.SES", 
               "ept_spp_richness", "ept_abundance", 
-              "diptera_spp_richness", "diptera_abundance", 
+#              "diptera_spp_richness", "diptera_abundance", 
+              "crustacea_spp_richness", "crustacea_abundance", 
               "insect_spp_richness", "insect_abundance", 
               "mollusc_spp_richness", "mollusc_abundance", 
               "annelid_spp_richness", "annelid_abundance")
@@ -210,7 +218,8 @@ names(VarToFit) <- c("Total\nabundance", "Taxon\nrichness", "Shannon\ndiversity"
                      "Func.\nrichness", "Func.\nevevness", "Func.\ndispersion", "Func.\nredundancy", "Func.\ntrunover", 
                      "Standardised\nfunc. richness", "Standardised\nfunc. evenness", "Standardised\nfunc. dispersion", 
                      "EPT\nrichness", "EPT\nabundance",
-                     "Diptera\nrichness", "Diptera\nabundance",
+#                     "Diptera\nrichness", "Diptera\nabundance",
+                     "Crustacea\nrichness", "Crustacea\nabundance", 
                      "Insect\nrichness", "Insect\nabundance",
                      "Mollusc\nrichness", "Mollusc\nabundance",
                      "Annelid\nrichness", "Annelid\nabundance")
@@ -468,7 +477,7 @@ mtext("Estimate", 1, outer = TRUE, line = 1)
 
 # taxon richness
 tiff(filename = "Plots/LT_Driver_Est_RivTyp_TaxoGroupsRich.tiff", width = 10, height = 10, units = 'in', res = 600, compression = 'lzw')
-VarToPlot <- c(15, 17, 19, 21, 23)
+VarToPlot <- c(15, 19, 17, 21, 23)
 par(mfrow=c(length(VarToPlot),5), mar=c(2,2,2,2), oma=c(2,4,2,2))
 sapply(names(Models.lme1)[VarToPlot], PlotRiverTypes, mod=Models.lme1)
 mtext("River Type", 3, outer=TRUE, font = 2)
@@ -484,7 +493,7 @@ mtext("Estimate", 1, outer = TRUE, line = 1)
 
 # taxon abundances
 tiff(filename = "Plots/LT_Driver_Est_RivTyp_TaxoGroupAbund.tiff", width = 10, height = 10, units = 'in', res = 600, compression = 'lzw')
-VarToPlot <- c(16, 18, 20, 22, 24)
+VarToPlot <- c(16, 20, 18, 22, 24)
 par(mfrow=c(length(VarToPlot),5), mar=c(2,2,2,2), oma=c(2,4,2,2))
 sapply(names(Models.lme1)[VarToPlot], PlotRiverTypes, mod=Models.lme1)
 mtext("River Type", 3, outer=TRUE, font = 2)
@@ -668,7 +677,7 @@ mtext("Estimate", 1, outer = TRUE, line = 1)
 
 # taxon richness
 tiff(filename = "Plots/LT_Driver_Est_Modified_TaxoGroupsRich.tiff", width = 4, height = 10, units = 'in', res = 600, compression = 'lzw')
-VarToPlot <- c(15, 17, 19, 21, 23)
+VarToPlot <- c(15, 19, 17, 21, 23)
 par(mfrow=c(length(VarToPlot),2), mar=c(2,2,2,2), oma=c(2,4,2,2))
 sapply(names(Models.lme2)[VarToPlot], PlotModified, mod=Models.lme2)
 mtext("Heavily Modified", 3, outer=TRUE, font = 2)
@@ -684,7 +693,7 @@ mtext("Estimate", 1, outer = TRUE, line = 1)
 
 # taxon abundances
 tiff(filename = "Plots/LT_Driver_Est_Modified_TaxoGroupsAbund.tiff", width = 4, height = 10, units = 'in', res = 600, compression = 'lzw')
-VarToPlot <- c(16, 18, 20, 22, 24)
+VarToPlot <- c(16, 20, 18, 22, 24)
 par(mfrow=c(length(VarToPlot),2), mar=c(2,2,2,2), oma=c(2,4,2,2))
 sapply(names(Models.lme2)[VarToPlot], PlotModified, mod=Models.lme2)
 mtext("Heavily Modified", 3, outer=TRUE, font = 2)
@@ -874,7 +883,7 @@ mtext("Estimate", 1, outer = TRUE, line = 1)
 
 # taxon richness
 tiff(filename = "Plots/LT_Driver_Est_EQR_TaxoGroupsRich.tiff", width = 8, height = 10, units = 'in', res = 600, compression = 'lzw')
-VarToPlot <- c(15, 17, 19, 21, 23)
+VarToPlot <- c(15, 19, 17, 21, 23)
 par(mfrow=c(length(VarToPlot),4), mar=c(2,2,2,2), oma=c(2,4,2,2))
 sapply(names(Models.lme3)[VarToPlot], PlotEQCs, mod=Models.lme3)
 mtext("Ecological Quality Class", 3, outer=TRUE, font = 2)
@@ -890,7 +899,7 @@ mtext("Estimate", 1, outer = TRUE, line = 1)
 
 # taxon abundances
 tiff(filename = "Plots/LT_Driver_Est_EQR_TaxoGroupsAbund.tiff", width = 8, height = 10, units = 'in', res = 600, compression = 'lzw')
-VarToPlot <- c(16, 18, 20, 22, 24)
+VarToPlot <- c(16, 20, 18, 22, 24)
 par(mfrow=c(length(VarToPlot),4), mar=c(2,2,2,2), oma=c(2,4,2,2))
 sapply(names(Models.lme3)[VarToPlot], PlotEQCs, mod=Models.lme3)
 mtext("Ecological Quality Class", 3, outer=TRUE, font = 2)

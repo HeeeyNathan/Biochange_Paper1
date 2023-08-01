@@ -84,8 +84,8 @@ allYrs <- subset(allYrs, select = -c(ID)) # remove ID variable
 response_lmer <- unique(allYrs[,c("site_code", "site_id", "year",
                                  "abundance", 
                                  "spp_richness", "shannonsH", "E10", "turnover", "spp_rich_rare",
-                                 "ept_spp_richness", "diptera_spp_richness", "insect_spp_richness", "mollusc_spp_richness", "annelid_spp_richness",
-                                 "ept_abundance", "diptera_abundance", "insect_abundance", "mollusc_abundance", "annelid_abundance",
+                                 "ept_spp_richness", "diptera_spp_richness", "insect_spp_richness", "mollusc_spp_richness", "annelid_spp_richness", "crustacea_spp_richness",
+                                 "ept_abundance", "diptera_abundance", "insect_abundance", "mollusc_abundance", "annelid_abundance", "crustacea_abundance",
                                  "FRic", "FEve", "FDis", "FRed", "F_turnover", 
                                  "FRic.SES", "FEve.SES", "FDis.SES", 
                                  "sflow", "stemp", "PC_axis1", "PC_axis2", 
@@ -100,7 +100,7 @@ library(lme4)
 
 ### get response for this task ##
 TaskID <- read.csv("Data/LT_ResponseTrends_TaskIDs.csv", as.is = T)
-task.id = as.integer(Sys.getenv("SLURM_ARRAY_TASK_ID", "24"))
+task.id = as.integer(Sys.getenv("SLURM_ARRAY_TASK_ID", "1"))
 myResponse <- TaskID$Response[which(TaskID$TaskID==task.id)]
 
 # choose which response for this task
@@ -154,7 +154,7 @@ if(myResponse %in% c("abundance", "ept_abundance", "diptera_abundance",
   response_lmer$Response <- response_lmer$Response^3
   
 }else if(myResponse %in% c("spp_richness", "spp_rich_rare", 
-                           "insect_spp_richness","ept_spp_richness", 
+                           "ept_spp_richness", #"insect_spp_richness",
                            "diptera_spp_richness", "mollusc_spp_richness", 
                            "annelid_spp_richness", "crustacea_spp_richness")){
   

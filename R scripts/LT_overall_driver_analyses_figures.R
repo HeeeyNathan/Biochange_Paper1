@@ -14,8 +14,8 @@ driver_gls$fDriver <- factor(driver_gls$driver, levels=c("sflow", "stemp", "PC_a
 unique(driver_gls$Response)
 Group1 <- driver_gls[driver_gls$Response %in% c("abundance", "spp_richness", "E10", "shannonsH", "turnover"),]
 Group2 <- driver_gls[driver_gls$Response %in% c("FRed", "FRic", "FEve", "FDis", "F_turnover"),]
-Group3 <- driver_gls[driver_gls$Response %in% c("ept_spp_richness", "diptera_spp_richness", "insect_spp_richness", "mollusc_spp_richness", "annelid_spp_richness"),]
-Group4 <- driver_gls[driver_gls$Response %in% c("ept_abundance", "diptera_abundance", "insect_abundance", "mollusc_abundance", "annelid_abundance"),]
+Group3 <- driver_gls[driver_gls$Response %in% c("ept_spp_richness", "insect_spp_richness", "crustacea_spp_richness", "mollusc_spp_richness", "annelid_spp_richness"),]
+Group4 <- driver_gls[driver_gls$Response %in% c("ept_abundance", "insect_abundance", "crustacea_abundance", "mollusc_abundance", "annelid_abundance"),]
 Group5 <- driver_gls[driver_gls$Response %in% c("spp_rich_rare", "FRic.SES", "FEve.SES", "FDis.SES"),]
 
 # Change response names to match other plots (consistency)
@@ -69,9 +69,9 @@ p2
 # Change response names to match other plots (consistency)
 nrow(Group3)
 Group3$Response
-fResponse3 <- data.frame(fResponse = factor(c(rep("Annelid richness", 4), rep("Dipera richness", 4), rep("EPT richness", 4), rep("Insect richness", 4), rep("Mollusc richness", 4))))
+fResponse3 <- data.frame(fResponse = factor(c(rep("Annelid richness", 4), rep("Crustacea richness", 4), rep("EPT richness", 4), rep("Insect richness", 4), rep("Mollusc richness", 4))))
 Group3 <- cbind(Group3, fResponse3)
-Group3$fResponse <- factor(Group3$fResponse, levels=c("EPT richness", "Dipera richness", "Insect richness", "Mollusc richness", "Annelid richness"), ordered = T)
+Group3$fResponse <- factor(Group3$fResponse, levels=c("EPT richness", "Crustacea richness", "Insect richness", "Mollusc richness", "Annelid richness"), ordered = T)
 
 # Create plot
 p3 <- ggplot(Group3, aes(x=Estimate, y=fDriver)) +
@@ -93,9 +93,9 @@ p3
 # Change response names to match other plots (consistency)
 nrow(Group4)
 Group4$Response
-fResponse4 <- data.frame(fResponse = factor(c(rep("Annelid abundance", 4), rep("Dipera abundance", 4), rep("EPT abundance", 4), rep("Insect abundance", 4), rep("Mollusc abundance", 4))))
+fResponse4 <- data.frame(fResponse = factor(c(rep("Annelid abundance", 4), rep("Crustacea abundance", 4), rep("EPT abundance", 4), rep("Insect abundance", 4), rep("Mollusc abundance", 4))))
 Group4 <- cbind(Group4, fResponse4)
-Group4$fResponse <- factor(Group4$fResponse, levels=c("EPT abundance", "Dipera abundance", "Insect abundance", "Mollusc abundance", "Annelid abundance"), ordered = T)
+Group4$fResponse <- factor(Group4$fResponse, levels=c("EPT abundance", "Crustacea abundance", "Insect abundance", "Mollusc abundance", "Annelid abundance"), ordered = T)
 
 # Create plot
 p4 <- ggplot(Group4, aes(x=Estimate, y=fDriver)) +
