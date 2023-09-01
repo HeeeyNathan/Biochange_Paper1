@@ -56,9 +56,9 @@ allYrs <- subset(allYrs, select = -c(ID)) # remove ID variable
 
 # # Check variable colinnearity
 # pairs(allYrs[, c(77:91)], lower.panel = panel.smooth, upper.panel = panel.cor, diag.panel = panel.hist, main = "Pearson Correlation Matrix") # Check env data for collinearity
-pairs(allYrs[, c(79:91)], lower.panel = panel.smooth, upper.panel = panel.cor, diag.panel = panel.hist, main = "Pearson Correlation Matrix") # Check env data for collinearity
+# pairs(allYrs[, c(79:91)], lower.panel = panel.smooth, upper.panel = panel.cor, diag.panel = panel.hist, main = "Pearson Correlation Matrix") # Check env data for collinearity
 # pairs(allYrs[, c(80, 83, 86:91)], lower.panel = panel.smooth, upper.panel = panel.cor, diag.panel = panel.hist, main = "Pearson Correlation Matrix") # Check env data for collinearity
-pairs(allYrs[, c(80, 83, 86:91)], lower.panel = panel.smooth, upper.panel = panel.cor, diag.panel = panel.hist, main = "Pearson Correlation Matrix") # Check env data for collinearity
+# pairs(allYrs[, c(80, 83, 86:91)], lower.panel = panel.smooth, upper.panel = panel.cor, diag.panel = panel.hist, main = "Pearson Correlation Matrix") # Check env data for collinearity
 
 # Construct PCA to check the environmental variables and their relationships
 allYrs_pca = princomp(na.omit(allYrs[, c(80, 83, 86:91)]), scores = TRUE) #computes PCA - gives us all the PCA results
@@ -106,8 +106,8 @@ response_lmer <- unique(allYrs[,c("site_code", "site_id", "year",
                                  "mollusc_abundance", "annelid_abundance", "crustacea_abundance",
                                  "FRic", "FEve", "FDis", "FRed", "F_turnover", 
                                  "FRic.SES", "FEve.SES", "FDis.SES", 
-                                 "sflow", "stemp", "sNH4.N", "ssus_solid", "so2_dis", "spH", "sBOD7", 
-                                 "PC_axis1", "fmodified", "ftype", "fEQC")])
+                                 "sflow", "stemp", "sNH4.N", "ssus_solid", "so2_dis", "spH", "sBOD7", "PC_axis1", 
+                                 "fmodified", "ftype", "fEQC")])
 
 ### remove missing covariate data ####
 response_lmer <- response_lmer[complete.cases(response_lmer[, c(30:37)]),]
@@ -118,7 +118,7 @@ library(lme4)
 
 ### get response for this task ##
 TaskID <- read.csv("Data/LT_ResponseTrends_TaskIDs.csv", as.is = T)
-task.id = as.integer(Sys.getenv("SLURM_ARRAY_TASK_ID", "26"))
+task.id = as.integer(Sys.getenv("SLURM_ARRAY_TASK_ID", "1"))
 myResponse <- TaskID$Response[which(TaskID$TaskID==task.id)]
 
 # choose which response for this task
@@ -184,7 +184,7 @@ if(myResponse %in% c("abundance", "ept_abundance", "diptera_abundance",
 hist(response_lmer$Response)
 
 ### run model ###
-fit1 <- lmer(Response ~ sflow + stemp + sNH4.N + ssus_solid + so2_dis + spH + sBOD7 + PC_axis1 + (1|site_id) + (1|year), data = response_lmer)
+fit1 <- lmer(Response ~ sflow + stemp + sNH4.N + so2_dis + spH + PC_axis1 + (1|site_id) + (1|year), data = response_lmer)
 
 summ <- summary(fit1)$coefficients
 (summ <- data.frame(summ))

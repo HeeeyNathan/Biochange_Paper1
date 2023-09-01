@@ -161,31 +161,45 @@ allYrs$EQCCols <- EQCCols[as.numeric(allYrs$fEQC)]
 
 colnames(allYrs)
 
-# define new variable for nutrients
-# Construct PCA to check the environmental variables and their relationships
-pairs(allYrs[, c(79:93)], lower.panel = panel.smooth, upper.panel = panel.cor, diag.panel = panel.hist, main = "Pearson Correlation Matrix") # Check env data for collinearity
-pairs(allYrs[, c(81:93)], lower.panel = panel.smooth, upper.panel = panel.cor, diag.panel = panel.hist, main = "Pearson Correlation Matrix") # Check env data for collinearity
+# # Check variable colinnearity
 pairs(allYrs[, c(82, 85, 88:93)], lower.panel = panel.smooth, upper.panel = panel.cor, diag.panel = panel.hist, main = "Pearson Correlation Matrix") # Check env data for collinearity
-allYrs_pca = princomp(na.omit(allYrs[, c(81:93)]), scores = TRUE) #computes PCA - gives us all the PCA results
+
+# Construct PCA to check the environmental variables and their relationships
+allYrs_pca = princomp(na.omit(allYrs[, c(82, 85, 88:93)]), scores = TRUE) #computes PCA - gives us all the PCA results
 summary(allYrs_pca)
+allYrs_pca
 plot(allYrs_pca$scores[, 1], allYrs_pca$scores[, 2], type = "n", xlab = "Axis.1", ylab = "Axis.2", las = 1) #empty PCA Plot
 abline(v = 0, lty = 3) #plots origin line verticle
 abline(h = 0, lty = 3) #plots origin line horizontal
-#text(allYrs_pca$scores[, 1], allYrs_pca$scores[, 2], allYrs$site_code, col = RivTypCols) #adds text for samples
-text(allYrs_pca$scores[, 1], allYrs_pca$scores[, 2], allYrs$site_id, col = "red", cex = 0.6) #adds text for samples
-#text(allYrs_pca$scores[, 1], allYrs_pca$scores[, 2], allYrs$ftype, col = "darkblue") #adds text for samples
-#text(allYrs_pca$scores[, 1], allYrs_pca$scores[, 2], allYrs$fmodified, col = "forestgreen") #adds text for samples
-vec = envfit(allYrs_pca, na.omit(allYrs[, c(81:93)]), choices = c(1, 2)) #computes the environmental variable vectors
+points(allYrs_pca$scores[, 1], allYrs_pca$scores[, 2], col = "red", cex = 0.6, pch = 3) #adds text for samples
+vec = envfit(allYrs_pca, na.omit(allYrs[, c(82, 85, 88:93)]), choices = c(1, 2)) #computes the environmental variable vectors
 plot(vec, col = "blue", cex = 1) #plots vectors (environmetal variables)
-pc1_scores <- as.data.frame(allYrs_pca$scores[, 1]*-1) # reverse signs to help with interpretation later
-pc2_scores <- as.data.frame(allYrs_pca$scores[, 2]) # reverse signs to help with interpretation later
+
+# Check broken stick model
+biplot(allYrs_pca)
+summary(allYrs_pca)
+allYrs_pca_scores <- (scores(allYrs_pca)[,1])
+corr1 <- cor(na.omit(allYrs[, c(82, 85, 88:93)]), scores(allYrs_pca)[,1]) # correlation between original variables and principal components
+round(corr1, 3)
+corr2 <- cor(na.omit(allYrs[, c(82, 85, 88:93)]), scores(allYrs_pca)[,2]) # correlation between original variables and principal components
+round(corr2, 3)
+screeplot(allYrs_pca, bstick = TRUE, npcs = length(allYrs_pca$sdev))
+(ev <- allYrs_pca$sdev^2)
+n <- length (ev)
+bsm <- data.frame(j=seq(1:n), p=0)
+bsm$p[1] <- 1/n
+for (i in 2:n) {bsm$p[i] = bsm$p[i-1] + (1/(n+1-i))}
+bsm$p <- 100*bsm$p/n
+bsm
+barplot(t(cbind(100*ev/sum(ev),bsm$p[n:1])), beside=TRUE, main="Broken stick model", col=c("blue",2), las=2)
+legend("topright", c("% eigenvalue", "Broken stick model"), pch=15, col=c("blue",2), bty="n")
+
+# isolate pc axis for use as covariate in model
+pc1_scores <- as.data.frame(allYrs_pca$scores[, 1]) # reverse signs to help with interpretation later
 colnames(pc1_scores) <- c("PC_axis1")
-colnames(pc2_scores) <- c("PC_axis2")
 pc1_scores$ID <- rownames(pc1_scores)
-pc2_scores$ID <- rownames(pc2_scores)
 allYrs$ID <- rownames(allYrs)
 allYrs <- dplyr::left_join(allYrs, pc1_scores, by = "ID")
-allYrs <- dplyr::left_join(allYrs, pc2_scores, by = "ID")
 allYrs <- subset(allYrs, select = -c(ID)) # remove ID variable
 
 # Create subsets for responses vs predictors
@@ -198,7 +212,7 @@ AllResponses <- c("abundance", "spp_richness", "shannonsH", "E10", "turnover", "
                   "insect_spp_richness", "insect_abundance", 
                   "mollusc_spp_richness", "mollusc_abundance", 
                   "annelid_spp_richness", "annelid_abundance")
-Predictors_num <- c("sflow", "stemp", "PC_axis1", "PC_axis2")
+Predictors_num <- c("sflow", "spH", "stemp", "so2_dis", "sNH4.N", "PC_axis1")
 # Predictors_num <- c("flow", "temp", "sus_solid", "o2_dis", "pH", "BOD7", "NH4.N", "Nut.PC1")
 # Predictors <- c("site_id", "year", "flow", "temp", "sus_solid", "o2_dis", "pH", "BOD7", "NH4.N", "Nut.PC1", "fmodified", "ftype")
 # Identifiers <- c("country", "study_id", "site_id", "year", "site_code", "season", "sample_id", "day", "month", "date", "day_of_year", "latitude", "longitude", "cYear", "iYear", "fYear", "syear", "RivTypCols", "ModifiedCols")
@@ -225,9 +239,9 @@ names(VarToFit) <- c("Total\nabundance", "Taxon\nrichness", "Shannon\ndiversity"
                      "Annelid\nrichness", "Annelid\nabundance")
 
 # FixedEffects <- c("sflow", "stemp", "ssus_solid", "so2_dis", "spH", "sBOD7", "sNH4.N", "Nut.PC1")
-FixedEffects <- c("sflow", "stemp", "PC_axis1", "PC_axis2")
+FixedEffects <- c("sflow", "spH", "stemp", "so2_dis", "sNH4.N", "PC_axis1")
 # names(FixedEffects) <- c("Flow [m3/s]", "Temp. [°C]", "Suspended solids", "Dissolved oxygen [mg/L]", "pH", "Biol. oxygen demand [mg/L]", "Ammonium [mg/L]", "Nutrients") 
-names(FixedEffects) <- c("Flow [m3/s]", "Temp. [°C]", "Princ. comp. 1", "Princ. comp. 2") 
+names(FixedEffects) <- c("Flow", "pH", "Temperature", "Diss. oxygen", "Ammonium", "Nutrients PCA") 
 
 # Plot data: covariates and responses
 ## Plot the precipitation covariates
@@ -307,7 +321,7 @@ pairs(allYrs[,unique(rownames(BigCorrs))], col = allYrs$EQCCols)
 pairs(allYrs[,unique(rownames(BigCorrs))], lower.panel = panel.smooth, upper.panel = panel.cor, diag.panel = panel.hist, main = "Pearson Correlation Matrix") # Check env data for collinearity
 
 ### remove missing covariate data ####
-allYrs_complete <- allYrs[complete.cases(allYrs[, c(79:93, 97:98)]),]
+allYrs_complete <- allYrs[complete.cases(allYrs[, c(79:93, 97)]),]
 
 ### Fitting models with lme4 ####
 ### With river type factor ####
@@ -328,7 +342,7 @@ FitModelContrasts <- function(resp, fixed, random, data) {
     summ <- summary(mod)$coefficients
     summ <- summ[!grepl("ftype", rownames(summ)),]
     CI <- confint(mod) # calculates confidence intervals (CI) for each model
-    summ <- cbind(summ, CI[4:8,]) # binds the CI to each summary table
+    summ <- cbind(summ, CI[4:10,]) # binds the CI to each summary table
     summ
     # isSingular(mod, tol = 1e-4) # a logical test to determine if the fitted mixed model is (almost/near) singular
   }, dat=data, ff=form)
@@ -341,66 +355,66 @@ Models.lme1 <- lapply(VarToFit, FitModelContrasts, fixed=form.fixedS_type,
 
 # Models.lme1$`Total\nabundance`$type1[, 4]
 
-# extract variables & generate functions
-GetEsts <- function(mod, var) {
-  require(plyr)
-  GetSumm <- function(summ, vr) return(summ[vr,])
-  ests <- ldply(.data=mod, .fun=GetSumm, vr=var)
-  return(ests)
-}
-
-# (Ests <- GetEsts(mod=Models.lme1[[1]], var="sflow"))
-
-PlotEffects <- function(name, summs, label.y=TRUE, title=TRUE, removeInt=FALSE) {
-  summ <- data.frame(summs[[name]])
-  if(removeInt) summ <- summ[rownames(summ)!="(Intercept)",]
-  summ$LLim <- summ[, 5]
-  summ$ULim <- summ[, 6]
-  # summ$LLim <- summ$Estimate - summ$Std..Error
-  # summ$ULim <- summ$Estimate + summ$Std..Error
-  At.Y <- 1:nrow(summ)
-  plot(summ$Estimate, At.Y, yaxt="n", ann=FALSE, 
-       xlim=c(min(summ$LLim), max(summ$ULim)), ylim=c(0.5, nrow(summ)+0.5), col = ifelse(summ$Estimate >= 0, "#95ccba", "#f2cc84"))
-  segments(summ$LLim, At.Y, summ$ULim, At.Y, col = ifelse(summ$Estimate >= 0, "#95ccba", "#f2cc84"))
-  abline(v=0, lty=3)
-  if(label.y) axis(2, at=At.Y, labels = rownames(summ), las=1)
-  if(title) title(main=name)
-}
-
-PlotEsts <- function(var, models, nrows=6) {
-  Estimates <- lapply(Models.lme1, GetEsts, var=var)
-  NEsts <-  length(Estimates)
-  if(NEsts%%nrows!=0) warning("Plot not nice and square")
-  par(mfcol=c(nrows,ceiling(NEsts/nrows)), mar=c(2,1,2,0), oma=c(2,3,0,0))
-  lapply(names(Estimates)[1:nrows], PlotEffects, summs=Estimates, label.y=TRUE)
-  lapply(names(Estimates)[(nrows+1):NEsts], PlotEffects, 
-         summs=Estimates, label.y=FALSE)
-  mtext("Estimated Effect", 1, outer=TRUE)
-  mtext("River type", 2, outer=TRUE)
-}
-
-# Flow effects
-PlotEsts(var="sflow", models=Models.lme1)
-
-# Temperature effects
-PlotEsts(var="stemp", models=Models.lme1)
-
-# # Suspended solids effects
-# PlotEsts(var="ssus_solid", models=Models.lme1)
-# # Dissolved oxygen effects
-# PlotEsts(var="so2_dis", models=Models.lme1)
-# # pH effects
-# PlotEsts(var="spH", models=Models.lme1)
-# # Biological Oxygen Demand effects
-# PlotEsts(var="sBOD7", models=Models.lme1)
-# # Ammonium effects
-# PlotEsts(var="sNH4.N", models=Models.lme1)
-
-# PC axis 1 effects
-PlotEsts(var="PC_axis1", models=Models.lme1)
-
-# PC axis 3 effects
-PlotEsts(var="PC_axis2", models=Models.lme1)
+# # extract variables & generate functions
+# GetEsts <- function(mod, var) {
+#   require(plyr)
+#   GetSumm <- function(summ, vr) return(summ[vr,])
+#   ests <- ldply(.data=mod, .fun=GetSumm, vr=var)
+#   return(ests)
+# }
+# 
+# # (Ests <- GetEsts(mod=Models.lme1[[1]], var="sflow"))
+# 
+# PlotEffects <- function(name, summs, label.y=TRUE, title=TRUE, removeInt=FALSE) {
+#   summ <- data.frame(summs[[name]])
+#   if(removeInt) summ <- summ[rownames(summ)!="(Intercept)",]
+#   summ$LLim <- summ[, 5]
+#   summ$ULim <- summ[, 6]
+#   # summ$LLim <- summ$Estimate - summ$Std..Error
+#   # summ$ULim <- summ$Estimate + summ$Std..Error
+#   At.Y <- 1:nrow(summ)
+#   plot(summ$Estimate, At.Y, yaxt="n", ann=FALSE, 
+#        xlim=c(min(summ$LLim), max(summ$ULim)), ylim=c(0.5, nrow(summ)+0.5), col = ifelse(summ$Estimate >= 0, "#95ccba", "#f2cc84"))
+#   segments(summ$LLim, At.Y, summ$ULim, At.Y, col = ifelse(summ$Estimate >= 0, "#95ccba", "#f2cc84"))
+#   abline(v=0, lty=3)
+#   if(label.y) axis(2, at=At.Y, labels = rownames(summ), las=1)
+#   if(title) title(main=name)
+# }
+# 
+# PlotEsts <- function(var, models, nrows=6) {
+#   Estimates <- lapply(Models.lme1, GetEsts, var=var)
+#   NEsts <-  length(Estimates)
+#   if(NEsts%%nrows!=0) warning("Plot not nice and square")
+#   par(mfcol=c(nrows,ceiling(NEsts/nrows)), mar=c(2,1,2,0), oma=c(2,3,0,0))
+#   lapply(names(Estimates)[1:nrows], PlotEffects, summs=Estimates, label.y=TRUE)
+#   lapply(names(Estimates)[(nrows+1):NEsts], PlotEffects, 
+#          summs=Estimates, label.y=FALSE)
+#   mtext("Estimated Effect", 1, outer=TRUE)
+#   mtext("River type", 2, outer=TRUE)
+# }
+# 
+# # Flow effects
+# PlotEsts(var="sflow", models=Models.lme1)
+# 
+# # Temperature effects
+# PlotEsts(var="stemp", models=Models.lme1)
+# 
+# # # Suspended solids effects
+# # PlotEsts(var="ssus_solid", models=Models.lme1)
+# # # Dissolved oxygen effects
+# # PlotEsts(var="so2_dis", models=Models.lme1)
+# # # pH effects
+# # PlotEsts(var="spH", models=Models.lme1)
+# # # Biological Oxygen Demand effects
+# # PlotEsts(var="sBOD7", models=Models.lme1)
+# # # Ammonium effects
+# # PlotEsts(var="sNH4.N", models=Models.lme1)
+# 
+# # PC axis 1 effects
+# PlotEsts(var="PC_axis1", models=Models.lme1)
+# 
+# # PC axis 3 effects
+# PlotEsts(var="PC_axis2", models=Models.lme1)
 
 ## Effects Plotted By variable
 # The effects are now plotted by variable, with different countries in dfferen columns. 
@@ -409,10 +423,11 @@ PlotEsts(var="PC_axis2", models=Models.lme1)
 PlotEffects <- function(name, summs, label.y=TRUE, title=TRUE, removeInt=FALSE) {
   summ <- data.frame(summs[[name]])
   if(removeInt) summ <- summ[rownames(summ)!="(Intercept)",]
+  # Set the rownames to the specified values
+  new_rownames <- c("Flow", "pH", "Temperature", "Diss. oxygen", "Ammonium", "Nutrients PCA")
+  rownames(summ) <- new_rownames
   summ$LLim <- summ[, 4]
   summ$ULim <- summ[, 5]
-  # summ$LLim <- summ$Estimate - summ$Std..Error
-  # summ$ULim <- summ$Estimate + summ$Std..Error
   At.Y <- 1:nrow(summ)
   plot(summ$Estimate, At.Y, yaxt="n", ann=FALSE, 
        xlim=c(min(summ$LLim), max(summ$ULim)), ylim=c(0.5, nrow(summ)+0.5), col = ifelse(summ$Estimate >= 0, "#95ccba", "#f2cc84"))
@@ -446,7 +461,7 @@ mtext("Estimate", 1, outer = TRUE, line = 1)
 # select taxon indices
 tiff(filename = "Plots/LT_Driver_Est_RivTyp_TaxoIndices.tiff", width = 10, height = 10, units = 'in', res = 600, compression = 'lzw')
 VarToPlot <- c(1:2, 4, 3, 5)
-par(mfrow=c(length(VarToPlot),5), mar=c(2,2,2,2), oma=c(2,4,2,2))
+par(mfrow=c(length(VarToPlot),5), mar=c(2,0.5,2,2), oma=c(2,6,2,2))
 sapply(names(Models.lme1)[VarToPlot], PlotRiverTypes, mod=Models.lme1)
 mtext("River Type", 3, outer=TRUE, font = 2)
 mtext("Estimate", 1, outer = TRUE, line = 1)
@@ -462,7 +477,7 @@ mtext("Estimate", 1, outer = TRUE, line = 1)
 # select func. indices
 tiff(filename = "Plots/LT_Driver_Est_RivTyp_FuncIndices.tiff", width = 10, height = 10, units = 'in', res = 600, compression = 'lzw')
 VarToPlot <- 6 + c(4, 1:3, 5)
-par(mfrow=c(length(VarToPlot),5), mar=c(2,2,2,2), oma=c(2,4,2,2))
+par(mfrow=c(length(VarToPlot),5), mar=c(2,0.5,2,2), oma=c(2,6,2,2))
 sapply(names(Models.lme1)[VarToPlot], PlotRiverTypes, mod=Models.lme1)
 mtext("River Type", 3, outer=TRUE, font = 2)
 mtext("Estimate", 1, outer = TRUE, line = 1)
@@ -478,7 +493,7 @@ mtext("Estimate", 1, outer = TRUE, line = 1)
 # taxon richness
 tiff(filename = "Plots/LT_Driver_Est_RivTyp_TaxoGroupsRich.tiff", width = 10, height = 10, units = 'in', res = 600, compression = 'lzw')
 VarToPlot <- c(15, 19, 17, 21, 23)
-par(mfrow=c(length(VarToPlot),5), mar=c(2,2,2,2), oma=c(2,4,2,2))
+par(mfrow=c(length(VarToPlot),5), mar=c(2,0.5,2,2), oma=c(2,6,2,2))
 sapply(names(Models.lme1)[VarToPlot], PlotRiverTypes, mod=Models.lme1)
 mtext("River Type", 3, outer=TRUE, font = 2)
 mtext("Estimate", 1, outer = TRUE, line = 1)
@@ -494,7 +509,7 @@ mtext("Estimate", 1, outer = TRUE, line = 1)
 # taxon abundances
 tiff(filename = "Plots/LT_Driver_Est_RivTyp_TaxoGroupAbund.tiff", width = 10, height = 10, units = 'in', res = 600, compression = 'lzw')
 VarToPlot <- c(16, 20, 18, 22, 24)
-par(mfrow=c(length(VarToPlot),5), mar=c(2,2,2,2), oma=c(2,4,2,2))
+par(mfrow=c(length(VarToPlot),5), mar=c(2,0.5,2,2), oma=c(2,6,2,2))
 sapply(names(Models.lme1)[VarToPlot], PlotRiverTypes, mod=Models.lme1)
 mtext("River Type", 3, outer=TRUE, font = 2)
 mtext("Estimate", 1, outer = TRUE, line = 1)
@@ -509,7 +524,7 @@ mtext("Estimate", 1, outer = TRUE, line = 1)
 
 tiff(filename = "Plots/LT_Driver_Est_RivTyp_Extra.tiff", width = 10, height = 8, units = 'in', res = 600, compression = 'lzw')
 VarToPlot <- c(6, 12, 13, 14)
-par(mfrow=c(length(VarToPlot),5), mar=c(2,2,2,2), oma=c(2,4,2,2))
+par(mfrow=c(length(VarToPlot),5), mar=c(2,0.5,2,2), oma=c(2,6,2,2))
 sapply(names(Models.lme1)[VarToPlot], PlotRiverTypes, mod=Models.lme1)
 mtext("River Type", 3, outer=TRUE, font = 2)
 mtext("Estimate", 1, outer = TRUE, line = 1)
