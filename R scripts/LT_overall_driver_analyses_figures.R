@@ -8,7 +8,19 @@ library(gridExtra)
 # Read in and organise data
 driver_gls <- readRDS("outputs/glsTrends_drivers_site_level.rds")
 driver_gls <- driver_gls[driver_gls$driver != "(Intercept)",] # removes the intercept line from each response variable
-driver_gls$fDriver <- factor(driver_gls$driver, levels=c("sflow", "stemp", "PC_axis1", "PC_axis2"), ordered = T) # reorder the driver names so that they appear in ggplot the way we want
+
+# Change the how the driver names appear in the figures
+driver_gls <- driver_gls %>%
+  mutate(driver = case_when(
+    driver == "sflow" ~ "Flow",
+    driver == "stemp" ~ "Temperature",
+    driver == "PC_axis1" ~ "PC axis 1",
+    driver == "PC_axis2" ~ "PC axis 2",
+    TRUE ~ driver  # Keep other values unchanged
+  ))
+
+# # Reorder the driver names so that they appear in ggplot the way we want
+driver_gls$fDriver <- factor(driver_gls$driver, levels=c("Flow", "Temperature", "PC axis 1", "PC axis 2"), ordered = T) # reorder the driver names so that they appear in ggplot the way we want
 
 # generate groups for plotting
 unique(driver_gls$Response)
@@ -25,22 +37,61 @@ Group1 <- cbind(Group1, fResponse)
 Group1$fResponse <- factor(Group1$fResponse, levels=c("Abundance", "Taxon richness", "Evenness", "Shannon's H", "Turnover"), ordered = T) # reorder the driver names so that they appear in ggplot the way we want
 
 # Create plot
-p1 <- ggplot(Group1, aes(x=Estimate, y=fDriver)) +
-  geom_line() +
+p1 <- ggplot(Group1, aes(x = Estimate, y = fDriver)) +
   scale_color_identity() +
-  geom_point(shape=21, size=2, fill="white", aes(color = ifelse(Estimate >= 0, "#95ccba", "#f2cc84"))) +
-  geom_errorbar(width=0, aes(xmin=(`2.5 %`), xmax=(`97.5 %`), color = ifelse(Estimate >= 0, "#95ccba", "#f2cc84")))  +
-  facet_wrap(~ fResponse, nrow  = 5, scales = "free_x") +
-  theme_bw() + 
-  theme(panel.grid = element_blank(),
-        strip.background = element_blank(), 
-        strip.text = element_text(face="bold"),
-        plot.margin = unit(c(0, 0.5, 0.5, 0), "cm"),
-        legend.position = "none") +
-  geom_vline(xintercept = 0, lty=3) +
+  geom_point(
+    shape = 21, size = 4, fill = "white",
+    aes(color = ifelse(Estimate >= 0, "#95ccba", "#f2cc84"))
+  ) +
+  geom_errorbar(
+    width = 0, linewidth = 1,
+    aes(xmin = (`2.5 %`), xmax = (`97.5 %`), color = ifelse(Estimate >= 0, "#95ccba", "#f2cc84"))
+  ) +
+  facet_wrap(~ fResponse, nrow = 5, scales = "free_x") +
+  theme_bw() +
+  theme(
+    panel.grid = element_blank(),
+    strip.background = element_blank(),
+    plot.margin = unit(c(0, 0.5, 0.5, 0), "cm"),
+    legend.position = "none",
+    text = element_text(size = 12),  # Adjust the size of all text elements
+    axis.title = element_blank(),    # Remove axis titles
+    axis.text = element_text(size = 12),  # Adjust the size of tick mark labels
+    strip.text = element_text(size = 12, face = "bold")  # Adjust the size and face of facet labels
+  ) +
+  geom_vline(xintercept = 0, lty = 3) +
   ylab("") +
   xlab("")
 p1
+
+# svg(filename = "Plots/Overall_drivers_TaxoIndices.svg", width = 6, height = 10, bg = "white")
+# p1 <- ggplot(Group1, aes(x = Estimate, y = fDriver)) +
+#   scale_color_identity() +
+#   geom_point(
+#     shape = 21, size = 4, fill = "white",
+#     aes(color = ifelse(Estimate >= 0, "#95ccba", "#f2cc84"))
+#   ) +
+#   geom_errorbar(
+#     width = 0, linewidth = 1,
+#     aes(xmin = (`2.5 %`), xmax = (`97.5 %`), color = ifelse(Estimate >= 0, "#95ccba", "#f2cc84"))
+#   ) +
+#   facet_wrap(~ fResponse, nrow = 5, scales = "free_x") +
+#   theme_bw() +
+#   theme(
+#     panel.grid = element_blank(),
+#     strip.background = element_blank(),
+#     plot.margin = unit(c(0, 0.5, 0.5, 0), "cm"),
+#     legend.position = "none",
+#     text = element_text(size = 12),  # Adjust the size of all text elements
+#     axis.title = element_blank(),    # Remove axis titles
+#     axis.text = element_text(size = 12),  # Adjust the size of tick mark labels
+#     strip.text = element_text(size = 12, face = "bold")  # Adjust the size and face of facet labels
+#   ) +
+#   geom_vline(xintercept = 0, lty = 3) +
+#   ylab("") +
+#   xlab("")
+# p1
+# dev.off()
 
 # Change response names to match other plots (consistency)
 nrow(Group2)
@@ -50,21 +101,61 @@ Group2 <- cbind(Group2, fResponse2)
 Group2$fResponse <- factor(Group2$fResponse, levels=c("Func. redundancy", "Func. richness", "Func. evenness", "Func. dispersion", "Func. turnover"), ordered = T)
 
 # Create plot
-p2 <- ggplot(Group2, aes(x=Estimate, y=fDriver)) +
-  geom_line() +
+p2 <- ggplot(Group2, aes(x = Estimate, y = fDriver)) +
   scale_color_identity() +
-  geom_point(shape=21, size=2, fill="white", aes(color = ifelse(Estimate >= 0, "#95ccba", "#f2cc84"))) +
-  geom_errorbar(width=0, aes(xmin=(`2.5 %`), xmax=(`97.5 %`), color = ifelse(Estimate >= 0, "#95ccba", "#f2cc84")))  +
-  facet_wrap(~ fResponse, nrow  = 5, scales = "free_x") +
-  theme_bw() + theme(panel.grid = element_blank(),
-                     strip.background = element_blank(),
-                     strip.text = element_text(face="bold"),
-                     plot.margin = unit(c(0, 0.5, 0.5, 0), "cm"),
-                     legend.position = "none") +
-  geom_vline(xintercept = 0, lty=3) +
+  geom_point(
+    shape = 21, size = 4, fill = "white",
+    aes(color = ifelse(Estimate >= 0, "#95ccba", "#f2cc84"))
+  ) +
+  geom_errorbar(
+    width = 0, linewidth = 1,
+    aes(xmin = (`2.5 %`), xmax = (`97.5 %`), color = ifelse(Estimate >= 0, "#95ccba", "#f2cc84"))
+  ) +
+  facet_wrap(~ fResponse, nrow = 5, scales = "free_x") +
+  theme_bw() +
+  theme(
+    panel.grid = element_blank(),
+    strip.background = element_blank(),
+    plot.margin = unit(c(0, 0.5, 0.5, 0), "cm"),
+    legend.position = "none",
+    text = element_text(size = 12),  # Adjust the size of all text elements
+    axis.title = element_blank(),    # Remove axis titles
+    axis.text = element_text(size = 12),  # Adjust the size of tick mark labels
+    strip.text = element_text(size = 12, face = "bold")  # Adjust the size and face of facet labels
+  ) +
+  geom_vline(xintercept = 0, lty = 3) +
   ylab("") +
   xlab("")
 p2
+
+# svg(filename = "Plots/Overall_drivers_FuncIndices.svg", width = 6, height = 10, bg = "white")
+# p2 <- ggplot(Group2, aes(x = Estimate, y = fDriver)) +
+#   scale_color_identity() +
+#   geom_point(
+#     shape = 21, size = 4, fill = "white",
+#     aes(color = ifelse(Estimate >= 0, "#95ccba", "#f2cc84"))
+#   ) +
+#   geom_errorbar(
+#     width = 0, linewidth = 1,
+#     aes(xmin = (`2.5 %`), xmax = (`97.5 %`), color = ifelse(Estimate >= 0, "#95ccba", "#f2cc84"))
+#   ) +
+#   facet_wrap(~ fResponse, nrow = 5, scales = "free_x") +
+#   theme_bw() +
+#   theme(
+#     panel.grid = element_blank(),
+#     strip.background = element_blank(),
+#     plot.margin = unit(c(0, 0.5, 0.5, 0), "cm"),
+#     legend.position = "none",
+#     text = element_text(size = 12),  # Adjust the size of all text elements
+#     axis.title = element_blank(),    # Remove axis titles
+#     axis.text = element_text(size = 12),  # Adjust the size of tick mark labels
+#     strip.text = element_text(size = 12, face = "bold")  # Adjust the size and face of facet labels
+#   ) +
+#   geom_vline(xintercept = 0, lty = 3) +
+#   ylab("") +
+#   xlab("")
+# p2
+# dev.off()
 
 # Change response names to match other plots (consistency)
 nrow(Group3)
@@ -74,18 +165,29 @@ Group3 <- cbind(Group3, fResponse3)
 Group3$fResponse <- factor(Group3$fResponse, levels=c("EPT richness", "Insect richness", "Crustacea richness", "Mollusc richness", "Annelid richness"), ordered = T)
 
 # Create plot
-p3 <- ggplot(Group3, aes(x=Estimate, y=fDriver)) +
-  geom_line() +
+p3 <- ggplot(Group3, aes(x = Estimate, y = fDriver)) +
   scale_color_identity() +
-  geom_point(shape=21, size=2, fill="white", aes(color = ifelse(Estimate >= 0, "#95ccba", "#f2cc84"))) +
-  geom_errorbar(width=0, aes(xmin=(`2.5 %`), xmax=(`97.5 %`), color = ifelse(Estimate >= 0, "#95ccba", "#f2cc84")))  +
-  facet_wrap(~ fResponse, nrow  = 5, scales = "free_x") +
-  theme_bw() + theme(panel.grid = element_blank(),
-                     strip.background = element_blank(),
-                     strip.text = element_text(face="bold"),
-                     plot.margin = unit(c(0, 0.5, 0.5, 0), "cm"),
-                     legend.position = "none") +
-  geom_vline(xintercept = 0, lty=3) +
+  geom_point(
+    shape = 21, size = 4, fill = "white",
+    aes(color = ifelse(Estimate >= 0, "#95ccba", "#f2cc84"))
+  ) +
+  geom_errorbar(
+    width = 0, linewidth = 1,
+    aes(xmin = (`2.5 %`), xmax = (`97.5 %`), color = ifelse(Estimate >= 0, "#95ccba", "#f2cc84"))
+  ) +
+  facet_wrap(~ fResponse, nrow = 5, scales = "free_x") +
+  theme_bw() +
+  theme(
+    panel.grid = element_blank(),
+    strip.background = element_blank(),
+    plot.margin = unit(c(0, 0.5, 0.5, 0), "cm"),
+    legend.position = "none",
+    text = element_text(size = 12),  # Adjust the size of all text elements
+    axis.title = element_blank(),    # Remove axis titles
+    axis.text = element_text(size = 12),  # Adjust the size of tick mark labels
+    strip.text = element_text(size = 12, face = "bold")  # Adjust the size and face of facet labels
+  ) +
+  geom_vline(xintercept = 0, lty = 3) +
   ylab("") +
   xlab("")
 p3
@@ -98,18 +200,29 @@ Group4 <- cbind(Group4, fResponse4)
 Group4$fResponse <- factor(Group4$fResponse, levels=c("EPT abundance", "Insect abundance", "Crustacea abundance", "Mollusc abundance", "Annelid abundance"), ordered = T)
 
 # Create plot
-p4 <- ggplot(Group4, aes(x=Estimate, y=fDriver)) +
-  geom_line() +
+p4 <- ggplot(Group4, aes(x = Estimate, y = fDriver)) +
   scale_color_identity() +
-  geom_point(shape=21, size=2, fill="white", aes(color = ifelse(Estimate >= 0, "#95ccba", "#f2cc84"))) +
-  geom_errorbar(width=0, aes(xmin=(`2.5 %`), xmax=(`97.5 %`), color = ifelse(Estimate >= 0, "#95ccba", "#f2cc84")))  +
-  facet_wrap(~ fResponse, nrow  = 5, scales = "free_x") +
-  theme_bw() + theme(panel.grid = element_blank(),
-                     strip.background = element_blank(),
-                     strip.text = element_text(face="bold"),
-                     plot.margin = unit(c(0, 0.5, 0.5, 0), "cm"),
-                     legend.position = "none") +
-  geom_vline(xintercept = 0, lty=3) +
+  geom_point(
+    shape = 21, size = 4, fill = "white",
+    aes(color = ifelse(Estimate >= 0, "#95ccba", "#f2cc84"))
+  ) +
+  geom_errorbar(
+    width = 0, linewidth = 1,
+    aes(xmin = (`2.5 %`), xmax = (`97.5 %`), color = ifelse(Estimate >= 0, "#95ccba", "#f2cc84"))
+  ) +
+  facet_wrap(~ fResponse, nrow = 5, scales = "free_x") +
+  theme_bw() +
+  theme(
+    panel.grid = element_blank(),
+    strip.background = element_blank(),
+    plot.margin = unit(c(0, 0.5, 0.5, 0), "cm"),
+    legend.position = "none",
+    text = element_text(size = 12),  # Adjust the size of all text elements
+    axis.title = element_blank(),    # Remove axis titles
+    axis.text = element_text(size = 12),  # Adjust the size of tick mark labels
+    strip.text = element_text(size = 12, face = "bold")  # Adjust the size and face of facet labels
+  ) +
+  geom_vline(xintercept = 0, lty = 3) +
   ylab("") +
   xlab("")
 p4
@@ -121,21 +234,31 @@ Group5 <- cbind(Group5, fResponse)
 Group5$fResponse <- factor(Group5$fResponse, levels=c("Rarified taxon richness", "Standardised func. richness", "Standardised func. evenness", "Standardised func. dispersion"), ordered = T) # reorder the driver names so that they appear in ggplot the way we want
 
 # Create plot
-p5 <- ggplot(Group5, aes(x=Estimate, y=fDriver)) +
-  geom_line() +
+p5 <- ggplot(Group5, aes(x = Estimate, y = fDriver)) +
   scale_color_identity() +
-  geom_point(shape=21, size=2, fill="white", aes(color = ifelse(Estimate >= 0, "#95ccba", "#f2cc84"))) +
-  geom_errorbar(width=0, aes(xmin=(`2.5 %`), xmax=(`97.5 %`), color = ifelse(Estimate >= 0, "#95ccba", "#f2cc84")))  +
-  facet_wrap(~ fResponse, nrow  = 5, scales = "free_x") +
-  theme_bw() + 
-  theme(panel.grid = element_blank(),
-        strip.background = element_blank(), 
-        strip.text = element_text(face="bold"),
-        plot.margin = unit(c(0, 0.5, 0.5, 0), "cm"),
-        legend.position = "none") +
-  geom_vline(xintercept = 0, lty=3) +
+  geom_point(
+    shape = 21, size = 4, fill = "white",
+    aes(color = ifelse(Estimate >= 0, "#95ccba", "#f2cc84"))
+  ) +
+  geom_errorbar(
+    width = 0, linewidth = 1,
+    aes(xmin = (`2.5 %`), xmax = (`97.5 %`), color = ifelse(Estimate >= 0, "#95ccba", "#f2cc84"))
+  ) +
+  facet_wrap(~ fResponse, nrow = 5, scales = "free_x") +
+  theme_bw() +
+  theme(
+    panel.grid = element_blank(),
+    strip.background = element_blank(),
+    plot.margin = unit(c(0, 0.5, 0.5, 0), "cm"),
+    legend.position = "none",
+    text = element_text(size = 12),  # Adjust the size of all text elements
+    axis.title = element_blank(),    # Remove axis titles
+    axis.text = element_text(size = 12),  # Adjust the size of tick mark labels
+    strip.text = element_text(size = 12, face = "bold")  # Adjust the size and face of facet labels
+  ) +
+  geom_vline(xintercept = 0, lty = 3) +
   ylab("") +
-  xlab("Estimate")
+  xlab("")
 p5
 
 # create common x and y labels

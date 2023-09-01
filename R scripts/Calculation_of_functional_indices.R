@@ -122,7 +122,7 @@ fit12 <- envfit(pco12, SupReg_traits_sel12)  # use envfit to draw arrows, can be
 
 # Plot Kernel Density Estimations
 # pc1 and pc2
-plot(esto12, cont = seq(1, 100, by = 1.79), display  = "filled.contour", add = FALSE, ylab = "PC2", xlab = "PC1", 
+plot(esto12, cont = seq(1, 100, by = 2.25), display  = "filled.contour", add = FALSE, ylab = "PC2", xlab = "PC1", 
      cex.axis = 0.75, ylim = c(-0.4, 0.6), xlim = c(-0.4, 0.6) , las = 1)
 
 ## FIGURE 1: RAIT PROBABILITY DENSITY PLOT #####
@@ -130,7 +130,7 @@ plot(esto12, cont = seq(1, 100, by = 1.79), display  = "filled.contour", add = F
 # svg(file="Plots/Supraregional_FS_density_vectors.svg", onefile = T, width = 12, height = 12)
 # tiff(file="Plots/Supraregional_FS_density_vectors.tiff", width = 12, height = 12, units = 'in', res = 600, compression = 'lzw')
 par(mfrow = c(1,1), cex.axis = 1.85, cex.lab = 2, cex.main = 2, mar = c(5,5,4,1))
-plot(esto12, cont = seq(1, 100, by = 1.79), display = "filled.contour", add = FALSE, 
+plot(esto12, cont = seq(1, 100, by = 2.25), display = "filled.contour", add = FALSE, 
      ylab = paste("PCo-2"), 
      xlab = paste("PCo-1"),
      main = paste("Supraregional FS"),

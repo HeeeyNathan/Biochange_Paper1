@@ -1,5 +1,10 @@
-"","spp_richness","spp_rich_rare","ShannonsH","E10","abundance","turnover","F_turnover","FRic","FEve","FDis","FRic.SES","FDis.SES","FEve.SES","FRed","ept_richness","ept_abundance","diptera_richness","diptera_abundance","insect_richness","insect_abundance","mollusc_richness","mollusc_abundance","annelid_richness","annelid_abundance","crustacea_richness","crustacea_abundance"
-"good[-Inf, 0.5]",40,40,40,41,40,40,40,40,40,41,40,41,41,39,40,40,39,40,41,41,41,41,41,40,38,38
-"ok[0.5, 0.7]",1,1,1,0,1,0,1,1,1,0,0,0,0,0,0,1,0,1,0,0,0,0,0,1,0,0
-"bad[0.7, 1]",0,0,0,0,0,1,0,0,0,0,1,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0
-"verybad[1, Inf]",0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,2,0,0,0,0,0,0,0,0,0
+,spp_richness,spp_rich_rare,ShannonsH,E10,abundance,turnover,F_turnover,FRic,FEve,FDis,FRic.SES,FDis.SES,FEve.SES,FRed,ept_richness,ept_abundance,diptera_richness,diptera_abundance,insect_richness,insect_abundance,mollusc_richness,mollusc_abundance,annelid_richness,annelid_abundance,crustacea_richness,crustacea_abundance,
+"good[-Inf, 0.5]",40,40,40,41,40,40,40,40,40,41,40,41,41,39,40,40,39,40,41,41,41,41,41,40,38,38,
+"ok[0.5, 0.7]",1,1,1,0,1,0,1,1,1,0,0,0,0,0,0,1,0,1,0,0,0,0,0,1,0,0,
+"bad[0.7, 1]",0,0,0,0,0,1,0,0,0,0,1,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,
+"verybad[1, Inf]",0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,2,0,0,0,0,0,0,0,0,0,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,
+"good[-Inf, 0.5]",97.56097561,97.56097561,97.56097561,100,97.56097561,97.56097561,97.56097561,97.56097561,97.56097561,100,97.56097561,100,100,95.12195122,97.56097561,97.56097561,95.12195122,97.56097561,100,100,100,100,100,97.56097561,100,100,98.4
+"ok[0.5, 0.7]",2.43902439,2.43902439,2.43902439,0,2.43902439,0,2.43902439,2.43902439,2.43902439,0,0,0,0,0,0,2.43902439,0,2.43902439,0,0,0,0,0,2.43902439,0,0,0.9
+"bad[0.7, 1]",0,0,0,0,0,2.43902439,0,0,0,0,2.43902439,0,0,2.43902439,2.43902439,0,0,0,0,0,0,0,0,0,0,0,0.4
+"verybad[1, Inf]",0,0,0,0,0,0,0,0,0,0,0,0,0,2.43902439,0,0,4.87804878,0,0,0,0,0,0,0,0,0,0.3

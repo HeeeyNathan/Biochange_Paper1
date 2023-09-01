@@ -4,6 +4,8 @@ head(response_gls)
 unique(response_gls$Response)
 length(unique(response_gls$site_id))
 
+# write.csv(response_gls, "Outputs/response_gls.csv", row.names = F)
+
 Ests <- read.csv("Outputs/LT_Yr_metaanaly_Ests.csv")
 Ests <- Ests[, -1]
 
@@ -11,6 +13,7 @@ d1 <- read.csv("Data/LT_siteYr_AllData_wNAs_modified.csv", header=T)
 allYrs <- d1[!is.na(d1$site_id_wMissing),]
 
 tiff(filename = "Plots/LT_slopeDistributions_TaxoFuncIndices.tiff", width = 12, height = 10, units = 'in', res = 600, compression = 'lzw')
+# svg(filename = "Plots/LT_slopeDistributions_TaxoFuncIndices.svg", width = 12, height = 10, bg = "white")
 
 par(mar=c(4,0.4,0.4,0.4), mfrow=c(1,2))
 
@@ -228,7 +231,7 @@ polygon(x=c(stand_FRed$Q5, stand_FRed$Q5, stand_FRed$Q95, stand_FRed$Q95),
 polygon(x=c(stand_FRed$Q10, stand_FRed$Q10, stand_FRed$Q90, stand_FRed$Q90),
         y=c((yy-yy/6),(yy+yy/6),(yy+yy/6),(yy-yy/6)),
         col = 1,border = 0,lwd =1)
-legend(x=-50, y=(4/4*(b-a)+a), legend=("f, Func. redundancy"), bty="n", cex=1.3)
+legend(x=-50, y=(4/4*(b-a)+a), legend=("a, Func. redundancy"), bty="n", cex=1.3)
 legend(x=25, y=(4/4*(b-a)+a), legend=expression(paste("+0.27% ",y^-1, sep = "")), bty="n", cex=1.3)
 
 #### Functional Richness #####
@@ -263,7 +266,7 @@ polygon(x=c(stand_FRic$Q5, stand_FRic$Q5, stand_FRic$Q95, stand_FRic$Q95),
 polygon(x=c(stand_FRic$Q10, stand_FRic$Q10, stand_FRic$Q90, stand_FRic$Q90),
         y=c((yy-yy/6),(yy+yy/6),(yy+yy/6),(yy-yy/6)),
         col = 1,border = 0,lwd =1)
-legend(x=-50, y=(3.2/4*(b-a)+a), legend=("g, Func. richness"), bty="n", cex=1.3)
+legend(x=-50, y=(3.2/4*(b-a)+a), legend=("b, Func. richness"), bty="n", cex=1.3)
 legend(x=25, y=(3.2/4*(b-a)+a), legend=expression(paste("+0.80% ",y^-1, sep = "")), bty="n", cex=1.3)
 
 #### Functional evenness #####
@@ -299,7 +302,7 @@ polygon(x=c(stand_FEve$Q5, stand_FEve$Q5, stand_FEve$Q95, stand_FEve$Q95),
 polygon(x=c(stand_FEve$Q10, stand_FEve$Q10, stand_FEve$Q90, stand_FEve$Q90),
         y=c((yy-yy/6),(yy+yy/6),(yy+yy/6),(yy-yy/6)),
         col = 1,border = 0,lwd =1)
-legend(x=-50, y=(2.4/4*(b-a)+a), legend=("h, Func. evenness"), bty="n", cex=1.3)
+legend(x=-50, y=(2.4/4*(b-a)+a), legend=("c, Func. evenness"), bty="n", cex=1.3)
 legend(x=25, y=(2.4/4*(b-a)+a), legend=expression(paste("+0.08% ",y^-1, sep = "")), bty="n", cex=1.3)
 
 #### Functional dispersion #####
@@ -335,7 +338,7 @@ polygon(x=c(stand_FDis$Q5, stand_FDis$Q5, stand_FDis$Q95, stand_FDis$Q95),
 polygon(x=c(stand_FDis$Q10, stand_FDis$Q10, stand_FDis$Q90, stand_FDis$Q90),
         y=c((yy-yy/6),(yy+yy/6),(yy+yy/6),(yy-yy/6)),
         col = 1,border = 0,lwd =1)
-legend(x=-50, y=(1.6/4*(b-a)+a), legend=("i, Func. dispersion"), bty="n", cex=1.3)
+legend(x=-50, y=(1.6/4*(b-a)+a), legend=("d, Func. dispersion"), bty="n", cex=1.3)
 legend(x=25, y=(1.6/4*(b-a)+a), legend=expression(paste("+0.36% ",y^-1, sep = "")), bty="n", cex=1.3)
 
 #### Func turnover #####
@@ -369,7 +372,7 @@ polygon(x=c(stand_F_to$Q5, stand_F_to$Q5, stand_F_to$Q95, stand_F_to$Q95),
 polygon(x=c(stand_F_to$Q10, stand_F_to$Q10, stand_F_to$Q90, stand_F_to$Q90),
         y=c((yy-yy/6),(yy+yy/6),(yy+yy/6),(yy-yy/6)),
         col = 1,border = 0,lwd =1)
-legend(x=-50, y=(0.8/4*(b-a)+a), legend=("j, Func. turnover"), bty="n", cex=1.3)
+legend(x=-50, y=(0.8/4*(b-a)+a), legend=("e, Func. turnover"), bty="n", cex=1.3)
 legend(x=25, y=(0.8/4*(b-a)+a), legend=expression(paste("-1.10% ",y^-1, sep = "")), bty="n", cex=1.3)
 
 ##
