@@ -98,15 +98,15 @@ allYrs <- dplyr::left_join(allYrs, pc1_scores, by = "ID")
 allYrs <- subset(allYrs, select = -c(ID)) # remove ID variable
 
 response_lmer <- unique(allYrs[,c("site_code", "site_id", "year",
-                                 "abundance", 
+                                 "abundance",
                                  "spp_richness", "shannonsH", "E10", "turnover", "spp_rich_rare",
-                                 "ept_spp_richness", "diptera_spp_richness", "insect_spp_richness", 
+                                 "ept_spp_richness", "diptera_spp_richness", "insect_spp_richness",
                                  "mollusc_spp_richness", "annelid_spp_richness", "crustacea_spp_richness",
-                                 "ept_abundance", "diptera_abundance", "insect_abundance", 
+                                 "ept_abundance", "diptera_abundance", "insect_abundance",
                                  "mollusc_abundance", "annelid_abundance", "crustacea_abundance",
-                                 "FRic", "FEve", "FDis", "FRed", "F_turnover", 
-                                 "FRic.SES", "FEve.SES", "FDis.SES", 
-                                 "sflow", "stemp", "sNH4.N", "ssus_solid", "so2_dis", "spH", "sBOD7", "PC_axis1", 
+                                 "FRic", "FEve", "FDis", "FRed", "F_turnover",
+                                 "FRic.SES", "FEve.SES", "FDis.SES",
+                                 "sflow", "stemp", "sNH4.N", "ssus_solid", "so2_dis", "spH", "sBOD7", "PC_axis1",
                                  "fmodified", "ftype", "fEQC")])
 
 ### remove missing covariate data ####
@@ -118,7 +118,7 @@ library(lme4)
 
 ### get response for this task ##
 TaskID <- read.csv("Data/LT_ResponseTrends_TaskIDs.csv", as.is = T)
-task.id = as.integer(Sys.getenv("SLURM_ARRAY_TASK_ID", "1"))
+task.id = as.integer(Sys.getenv("SLURM_ARRAY_TASK_ID", "26"))
 myResponse <- TaskID$Response[which(TaskID$TaskID==task.id)]
 
 # choose which response for this task
@@ -184,15 +184,15 @@ if(myResponse %in% c("abundance", "ept_abundance", "diptera_abundance",
 hist(response_lmer$Response)
 
 ### run model ###
-fit1 <- lmer(Response ~ sflow + stemp + sNH4.N + so2_dis + spH + PC_axis1 + (1|site_id) + (1|year), data = response_lmer)
+fit1 <- lmer(Response ~ sflow + spH + stemp + so2_dis + sNH4.N + PC_axis1 + (1|site_id) + (1|year), data = response_lmer)
 
 summ <- summary(fit1)$coefficients
 (summ <- data.frame(summ))
 summ$covariate <- rownames(summ)
-rownames(summ) <- (1:9)
+rownames(summ) <- (1:7)
 
 CI <- confint(fit1)
-summ <- cbind(summ, CI[4:12,])
+summ <- cbind(summ, CI[4:10,])
 summ
 
 # check residuals
