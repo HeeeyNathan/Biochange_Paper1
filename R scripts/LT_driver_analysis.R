@@ -547,7 +547,7 @@ FitModelContrasts2 <- function(resp, fixed, random, data) {
     summ <- summary(mod)$coefficients
     summ <- summ[!grepl("fmodified", rownames(summ)),]
     CI <- confint(mod) # calculates confidence intervals (CI) for each model
-    summ <- cbind(summ, CI[4:8,]) # binds the CI to each summary table
+    summ <- cbind(summ, CI[4:10,]) # binds the CI to each summary table
     summ
     # isSingular(mod, tol = 1e-4) # a logical test to determine if the fitted mixed model is (almost/near) singular
   }, dat=data, ff=form)
@@ -558,69 +558,71 @@ FitModelContrasts2 <- function(resp, fixed, random, data) {
 Models.lme2 <- lapply(VarToFit, FitModelContrasts2, fixed=form.fixedS_mod, 
                      random=form.randomlme, data=allYrs_complete)
 
-# Models.lme2$`Total\nabundance`$Yes[, 4]
-
-# extract variables & generate functions
-GetEsts2 <- function(mod, var) {
-  require(plyr)
-  GetSumm <- function(summ, vr) return(summ[vr,])
-  ests <- ldply(.data=mod, .fun=GetSumm, vr=var)
-  return(ests)
-}
-
-# (Ests <- GetEsts(mod=Models.lme2[[1]], var="sflow"))
-
-PlotEffects2 <- function(name, summs, label.y=TRUE, title=TRUE, removeInt=FALSE) {
-  summ <- data.frame(summs[[name]])
-  if(removeInt) summ <- summ[rownames(summ)!="(Intercept)",]
-  summ$LLim <- summ[, 5]
-  summ$ULim <- summ[, 6]
-  # summ$LLim <- summ$Estimate - summ$Std..Error
-  # summ$ULim <- summ$Estimate + summ$Std..Error
-  At.Y <- 1:nrow(summ)
-  plot(summ$Estimate, At.Y, yaxt="n", ann=FALSE, 
-       xlim=c(min(summ$LLim), max(summ$ULim)), ylim=c(0.5, nrow(summ)+0.5), col = ifelse(summ$Estimate >= 0, "#95ccba", "#f2cc84"))
-  segments(summ$LLim, At.Y, summ$ULim, At.Y, col = ifelse(summ$Estimate >= 0, "#95ccba", "#f2cc84"))
-  abline(v=0, lty=3)
-  if(label.y) axis(2, at=At.Y, labels = rownames(summ), las=1)
-  if(title) title(main=name)
-}
-
-PlotEsts2 <- function(var, models, nrows=6) {
-  Estimates <- lapply(Models.lme2, GetEsts2, var=var)
-  NEsts <-  length(Estimates)
-  if(NEsts%%nrows!=0) warning("Plot not nice and square")
-  par(mfcol=c(nrows,ceiling(NEsts/nrows)), mar=c(2,1,2,0), oma=c(2,3,0,0))
-  lapply(names(Estimates)[1:nrows], PlotEffects2, summs=Estimates, label.y=TRUE)
-  lapply(names(Estimates)[(nrows+1):NEsts], PlotEffects2, 
-         summs=Estimates, label.y=FALSE)
-  mtext("Estimated Effect", 1, outer=TRUE)
-  mtext("Modified", 2, outer=TRUE)
-}
-
-# Flow effects
-PlotEsts2(var="sflow", models=Models.lme2)
-
-# Temperature effects
-PlotEsts2(var="stemp", models=Models.lme2)
-
-# # Suspended solids effects
-# PlotEsts2(var="ssus_solid", models=Models.lme2)
-# # Dissolved oxygen effects
-# PlotEsts2(var="so2_dis", models=Models.lme2)
-# # pH effects
-# PlotEsts2(var="spH", models=Models.lme2)
-# # Biological Oxygen Demand effects
-# PlotEsts2(var="sBOD7", models=Models.lme2)
-# # Ammonium effects
-# PlotEsts2(var="sNH4.N", models=Models.lme2)
-
-# PC_axis1 effects
-PlotEsts2(var="PC_axis1", models=Models.lme2)
-
-# PC_axis2 effects
-PlotEsts2(var="PC_axis2", models=Models.lme2)
-
+# # Models.lme2$`Total\nabundance`$Yes[, 4]
+# 
+# # extract variables & generate functions
+# GetEsts2 <- function(mod, var) {
+#   require(plyr)
+#   GetSumm <- function(summ, vr) return(summ[vr,])
+#   ests <- ldply(.data=mod, .fun=GetSumm, vr=var)
+#   return(ests)
+# }
+# 
+# # (Ests <- GetEsts(mod=Models.lme2[[1]], var="sflow"))
+# 
+# PlotEffects2 <- function(name, summs, label.y=TRUE, title=TRUE, removeInt=FALSE) {
+#   summ <- data.frame(summs[[name]])
+#   if(removeInt) summ <- summ[rownames(summ)!="(Intercept)",]
+#   new_rownames <- c("Flow", "pH", "Temperature", "Diss. oxygen", "Ammonium", "Nutrients PCA")
+#   rownames(summ) <- new_rownames
+#   summ$LLim <- summ[, 5]
+#   summ$ULim <- summ[, 6]
+#   # summ$LLim <- summ$Estimate - summ$Std..Error
+#   # summ$ULim <- summ$Estimate + summ$Std..Error
+#   At.Y <- 1:nrow(summ)
+#   plot(summ$Estimate, At.Y, yaxt="n", ann=FALSE, 
+#        xlim=c(min(summ$LLim), max(summ$ULim)), ylim=c(0.5, nrow(summ)+0.5), col = ifelse(summ$Estimate >= 0, "#95ccba", "#f2cc84"))
+#   segments(summ$LLim, At.Y, summ$ULim, At.Y, col = ifelse(summ$Estimate >= 0, "#95ccba", "#f2cc84"))
+#   abline(v=0, lty=3)
+#   if(label.y) axis(2, at=At.Y, labels = rownames(summ), las=1)
+#   if(title) title(main=name)
+# }
+# 
+# PlotEsts2 <- function(var, models, nrows=6) {
+#   Estimates <- lapply(Models.lme2, GetEsts2, var=var)
+#   NEsts <-  length(Estimates)
+#   if(NEsts%%nrows!=0) warning("Plot not nice and square")
+#   par(mfcol=c(nrows,ceiling(NEsts/nrows)), mar=c(2,1,2,0), oma=c(2,3,0,0))
+#   lapply(names(Estimates)[1:nrows], PlotEffects2, summs=Estimates, label.y=TRUE)
+#   lapply(names(Estimates)[(nrows+1):NEsts], PlotEffects2, 
+#          summs=Estimates, label.y=FALSE)
+#   mtext("Estimated Effect", 1, outer=TRUE)
+#   mtext("Modified", 2, outer=TRUE)
+# }
+# 
+# # Flow effects
+# PlotEsts2(var="sflow", models=Models.lme2)
+# 
+# # Temperature effects
+# PlotEsts2(var="stemp", models=Models.lme2)
+# 
+# # # Suspended solids effects
+# # PlotEsts2(var="ssus_solid", models=Models.lme2)
+# # # Dissolved oxygen effects
+# # PlotEsts2(var="so2_dis", models=Models.lme2)
+# # # pH effects
+# # PlotEsts2(var="spH", models=Models.lme2)
+# # # Biological Oxygen Demand effects
+# # PlotEsts2(var="sBOD7", models=Models.lme2)
+# # # Ammonium effects
+# # PlotEsts2(var="sNH4.N", models=Models.lme2)
+# 
+# # PC_axis1 effects
+# PlotEsts2(var="PC_axis1", models=Models.lme2)
+# 
+# # PC_axis2 effects
+# PlotEsts2(var="PC_axis2", models=Models.lme2)
+ 
 ## Effects Plotted By variable
 # The effects are now plotted by variable, with different countries in dfferen columns. 
 # This should give an idea about the realtive magnitudes. Note that the covariates have been standardised, 
@@ -628,6 +630,9 @@ PlotEsts2(var="PC_axis2", models=Models.lme2)
 PlotEffects2 <- function(name, summs, label.y=TRUE, title=TRUE, removeInt=FALSE) {
   summ <- data.frame(summs[[name]])
   if(removeInt) summ <- summ[rownames(summ)!="(Intercept)",]
+  # Set the rownames to the specified values
+  new_rownames <- c("Flow", "pH", "Temperature", "Diss. oxygen", "Ammonium", "Nutrients PCA")
+  rownames(summ) <- new_rownames
   summ$LLim <- summ[, 4]
   summ$ULim <- summ[, 5]
   # summ$LLim <- summ$Estimate - summ$Std..Error
@@ -643,7 +648,6 @@ PlotEffects2 <- function(name, summs, label.y=TRUE, title=TRUE, removeInt=FALSE)
 
 PlotModified <- function(wh, mod) {
   AbundEsts <- mod[[wh]]
-  
   PlotEffects(name=names(AbundEsts)[1], summs=AbundEsts, 
               label.y=TRUE, title=TRUE, removeInt = TRUE)
   sapply(names(AbundEsts)[-1], PlotEffects, summs=AbundEsts, 
@@ -661,7 +665,7 @@ mtext("Estimate", 1, outer = TRUE, line = 1)
 # select taxon indices
 tiff(filename = "Plots/LT_Driver_Est_Modified_TaxoIndices.tiff", width = 4, height = 10, units = 'in', res = 600, compression = 'lzw')
 VarToPlot <- c(1:2, 4, 3, 5)
-par(mfrow=c(length(VarToPlot),2), mar=c(2,2,2,2), oma=c(2,4,2,2))
+par(mfrow=c(length(VarToPlot),2), mar=c(2,0.5,2,2), oma=c(2,6,2,2))
 sapply(names(Models.lme2)[VarToPlot], PlotModified, mod=Models.lme2)
 mtext("Heavily Modified", 3, outer=TRUE, font = 2)
 mtext("Estimate", 1, outer = TRUE, line = 1)
@@ -677,7 +681,7 @@ mtext("Estimate", 1, outer = TRUE, line = 1)
 # select func. indices
 tiff(filename = "Plots/LT_Driver_Est_Modified_FuncIndices.tiff", width = 4, height = 10, units = 'in', res = 600, compression = 'lzw')
 VarToPlot <- 6 + c(4, 1:3, 5)
-par(mfrow=c(length(VarToPlot),2), mar=c(2,2,2,2), oma=c(2,4,2,2))
+par(mfrow=c(length(VarToPlot),2), mar=c(2,0.5,2,2), oma=c(2,6,2,2))
 sapply(names(Models.lme2)[VarToPlot], PlotModified, mod=Models.lme2)
 mtext("Heavily Modified", 3, outer=TRUE, font = 2)
 mtext("Estimate", 1, outer = TRUE, line = 1)
@@ -693,7 +697,7 @@ mtext("Estimate", 1, outer = TRUE, line = 1)
 # taxon richness
 tiff(filename = "Plots/LT_Driver_Est_Modified_TaxoGroupsRich.tiff", width = 4, height = 10, units = 'in', res = 600, compression = 'lzw')
 VarToPlot <- c(15, 19, 17, 21, 23)
-par(mfrow=c(length(VarToPlot),2), mar=c(2,2,2,2), oma=c(2,4,2,2))
+par(mfrow=c(length(VarToPlot),2), mar=c(2,0.5,2,2), oma=c(2,6,2,2))
 sapply(names(Models.lme2)[VarToPlot], PlotModified, mod=Models.lme2)
 mtext("Heavily Modified", 3, outer=TRUE, font = 2)
 mtext("Estimate", 1, outer = TRUE, line = 1)
@@ -709,7 +713,7 @@ mtext("Estimate", 1, outer = TRUE, line = 1)
 # taxon abundances
 tiff(filename = "Plots/LT_Driver_Est_Modified_TaxoGroupsAbund.tiff", width = 4, height = 10, units = 'in', res = 600, compression = 'lzw')
 VarToPlot <- c(16, 20, 18, 22, 24)
-par(mfrow=c(length(VarToPlot),2), mar=c(2,2,2,2), oma=c(2,4,2,2))
+par(mfrow=c(length(VarToPlot),2), mar=c(2,0.5,2,2), oma=c(2,6,2,2))
 sapply(names(Models.lme2)[VarToPlot], PlotModified, mod=Models.lme2)
 mtext("Heavily Modified", 3, outer=TRUE, font = 2)
 mtext("Estimate", 1, outer = TRUE, line = 1)
@@ -724,7 +728,7 @@ mtext("Estimate", 1, outer = TRUE, line = 1)
 
 tiff(filename = "Plots/LT_Driver_Est_Modified_Extra.tiff", width = 4, height = 8, units = 'in', res = 600, compression = 'lzw')
 VarToPlot <- c(6, 12, 13, 14)
-par(mfrow=c(length(VarToPlot),2), mar=c(2,2,2,2), oma=c(2,4,2,2))
+par(mfrow=c(length(VarToPlot),2), mar=c(2,0.5,2,2), oma=c(2,6,2,2))
 sapply(names(Models.lme2)[VarToPlot], PlotModified, mod=Models.lme2)
 mtext("Heavily Modified", 3, outer=TRUE, font = 2)
 mtext("Estimate", 1, outer = TRUE, line = 1)
@@ -734,7 +738,7 @@ dev.off()
 ### fitting the model
 VarToFit
 FixedEffects
-form.fixedS_EQC <- paste("(", paste(FixedEffects, collapse = " + "), ")*fEQC", collapse = "")
+(form.fixedS_EQC <- paste("(", paste(FixedEffects, collapse = " + "), ")*fEQC", collapse = ""))
 
 ## Make functions
 FitModelContrasts3 <- function(resp, fixed, random, data) {
@@ -748,7 +752,7 @@ FitModelContrasts3 <- function(resp, fixed, random, data) {
     summ <- summary(mod)$coefficients
     summ <- summ[!grepl("fEQC", rownames(summ)),]
     CI <- confint(mod) # calculates confidence intervals (CI) for each model
-    summ <- cbind(summ, CI[4:8,]) # binds the CI to each summary table
+    summ <- cbind(summ, CI[4:10,]) # binds the CI to each summary table
     summ
     # isSingular(mod, tol = 1e-4) # a logical test to determine if the fitted mixed model is (almost/near) singular
   }, dat=data, ff=form)
@@ -759,68 +763,68 @@ FitModelContrasts3 <- function(resp, fixed, random, data) {
 Models.lme3 <- lapply(VarToFit, FitModelContrasts3, fixed=form.fixedS_EQC, 
                       random=form.randomlme, data=allYrs_complete)
 
-# Models.lme3$`Total\nabundance`$Good[, 4]
-
-# extract variables & generate functions
-GetEsts3 <- function(mod, var) {
-  require(plyr)
-  GetSumm <- function(summ, vr) return(summ[vr,])
-  ests <- ldply(.data=mod, .fun=GetSumm, vr=var)
-  return(ests)
-}
-
-# (Ests <- GetEsts3(mod=Models.lme3[[1]], var="sflow"))
-
-PlotEffects3 <- function(name, summs, label.y=TRUE, title=TRUE, removeInt=FALSE) {
-  summ <- data.frame(summs[[name]])
-  if(removeInt) summ <- summ[rownames(summ)!="(Intercept)",]
-  summ$LLim <- summ[, 5]
-  summ$ULim <- summ[, 6]
-  # summ$LLim <- summ$Estimate - summ$Std..Error
-  # summ$ULim <- summ$Estimate + summ$Std..Error
-  At.Y <- 1:nrow(summ)
-  plot(summ$Estimate, At.Y, yaxt="n", ann=FALSE, 
-       xlim=c(min(summ$LLim), max(summ$ULim)), ylim=c(0.5, nrow(summ)+0.5), col = ifelse(summ$Estimate >= 0, "#95ccba", "#f2cc84"))
-  segments(summ$LLim, At.Y, summ$ULim, At.Y, col = ifelse(summ$Estimate >= 0, "#95ccba", "#f2cc84"))
-  abline(v=0, lty=3)
-  if(label.y) axis(2, at=At.Y, labels = rownames(summ), las=1)
-  if(title) title(main=name)
-}
-
-PlotEsts3 <- function(var, models, nrows=6) {
-  Estimates <- lapply(Models.lme3, GetEsts3, var=var)
-  NEsts <-  length(Estimates)
-  if(NEsts%%nrows!=0) warning("Plot not nice and square")
-  par(mfcol=c(nrows,ceiling(NEsts/nrows)), mar=c(2,1,2,0), oma=c(2,3,0,0))
-  lapply(names(Estimates)[1:nrows], PlotEffects3, summs=Estimates, label.y=TRUE)
-  lapply(names(Estimates)[(nrows+1):NEsts], PlotEffects3, 
-         summs=Estimates, label.y=FALSE)
-  mtext("Estimated Effect", 1, outer=TRUE)
-  mtext("Ecological Quality Class", 2, outer=TRUE)
-}
-
-# Flow effects
-PlotEsts3(var="sflow", models=Models.lme3)
-
-# Temperature effects
-PlotEsts3(var="stemp", models=Models.lme3)
-
-# # Suspended solids effects
-# PlotEsts3(var="ssus_solid", models=Models.lme3)
-# # Dissolved oxygen effects
-# PlotEsts3(var="so2_dis", models=Models.lme3)
-# # pH effects
-# PlotEsts3(var="spH", models=Models.lme3)
-# # Biological Oxygen Demand effects
-# PlotEsts3(var="sBOD7", models=Models.lme3)
-# # Ammonium effects
-# PlotEsts3(var="sNH4.N", models=Models.lme3)
-
-# PC_axis1 effects
-PlotEsts3(var="PC_axis1", models=Models.lme3)
-
-# PC_axis2 effects
-PlotEsts3(var="PC_axis2", models=Models.lme3)
+# # Models.lme3$`Total\nabundance`$Good[, 4]
+# 
+# # extract variables & generate functions
+# GetEsts3 <- function(mod, var) {
+#   require(plyr)
+#   GetSumm <- function(summ, vr) return(summ[vr,])
+#   ests <- ldply(.data=mod, .fun=GetSumm, vr=var)
+#   return(ests)
+# }
+# 
+# # (Ests <- GetEsts3(mod=Models.lme3[[1]], var="sflow"))
+# 
+# PlotEffects3 <- function(name, summs, label.y=TRUE, title=TRUE, removeInt=FALSE) {
+#   summ <- data.frame(summs[[name]])
+#   if(removeInt) summ <- summ[rownames(summ)!="(Intercept)",]
+#   summ$LLim <- summ[, 5]
+#   summ$ULim <- summ[, 6]
+#   # summ$LLim <- summ$Estimate - summ$Std..Error
+#   # summ$ULim <- summ$Estimate + summ$Std..Error
+#   At.Y <- 1:nrow(summ)
+#   plot(summ$Estimate, At.Y, yaxt="n", ann=FALSE, 
+#        xlim=c(min(summ$LLim), max(summ$ULim)), ylim=c(0.5, nrow(summ)+0.5), col = ifelse(summ$Estimate >= 0, "#95ccba", "#f2cc84"))
+#   segments(summ$LLim, At.Y, summ$ULim, At.Y, col = ifelse(summ$Estimate >= 0, "#95ccba", "#f2cc84"))
+#   abline(v=0, lty=3)
+#   if(label.y) axis(2, at=At.Y, labels = rownames(summ), las=1)
+#   if(title) title(main=name)
+# }
+# 
+# PlotEsts3 <- function(var, models, nrows=6) {
+#   Estimates <- lapply(Models.lme3, GetEsts3, var=var)
+#   NEsts <-  length(Estimates)
+#   if(NEsts%%nrows!=0) warning("Plot not nice and square")
+#   par(mfcol=c(nrows,ceiling(NEsts/nrows)), mar=c(2,1,2,0), oma=c(2,3,0,0))
+#   lapply(names(Estimates)[1:nrows], PlotEffects3, summs=Estimates, label.y=TRUE)
+#   lapply(names(Estimates)[(nrows+1):NEsts], PlotEffects3, 
+#          summs=Estimates, label.y=FALSE)
+#   mtext("Estimated Effect", 1, outer=TRUE)
+#   mtext("Ecological Quality Class", 2, outer=TRUE)
+# }
+# 
+# # Flow effects
+# PlotEsts3(var="sflow", models=Models.lme3)
+# 
+# # Temperature effects
+# PlotEsts3(var="stemp", models=Models.lme3)
+# 
+# # # Suspended solids effects
+# # PlotEsts3(var="ssus_solid", models=Models.lme3)
+# # # Dissolved oxygen effects
+# # PlotEsts3(var="so2_dis", models=Models.lme3)
+# # # pH effects
+# # PlotEsts3(var="spH", models=Models.lme3)
+# # # Biological Oxygen Demand effects
+# # PlotEsts3(var="sBOD7", models=Models.lme3)
+# # # Ammonium effects
+# # PlotEsts3(var="sNH4.N", models=Models.lme3)
+# 
+# # PC_axis1 effects
+# PlotEsts3(var="PC_axis1", models=Models.lme3)
+# 
+# # PC_axis2 effects
+# PlotEsts3(var="PC_axis2", models=Models.lme3)
 
 ## Effects Plotted By variable
 # The effects are now plotted by variable, with different countries in dfferen columns. 
@@ -829,6 +833,9 @@ PlotEsts3(var="PC_axis2", models=Models.lme3)
 PlotEffects3 <- function(name, summs, label.y=TRUE, title=TRUE, removeInt=FALSE) {
   summ <- data.frame(summs[[name]])
   if(removeInt) summ <- summ[rownames(summ)!="(Intercept)",]
+  # Set the rownames to the specified values
+  new_rownames <- c("Flow", "pH", "Temperature", "Diss. oxygen", "Ammonium", "Nutrients PCA")
+  rownames(summ) <- new_rownames
   summ$LLim <- summ[, 4]
   summ$ULim <- summ[, 5]
   # summ$LLim <- summ$Estimate - summ$Std..Error
@@ -844,7 +851,7 @@ PlotEffects3 <- function(name, summs, label.y=TRUE, title=TRUE, removeInt=FALSE)
 
 PlotEQCs <- function(wh, mod) {
   AbundEsts <- mod[[wh]]
-  names(AbundEsts)[1] <- "Poor"
+  names(AbundEsts)[1] <- "Bad/Poor"
   names(AbundEsts)[2] <- "Moderate"
   names(AbundEsts)[3] <- "Good"
   names(AbundEsts)[4] <- "High"
@@ -867,7 +874,7 @@ mtext("Estimate", 1, outer = TRUE, line = 1)
 # select taxon indices
 tiff(filename = "Plots/LT_Driver_Est_EQR_TaxoIndices.tiff", width = 8, height = 10, units = 'in', res = 600, compression = 'lzw')
 VarToPlot <- c(1:2, 4, 3, 5)
-par(mfrow=c(length(VarToPlot),4), mar=c(2,2,2,2), oma=c(2,4,2,2))
+par(mfrow=c(length(VarToPlot),4), mar=c(2,0.5,2,2), oma=c(2,6,2,2))
 sapply(names(Models.lme3)[VarToPlot], PlotEQCs, mod=Models.lme3)
 mtext("Ecological Quality Class", 3, outer=TRUE, font = 2)
 mtext("Estimate", 1, outer = TRUE, line = 1)
@@ -883,7 +890,7 @@ mtext("Estimate", 1, outer = TRUE, line = 1)
 # select func. indices
 tiff(filename = "Plots/LT_Driver_Est_EQR_FuncIndices.tiff", width = 8, height = 10, units = 'in', res = 600, compression = 'lzw')
 VarToPlot <- 6 + c(4, 1:3, 5)
-par(mfrow=c(length(VarToPlot),4), mar=c(2,2,2,2), oma=c(2,4,2,2))
+par(mfrow=c(length(VarToPlot),4), mar=c(2,0.5,2,2), oma=c(2,6,2,2))
 sapply(names(Models.lme3)[VarToPlot], PlotEQCs, mod=Models.lme3)
 mtext("Ecological Quality Class", 3, outer=TRUE, font = 2)
 mtext("Estimate", 1, outer = TRUE, line = 1)
@@ -899,7 +906,7 @@ mtext("Estimate", 1, outer = TRUE, line = 1)
 # taxon richness
 tiff(filename = "Plots/LT_Driver_Est_EQR_TaxoGroupsRich.tiff", width = 8, height = 10, units = 'in', res = 600, compression = 'lzw')
 VarToPlot <- c(15, 19, 17, 21, 23)
-par(mfrow=c(length(VarToPlot),4), mar=c(2,2,2,2), oma=c(2,4,2,2))
+par(mfrow=c(length(VarToPlot),4), mar=c(2,0.5,2,2), oma=c(2,6,2,2))
 sapply(names(Models.lme3)[VarToPlot], PlotEQCs, mod=Models.lme3)
 mtext("Ecological Quality Class", 3, outer=TRUE, font = 2)
 mtext("Estimate", 1, outer = TRUE, line = 1)
@@ -915,7 +922,7 @@ mtext("Estimate", 1, outer = TRUE, line = 1)
 # taxon abundances
 tiff(filename = "Plots/LT_Driver_Est_EQR_TaxoGroupsAbund.tiff", width = 8, height = 10, units = 'in', res = 600, compression = 'lzw')
 VarToPlot <- c(16, 20, 18, 22, 24)
-par(mfrow=c(length(VarToPlot),4), mar=c(2,2,2,2), oma=c(2,4,2,2))
+par(mfrow=c(length(VarToPlot),4), mar=c(2,0.5,2,2), oma=c(2,6,2,2))
 sapply(names(Models.lme3)[VarToPlot], PlotEQCs, mod=Models.lme3)
 mtext("Ecological Quality Class", 3, outer=TRUE, font = 2)
 mtext("Estimate", 1, outer = TRUE, line = 1)
@@ -930,7 +937,7 @@ mtext("Estimate", 1, outer = TRUE, line = 1)
 
 tiff(filename = "Plots/LT_Driver_Est_EQR_Extra.tiff", width = 8, height = 8, units = 'in', res = 600, compression = 'lzw')
 VarToPlot <- c(6, 12, 13, 14)
-par(mfrow=c(length(VarToPlot),4), mar=c(2,2,2,2), oma=c(2,4,2,2))
+par(mfrow=c(length(VarToPlot),4), mar=c(2,0.5,2,2), oma=c(2,6,2,2))
 sapply(names(Models.lme3)[VarToPlot], PlotEQCs, mod=Models.lme3)
 mtext("Ecological Quality Class", 3, outer=TRUE, font = 2)
 mtext("Estimate", 1, outer = TRUE, line = 1)
