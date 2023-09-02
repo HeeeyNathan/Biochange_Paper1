@@ -13,18 +13,18 @@ driver_gls <- driver_gls[driver_gls$driver != "(Intercept)",] # removes the inte
 driver_gls <- driver_gls %>%
   mutate(driver = case_when(
     driver == "sflow" ~ "Flow",
-    driver == "stemp" ~ "Temperature",
-    driver == "sNH4.N" ~ "Ammonium",
-    driver == "ssus_solid" ~ "Susp. solids",
-    driver == "so2_dis" ~ "Diss. oxygen",
     driver == "spH" ~ "pH",
-    driver == "sBOD7" ~ "Biol. oxygen demand",
+    driver == "stemp" ~ "Temperature",
+    # driver == "ssus_solid" ~ "Susp. solids",
+    driver == "so2_dis" ~ "Diss. oxygen",
+    # driver == "sBOD7" ~ "Biol. oxygen demand",
+    driver == "sNH4.N" ~ "Ammonium",
     driver == "PC_axis1" ~ "Nutrients PCA",
     TRUE ~ driver  # Keep other values unchanged
   ))
 
 # # Reorder the driver names so that they appear in ggplot the way we want
-driver_gls$fDriver <- factor(driver_gls$driver, levels=c("Flow", "Susp. solids", "pH", "Temperature", "Diss. oxygen", "Biol. oxygen demand", "Ammonium", "Nutrients PCA"), ordered = T) # reorder the driver names so that they appear in ggplot the way we want
+driver_gls$fDriver <- factor(driver_gls$driver, levels=c("Flow", "pH", "Temperature", "Diss. oxygen", "Ammonium", "Nutrients PCA"), ordered = T) # reorder the driver names so that they appear in ggplot the way we want
 
 # generate groups for plotting
 unique(driver_gls$Response)
@@ -36,7 +36,7 @@ Group5 <- driver_gls[driver_gls$Response %in% c("spp_rich_rare", "FRic.SES", "FE
 
 # Change response names to match other plots (consistency)
 nrow(Group1)
-fResponse <- data.frame(fResponse = factor(c(rep("Abundance", 8), rep("Evenness", 8), rep("Shannon's H", 8), rep("Taxon richness", 8), rep("Turnover", 8))))
+fResponse <- data.frame(fResponse = factor(c(rep("Abundance", 6), rep("Evenness", 6), rep("Shannon's H", 6), rep("Taxon richness", 6), rep("Turnover", 6))))
 Group1 <- cbind(Group1, fResponse)
 Group1$fResponse <- factor(Group1$fResponse, levels=c("Abundance", "Taxon richness", "Evenness", "Shannon's H", "Turnover"), ordered = T) # reorder the driver names so that they appear in ggplot the way we want
 
@@ -100,7 +100,7 @@ p1
 # Change response names to match other plots (consistency)
 nrow(Group2)
 Group2$Response
-fResponse2 <- data.frame(fResponse = factor(c(rep("Func. turnover", 8), rep("Func. dispersion", 8), rep("Func. evenness", 8), rep("Func. redundancy", 8), rep("Func. richness", 8))))
+fResponse2 <- data.frame(fResponse = factor(c(rep("Func. turnover", 6), rep("Func. dispersion", 6), rep("Func. evenness", 6), rep("Func. redundancy", 6), rep("Func. richness", 6))))
 Group2 <- cbind(Group2, fResponse2)
 Group2$fResponse <- factor(Group2$fResponse, levels=c("Func. redundancy", "Func. richness", "Func. evenness", "Func. dispersion", "Func. turnover"), ordered = T)
 
@@ -164,7 +164,7 @@ p2
 # Change response names to match other plots (consistency)
 nrow(Group3)
 Group3$Response
-fResponse3 <- data.frame(fResponse = factor(c(rep("Annelid richness", 8), rep("Crustacea richness", 8), rep("EPT richness", 8), rep("Insect richness", 8), rep("Mollusc richness", 8))))
+fResponse3 <- data.frame(fResponse = factor(c(rep("Annelid richness", 6), rep("Crustacea richness", 6), rep("EPT richness", 6), rep("Insect richness", 6), rep("Mollusc richness", 6))))
 Group3 <- cbind(Group3, fResponse3)
 Group3$fResponse <- factor(Group3$fResponse, levels=c("EPT richness", "Insect richness", "Crustacea richness", "Mollusc richness", "Annelid richness"), ordered = T)
 
@@ -199,7 +199,7 @@ p3
 # Change response names to match other plots (consistency)
 nrow(Group4)
 Group4$Response
-fResponse4 <- data.frame(fResponse = factor(c(rep("Annelid abundance", 8), rep("Crustacea abundance", 8), rep("EPT abundance", 8), rep("Insect abundance", 8), rep("Mollusc abundance", 8))))
+fResponse4 <- data.frame(fResponse = factor(c(rep("Annelid abundance", 6), rep("Crustacea abundance", 6), rep("EPT abundance", 6), rep("Insect abundance", 6), rep("Mollusc abundance", 6))))
 Group4 <- cbind(Group4, fResponse4)
 Group4$fResponse <- factor(Group4$fResponse, levels=c("EPT abundance", "Insect abundance", "Crustacea abundance", "Mollusc abundance", "Annelid abundance"), ordered = T)
 
@@ -233,7 +233,7 @@ p4
 
 # Change response names to match other plots (consistency)
 nrow(Group5)
-fResponse <- data.frame(fResponse = factor(c(rep("Standardised func. dispersion", 8), rep("Standardised func. evenness", 8), rep("Standardised func. richness", 8), rep("Rarified taxon richness", 8))))
+fResponse <- data.frame(fResponse = factor(c(rep("Standardised func. dispersion", 6), rep("Standardised func. evenness", 6), rep("Standardised func. richness", 6), rep("Rarified taxon richness", 6))))
 Group5 <- cbind(Group5, fResponse)
 Group5$fResponse <- factor(Group5$fResponse, levels=c("Rarified taxon richness", "Standardised func. richness", "Standardised func. evenness", "Standardised func. dispersion"), ordered = T) # reorder the driver names so that they appear in ggplot the way we want
 
