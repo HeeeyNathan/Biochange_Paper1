@@ -312,13 +312,13 @@ pairs(allYrs[,VarToFit], col = allYrs$ModifiedCols)
 pairs(allYrs[,VarToFit], col = allYrs$EQCCols)
 pairs(allYrs[,VarToFit], lower.panel = panel.smooth, upper.panel = panel.cor, diag.panel = panel.hist, main = "Pearson Correlation Matrix") # Check env data for collinearity
 
-Corrs <- cor(allYrs[,AllResponses])
-BigCorrs <- which(Corrs>0.9 & Corrs<1, arr.ind = TRUE)
-pairs(allYrs[,unique(rownames(BigCorrs))])
-pairs(allYrs[,unique(rownames(BigCorrs))], col = allYrs$RivTypCols)
-pairs(allYrs[,unique(rownames(BigCorrs))], col = allYrs$ModifiedCols)
-pairs(allYrs[,unique(rownames(BigCorrs))], col = allYrs$EQCCols)
-pairs(allYrs[,unique(rownames(BigCorrs))], lower.panel = panel.smooth, upper.panel = panel.cor, diag.panel = panel.hist, main = "Pearson Correlation Matrix") # Check env data for collinearity
+# Corrs <- cor(allYrs[,AllResponses])
+# BigCorrs <- which(Corrs>0.9 & Corrs<1, arr.ind = TRUE)
+# pairs(allYrs[,unique(rownames(BigCorrs))])
+# pairs(allYrs[,unique(rownames(BigCorrs))], col = allYrs$RivTypCols)
+# pairs(allYrs[,unique(rownames(BigCorrs))], col = allYrs$ModifiedCols)
+# pairs(allYrs[,unique(rownames(BigCorrs))], col = allYrs$EQCCols)
+# pairs(allYrs[,unique(rownames(BigCorrs))], lower.panel = panel.smooth, upper.panel = panel.cor, diag.panel = panel.hist, main = "Pearson Correlation Matrix") # Check env data for collinearity
 
 ### remove missing covariate data ####
 allYrs_complete <- allYrs[complete.cases(allYrs[, c(79:93, 97)]),]
@@ -420,6 +420,23 @@ Models.lme1 <- lapply(VarToFit, FitModelContrasts, fixed=form.fixedS_type,
 # The effects are now plotted by variable, with different countries in dfferen columns. 
 # This should give an idea about the realtive magnitudes. Note that the covariates have been standardised, 
 # so they represent the effects of changing the covariate by one standard deviation.
+# PlotEffects <- function(name, summs, label.y=TRUE, title=TRUE, removeInt=FALSE) {
+#   summ <- data.frame(summs[[name]])
+#   if(removeInt) summ <- summ[rownames(summ)!="(Intercept)",]
+#   # Set the rownames to the specified values
+#   new_rownames <- c("Flow", "pH", "Temperature", "Diss. oxygen", "Ammonium", "Nutrients PCA")
+#   rownames(summ) <- new_rownames
+#   summ$LLim <- summ[, 4]
+#   summ$ULim <- summ[, 5]
+#   At.Y <- 1:nrow(summ)
+#   plot(summ$Estimate, At.Y, yaxt="n", ann=FALSE, 
+#        xlim=c(min(summ$LLim), max(summ$ULim)), ylim=c(0.5, nrow(summ)+0.5), col = ifelse(summ$Estimate >= 0, "#95ccba", "#f2cc84"), cex = 2)
+#   segments(summ$LLim, At.Y, summ$ULim, At.Y, col = ifelse(summ$Estimate >= 0, "#95ccba", "#f2cc84"), lwd = 2)
+#   abline(v=0, lty=3)
+#   if(label.y) axis(2, at=At.Y, labels = rownames(summ), las=1)
+#   if(title) title(main=name)
+# }
+
 PlotEffects <- function(name, summs, label.y=TRUE, title=TRUE, removeInt=FALSE) {
   summ <- data.frame(summs[[name]])
   if(removeInt) summ <- summ[rownames(summ)!="(Intercept)",]
@@ -429,9 +446,16 @@ PlotEffects <- function(name, summs, label.y=TRUE, title=TRUE, removeInt=FALSE) 
   summ$LLim <- summ[, 4]
   summ$ULim <- summ[, 5]
   At.Y <- 1:nrow(summ)
+  # # Set line end style to square globally
+  # par(lend = 2)
   plot(summ$Estimate, At.Y, yaxt="n", ann=FALSE, 
-       xlim=c(min(summ$LLim), max(summ$ULim)), ylim=c(0.5, nrow(summ)+0.5), col = ifelse(summ$Estimate >= 0, "#95ccba", "#f2cc84"))
-  segments(summ$LLim, At.Y, summ$ULim, At.Y, col = ifelse(summ$Estimate >= 0, "#95ccba", "#f2cc84"))
+       xlim=c(min(summ$LLim), max(summ$ULim)), ylim=c(0.5, nrow(summ)+0.5), col = ifelse(summ$Estimate >= 0, "#95ccba", "#f2cc84"), cex = 2)
+  # Plot segments to the left of zero in "#f2cc84" with square ends
+  left_of_zero <- summ$LLim < 0
+  segments(summ$LLim[left_of_zero], At.Y[left_of_zero], pmin(0, summ$ULim[left_of_zero]), At.Y[left_of_zero], col = "#f2cc84", lwd = 2, lend = 2)  # Use lend = 2 for square ends
+  # Plot segments to the right of zero in "#95ccba" with square ends
+  right_of_zero <- summ$ULim > 0
+  segments(pmax(0, summ$LLim[right_of_zero]), At.Y[right_of_zero], summ$ULim[right_of_zero], At.Y[right_of_zero], col = "#95ccba", lwd = 2, lend = 2)  # Use lend = 2 for square ends
   abline(v=0, lty=3)
   if(label.y) axis(2, at=At.Y, labels = rownames(summ), las=1)
   if(title) title(main=name)
@@ -627,6 +651,25 @@ Models.lme2 <- lapply(VarToFit, FitModelContrasts2, fixed=form.fixedS_mod,
 # The effects are now plotted by variable, with different countries in dfferen columns. 
 # This should give an idea about the realtive magnitudes. Note that the covariates have been standardised, 
 # so they represent the effects of changing the covariate by one standard deviation.
+# PlotEffects2 <- function(name, summs, label.y=TRUE, title=TRUE, removeInt=FALSE) {
+#   summ <- data.frame(summs[[name]])
+#   if(removeInt) summ <- summ[rownames(summ)!="(Intercept)",]
+#   # Set the rownames to the specified values
+#   new_rownames <- c("Flow", "pH", "Temperature", "Diss. oxygen", "Ammonium", "Nutrients PCA")
+#   rownames(summ) <- new_rownames
+#   summ$LLim <- summ[, 4]
+#   summ$ULim <- summ[, 5]
+#   # summ$LLim <- summ$Estimate - summ$Std..Error
+#   # summ$ULim <- summ$Estimate + summ$Std..Error
+#   At.Y <- 1:nrow(summ)
+#   plot(summ$Estimate, At.Y, yaxt="n", ann=FALSE, 
+#        xlim=c(min(summ$LLim), max(summ$ULim)), ylim=c(0.5, nrow(summ)+0.5), col = ifelse(summ$Estimate >= 0, "#95ccba", "#f2cc84"), cex = 2)
+#   segments(summ$LLim, At.Y, summ$ULim, At.Y, col = ifelse(summ$Estimate >= 0, "#95ccba", "#f2cc84"), lwd = 2)
+#   abline(v=0, lty=3)
+#   if(label.y) axis(2, at=At.Y, labels = rownames(summ), las=1)
+#   if(title) title(main=name)
+# }
+
 PlotEffects2 <- function(name, summs, label.y=TRUE, title=TRUE, removeInt=FALSE) {
   summ <- data.frame(summs[[name]])
   if(removeInt) summ <- summ[rownames(summ)!="(Intercept)",]
@@ -635,12 +678,17 @@ PlotEffects2 <- function(name, summs, label.y=TRUE, title=TRUE, removeInt=FALSE)
   rownames(summ) <- new_rownames
   summ$LLim <- summ[, 4]
   summ$ULim <- summ[, 5]
-  # summ$LLim <- summ$Estimate - summ$Std..Error
-  # summ$ULim <- summ$Estimate + summ$Std..Error
   At.Y <- 1:nrow(summ)
+  # # Set line end style to square globally
+  # par(lend = 2)
   plot(summ$Estimate, At.Y, yaxt="n", ann=FALSE, 
-       xlim=c(min(summ$LLim), max(summ$ULim)), ylim=c(0.5, nrow(summ)+0.5), col = ifelse(summ$Estimate >= 0, "#95ccba", "#f2cc84"))
-  segments(summ$LLim, At.Y, summ$ULim, At.Y, col = ifelse(summ$Estimate >= 0, "#95ccba", "#f2cc84"))
+       xlim=c(min(summ$LLim), max(summ$ULim)), ylim=c(0.5, nrow(summ)+0.5), col = ifelse(summ$Estimate >= 0, "#95ccba", "#f2cc84"), cex = 2)
+  # Plot segments to the left of zero in "#f2cc84" with square ends
+  left_of_zero <- summ$LLim < 0
+  segments(summ$LLim[left_of_zero], At.Y[left_of_zero], pmin(0, summ$ULim[left_of_zero]), At.Y[left_of_zero], col = "#f2cc84", lwd = 2, lend = 2)  # Use lend = 2 for square ends
+  # Plot segments to the right of zero in "#95ccba" with square ends
+  right_of_zero <- summ$ULim > 0
+  segments(pmax(0, summ$LLim[right_of_zero]), At.Y[right_of_zero], summ$ULim[right_of_zero], At.Y[right_of_zero], col = "#95ccba", lwd = 2, lend = 2)  # Use lend = 2 for square ends
   abline(v=0, lty=3)
   if(label.y) axis(2, at=At.Y, labels = rownames(summ), las=1)
   if(title) title(main=name)
@@ -650,7 +698,7 @@ PlotModified <- function(wh, mod) {
   AbundEsts <- mod[[wh]]
   PlotEffects(name=names(AbundEsts)[1], summs=AbundEsts, 
               label.y=TRUE, title=TRUE, removeInt = TRUE)
-  sapply(names(AbundEsts)[-1], PlotEffects, summs=AbundEsts, 
+  sapply(names(AbundEsts)[-1], PlotEffects2, summs=AbundEsts, 
          label.y=FALSE, title=TRUE, removeInt = TRUE)
   mtext(wh, 4, outer=FALSE, line=2)
 }
@@ -830,6 +878,25 @@ Models.lme3 <- lapply(VarToFit, FitModelContrasts3, fixed=form.fixedS_EQC,
 # The effects are now plotted by variable, with different countries in dfferen columns. 
 # This should give an idea about the realtive magnitudes. Note that the covariates have been standardised, 
 # so they represent the effects of changing the covariate by one standard deviation.
+# PlotEffects3 <- function(name, summs, label.y=TRUE, title=TRUE, removeInt=FALSE) {
+#   summ <- data.frame(summs[[name]])
+#   if(removeInt) summ <- summ[rownames(summ)!="(Intercept)",]
+#   # Set the rownames to the specified values
+#   new_rownames <- c("Flow", "pH", "Temperature", "Diss. oxygen", "Ammonium", "Nutrients PCA")
+#   rownames(summ) <- new_rownames
+#   summ$LLim <- summ[, 4]
+#   summ$ULim <- summ[, 5]
+#   # summ$LLim <- summ$Estimate - summ$Std..Error
+#   # summ$ULim <- summ$Estimate + summ$Std..Error
+#   At.Y <- 1:nrow(summ)
+#   plot(summ$Estimate, At.Y, yaxt="n", ann=FALSE, 
+#        xlim=c(min(summ$LLim), max(summ$ULim)), ylim=c(0.5, nrow(summ)+0.5), col = ifelse(summ$Estimate >= 0, "#95ccba", "#f2cc84"), cex = 2)
+#   segments(summ$LLim, At.Y, summ$ULim, At.Y, col = ifelse(summ$Estimate >= 0, "#95ccba", "#f2cc84"), lwd = 2)
+#   abline(v=0, lty=3)
+#   if(label.y) axis(2, at=At.Y, labels = rownames(summ), las=1)
+#   if(title) title(main=name)
+# }
+
 PlotEffects3 <- function(name, summs, label.y=TRUE, title=TRUE, removeInt=FALSE) {
   summ <- data.frame(summs[[name]])
   if(removeInt) summ <- summ[rownames(summ)!="(Intercept)",]
@@ -838,12 +905,17 @@ PlotEffects3 <- function(name, summs, label.y=TRUE, title=TRUE, removeInt=FALSE)
   rownames(summ) <- new_rownames
   summ$LLim <- summ[, 4]
   summ$ULim <- summ[, 5]
-  # summ$LLim <- summ$Estimate - summ$Std..Error
-  # summ$ULim <- summ$Estimate + summ$Std..Error
   At.Y <- 1:nrow(summ)
+  # # Set line end style to square globally
+  # par(lend = 2)
   plot(summ$Estimate, At.Y, yaxt="n", ann=FALSE, 
-       xlim=c(min(summ$LLim), max(summ$ULim)), ylim=c(0.5, nrow(summ)+0.5), col = ifelse(summ$Estimate >= 0, "#95ccba", "#f2cc84"))
-  segments(summ$LLim, At.Y, summ$ULim, At.Y, col = ifelse(summ$Estimate >= 0, "#95ccba", "#f2cc84"))
+       xlim=c(min(summ$LLim), max(summ$ULim)), ylim=c(0.5, nrow(summ)+0.5), col = ifelse(summ$Estimate >= 0, "#95ccba", "#f2cc84"), cex = 2)
+  # Plot segments to the left of zero in "#f2cc84" with square ends
+  left_of_zero <- summ$LLim < 0
+  segments(summ$LLim[left_of_zero], At.Y[left_of_zero], pmin(0, summ$ULim[left_of_zero]), At.Y[left_of_zero], col = "#f2cc84", lwd = 2, lend = 2)  # Use lend = 2 for square ends
+  # Plot segments to the right of zero in "#95ccba" with square ends
+  right_of_zero <- summ$ULim > 0
+  segments(pmax(0, summ$LLim[right_of_zero]), At.Y[right_of_zero], summ$ULim[right_of_zero], At.Y[right_of_zero], col = "#95ccba", lwd = 2, lend = 2)  # Use lend = 2 for square ends
   abline(v=0, lty=3)
   if(label.y) axis(2, at=At.Y, labels = rownames(summ), las=1)
   if(title) title(main=name)
@@ -862,7 +934,6 @@ PlotEQCs <- function(wh, mod) {
          label.y=FALSE, title=TRUE, removeInt = TRUE)
   mtext(wh, 4, outer=FALSE, line=2)
 }
-
 
 # all taxon indices
 VarToPlot <- (1:6)

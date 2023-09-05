@@ -36,9 +36,9 @@ Group5 <- driver_gls[driver_gls$Response %in% c("spp_rich_rare", "FRic.SES", "FE
 
 # Change response names to match other plots (consistency)
 nrow(Group1)
-fResponse <- data.frame(fResponse = factor(c(rep("Abundance", 6), rep("Evenness", 6), rep("Shannon's H", 6), rep("Taxon richness", 6), rep("Turnover", 6))))
+fResponse <- data.frame(fResponse = factor(c(rep("Total abundance", 6), rep("Shannon evenness", 6), rep("Shannon diversity", 6), rep("Taxon richness", 6), rep("Taxon turnover", 6))))
 Group1 <- cbind(Group1, fResponse)
-Group1$fResponse <- factor(Group1$fResponse, levels=c("Abundance", "Taxon richness", "Evenness", "Shannon's H", "Turnover"), ordered = T) # reorder the driver names so that they appear in ggplot the way we want
+Group1$fResponse <- factor(Group1$fResponse, levels=c("Total abundance", "Taxon richness", "Shannon evenness", "Shannon diversity", "Taxon turnover"), ordered = T) # reorder the driver names so that they appear in ggplot the way we want
 
 # Create plot
 p1 <- ggplot(Group1, aes(x = Estimate, y = fDriver)) +
