@@ -59,8 +59,23 @@ qual_fs$meanSD # 0.006 at 10D
 
 # Supraregional FS (PCoA)
 supreg.pco <- dudi.pco(tr.dist, scan = F, nf = 11)
+summary(supreg.pco)
 
 cumsum(supreg.pco$eig)[6]/sum(supreg.pco$eig)*100 # Variance explained by FS (PCoA); 54.31%
+
+# Validating the PCoA
+biplot(supreg.pco)
+summary(supreg.pco)
+screeplot(supreg.pco, bstick = TRUE, npcs = length(supreg.pco$eig))
+(ev <- supreg.pco$eig^2)
+n <- length (ev)
+bsm <- data.frame(j=seq(1:n), p=0)
+bsm$p[1] <- 1/n
+for (i in 2:n) {bsm$p[i] = bsm$p[i-1] + (1/(n+1-i))}
+bsm$p <- 100*bsm$p/n
+bsm
+barplot(t(cbind(100*ev/sum(ev),bsm$p[n:1])), beside=TRUE, main="Broken stick model", col=c("blue",2), las=2)
+legend("topright", c("% eigenvalue", "Broken stick model"), pch=15, col=c("blue",2), bty="n")
 
 # Spearman rank correlations between original trait categories and functional space axes
 cor.res <- round(cor(SupReg_traits[which(rowSums(SupReg_traits) == 11),], supreg.pco$li, method = "spearman"), 2) #11 trait groups used
@@ -121,7 +136,6 @@ SupReg_traits_sel12 <- subset(SupReg_traits, select = c(tachfeed_scr,
 fit12 <- envfit(pco12, SupReg_traits_sel12)  # use envfit to draw arrows, can be also done using trait loadings
 
 # Plot Kernel Density Estimations
-# pc1 and pc2
 plot(esto12, cont = seq(1, 100, by = 2.25), display  = "filled.contour", add = FALSE, ylab = "PC2", xlab = "PC1", 
      cex.axis = 0.75, ylim = c(-0.4, 0.6), xlim = c(-0.4, 0.6) , las = 1)
 
@@ -151,11 +165,14 @@ library(adegraphics)
 supra.gr <- data.frame(group2 = traits_raw$group2, traits)[(intersect(rownames(traits), colnames(comm))),]
 
 # pdf(file = "Plots/Supraregional_FS_taxa_grouping.pdf", onefile = T, width = 6, height = 6)
-# svg(file = "Plots/Supraregional_FS_taxa_grouping.svg", onefile = T, width = 12, height = 12)
+svg(file = "Plots/Supraregional_FS_taxa_grouping.svg", onefile = T, width = 7, height = 7)
 # tiff(file="Plots/Supraregional_FS_taxa_grouping.tiff", width = 12, height = 12, units = 'in', res = 600, compression = 'lzw')
-par(mfrow = c(1,1), cex.axis = 1.85, cex.lab = 2, cex.main = 2, mar = c(5,5,4,1))
-s.class(supreg.pco$li, fac = as.factor(supra.gr$group2[which(rowSums(traits)==11)]), plines.col = 1:18, col = T)
-# dev.off()
+par(mfrow = c(1,1), mar = c(5,5,4,1))
+# Define a vector of pastel colors
+pastel_colors <- c("#FFC0CB", "#FFD700", "#87CEEB", "#98FB98", "#FFA07A", "#9370DB", "#F0E68C", "#FF69B4", "#00CED1", "#B0E0E6", "#DDA0DD", "#20B2AA", "#FFE4B5", "#00FF7F", "#7B68EE", "#AFEEEE", "#F08080", "#40E0D0")
+s.class(supreg.pco$li, fac = as.factor(supra.gr$group2[which(rowSums(traits)==11)]), plines.col = 1:18, col = pastel_colors)
+# s.class(supreg.pco$li, fac = as.factor(supra.gr$group2[which(rowSums(traits)==11)]), plines.col = 1:18, col = T)
+dev.off()
 
 ## FIGURE 3: REPRESENTATION OF THE SUPRAREGIONAL FS #####
 # pdf(file = "Plots/Supraregional_FS_convexhull.pdf",onefile = T, width = 12, height = 16) 
@@ -170,6 +187,34 @@ points(cent_ov[1],cent_ov[2],col="black",pch="+",cex=4)
 colMeans(supreg.pco$li[(intersect(rownames(supreg.pco$li), colnames(comm))),c(1,2)])->cent_r
 points(cent_r[1],cent_r[2],col="red",pch="+",cex=2.5)
 # dev.off()
+
+# combined plots
+svg(file = "Plots/funcitonal_space_largerlabs.svg",onefile = T, width = 21, height = 7) 
+par(mfrow = c(1,3), cex.axis = 1.85, cex.lab = 2, cex.main = 2, mar = c(5,5,3,1))
+# Supraregional functional space
+plot(range(supreg.pco$li[1]), range(supreg.pco$li[2]), type = "n", cex.axis = 1.5, cex.lab = 1.5,
+     xlab = paste("PCo-1","(",round(supreg.pco$eig[1]/sum(supreg.pco$eig),3)*100,"%)"),
+     ylab = paste("PCo-2","(",round(supreg.pco$eig[2]/sum(supreg.pco$eig),3)*100,"%)"))
+points(supreg.pco$li[,c(1,2)],col="#4D4D4D",pch=".",cex=7)
+plot_chull2D(supreg.pco$li[,c(1,2)],col_ch="#1E90FF50",border_ch="#4D4D4D")
+colMeans(supreg.pco$li[,c(1,2)])->cent_ov
+points(cent_ov[1],cent_ov[2],col="black",pch="+",cex=4)
+colMeans(supreg.pco$li[(intersect(rownames(supreg.pco$li), colnames(comm))),c(1,2)])->cent_r
+points(cent_r[1],cent_r[2],col="red",pch="+",cex=2.5)
+#Probability denisty
+plot(esto12, cont = seq(1, 100, by = 2.25), display = "filled.contour", add = FALSE, 
+     xlab = paste("PCo-1","(",round(supreg.pco$eig[1]/sum(supreg.pco$eig), 3)*100,"%)"),
+     ylab = "",
+     cex.lab = 1.5,
+     cex.axis = 1.5, ylim=c(-1, 1), xlim = c(-1, 1), las = 1)
+abline(h = 0, lty = 2, col = grey(0.5, alpha=0.2))
+abline(v = 0, lty = 2, col = grey(0.5, alpha=0.2))
+plot(esto12, abs.cont = clo12[1], labels = c(0.5), labcex = 0.75, add = TRUE, lwd = 0.75, col = "grey30")
+plot(esto12, abs.cont = clo12[2], labels = c(0.95), labcex = 0.75, add = TRUE, lwd = 0.5, col = "grey60")
+plot(esto12, abs.cont = clo12[3], labels = c(0.99), labcex = 0.75, add = TRUE, lwd = 0.25, col = "grey70")
+points(pco12[,], pch = 16, cex = 0.25, col = "grey30")
+plot(fit12, cex = 1.25, col = 1)
+dev.off()
 
 ## FIGURE 4: YEARLY TAXON POOL REPRESENTATION WITHIN THE SUPRAREGIONAL FSs #####
 # pdf(file = "Plots/Change_in_FS_through_time.pdf",onefile = T, width = 12, height = 16) 
