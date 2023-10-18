@@ -165,14 +165,14 @@ library(adegraphics)
 supra.gr <- data.frame(group2 = traits_raw$group2, traits)[(intersect(rownames(traits), colnames(comm))),]
 
 # pdf(file = "Plots/Supraregional_FS_taxa_grouping.pdf", onefile = T, width = 6, height = 6)
-svg(file = "Plots/Supraregional_FS_taxa_grouping.svg", onefile = T, width = 7, height = 7)
+# svg(file = "Plots/Supraregional_FS_taxa_grouping.svg", onefile = T, width = 7, height = 7)
 # tiff(file="Plots/Supraregional_FS_taxa_grouping.tiff", width = 12, height = 12, units = 'in', res = 600, compression = 'lzw')
 par(mfrow = c(1,1), mar = c(5,5,4,1))
 # Define a vector of pastel colors
 pastel_colors <- c("#FFC0CB", "#FFD700", "#87CEEB", "#98FB98", "#FFA07A", "#9370DB", "#F0E68C", "#FF69B4", "#00CED1", "#B0E0E6", "#DDA0DD", "#20B2AA", "#FFE4B5", "#00FF7F", "#7B68EE", "#AFEEEE", "#F08080", "#40E0D0")
 s.class(supreg.pco$li, fac = as.factor(supra.gr$group2[which(rowSums(traits)==11)]), plines.col = 1:18, col = pastel_colors)
 # s.class(supreg.pco$li, fac = as.factor(supra.gr$group2[which(rowSums(traits)==11)]), plines.col = 1:18, col = T)
-dev.off()
+# dev.off()
 
 ## FIGURE 3: REPRESENTATION OF THE SUPRAREGIONAL FS #####
 # pdf(file = "Plots/Supraregional_FS_convexhull.pdf",onefile = T, width = 12, height = 16) 
@@ -189,7 +189,7 @@ points(cent_r[1],cent_r[2],col="red",pch="+",cex=2.5)
 # dev.off()
 
 # combined plots
-svg(file = "Plots/funcitonal_space_largerlabs.svg",onefile = T, width = 21, height = 7) 
+# svg(file = "Plots/funcitonal_space_largerlabs.svg",onefile = T, width = 21, height = 7) 
 par(mfrow = c(1,3), cex.axis = 1.85, cex.lab = 2, cex.main = 2, mar = c(5,5,3,1))
 # Supraregional functional space
 plot(range(supreg.pco$li[1]), range(supreg.pco$li[2]), type = "n", cex.axis = 1.5, cex.lab = 1.5,
@@ -214,7 +214,7 @@ plot(esto12, abs.cont = clo12[2], labels = c(0.95), labcex = 0.75, add = TRUE, l
 plot(esto12, abs.cont = clo12[3], labels = c(0.99), labcex = 0.75, add = TRUE, lwd = 0.25, col = "grey70")
 points(pco12[,], pch = 16, cex = 0.25, col = "grey30")
 plot(fit12, cex = 1.25, col = 1)
-dev.off()
+# dev.off()
 
 ## FIGURE 4: YEARLY TAXON POOL REPRESENTATION WITHIN THE SUPRAREGIONAL FSs #####
 # pdf(file = "Plots/Change_in_FS_through_time.pdf",onefile = T, width = 12, height = 16) 
@@ -595,8 +595,9 @@ FRic.shuff <- function(x){
 }
 set.seed(1) # make results repeatable
 FRic.obs.null.output.shuff <- cbind(fric_3d(comm, supreg.pco$li, m = 6, prec = "QJ", fric.3d.max = ch_st), 
-                                    replicate(3, FRic.shuff(supreg.pco$li))) # change this number to 999 after you have determined the code runs
-
+                                    replicate(9, FRic.shuff(supreg.pco$li))) # change this number to 999 after you have determined the code runs
+hist(FRic.obs.null.output.shuff)
+abline(v = func_div[1, 1], col = "blue")
 FRic.ses.value <- (FRic.obs.null.output.shuff[,1] - 
                      apply(FRic.obs.null.output.shuff, 1, mean))/
   apply(FRic.obs.null.output.shuff,1,sd)
@@ -607,7 +608,7 @@ for(i in seq(qFRic)){
   qFRic[i] <- sum(FRic.obs.null.output.shuff[,1][i] > FRic.obs.null.output.shuff[i,]) / length(FRic.obs.null.output.shuff[i,])
 }
 
-sigFRic <- qFRic < 0.05 | qFRic > 0.95 # test if outside distribution
+sigFRic <- qFRic < 0.025 | qFRic > 0.975 # test if outside distribution
 
 FRic_output <- as.data.frame(cbind(FRic.ses.value, sigFRic))
 colnames(FRic_output) <- c("FRic.SES", "FRic.SES.sig")
@@ -641,7 +642,7 @@ for(i in seq(qFEve)){
   qFEve[i] <- sum(FEve.obs.null.output.shuff[,1][i] > FEve.obs.null.output.shuff[i,]) / length(FEve.obs.null.output.shuff[i,])
 }
 
-sigFEve <- qFEve < 0.05 | qFEve > 0.95 # test if outside distribution
+sigFEve <- qFEve < 0.025 | qFEve > 0.975 # test if outside distribution
 
 FEve_output <- as.data.frame(cbind(FEve.ses.value, sigFEve))
 colnames(FEve_output) <- c("FEve.SES", "FEve.SES.sig")
@@ -676,7 +677,7 @@ for(i in seq(qFDis)){
   qFDis[i] <- sum(FDis.obs.null.output.shuff[,1][i] > FDis.obs.null.output.shuff[i,]) / length(FDis.obs.null.output.shuff[i,])
 }
 
-sigFDis <- qFDis < 0.05 | qFDis > 0.95 # test if outside distribution
+sigFDis <- qFDis < 0.025 | qFDis > 0.975 # test if outside distribution
 
 FDis_output <- as.data.frame(cbind(FDis.ses.value, sigFDis))
 colnames(FDis_output) <- c("FDis.SES", "FDis.SES.sig")
