@@ -1,7 +1,7 @@
 country,Response,TaskID
 Lithuania,flow,1
 Lithuania,temp,2
-Lithuania,PC_axis1,3
-Lithuania,PC_axis2,4
-Lithuania,sflow,5
-Lithuania,stemp,6
+Lithuania,o2_dis,3
+Lithuania,pH,4
+Lithuania,NH4.N,5
+Lithuania,PC_axis1,6

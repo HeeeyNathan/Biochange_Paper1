@@ -15,6 +15,19 @@ source("HighstatLibV10.R")
 d1 <- read.csv("Data/LT_siteYr_AllData_wNAs_modified.csv", header=T)
 allYrs <- d1[!is.na(d1$site_id_wMissing),]
 
+# Change river type variables
+allYrs$river_type[allYrs$river_type == 1] <- "type1"
+allYrs$river_type[allYrs$river_type == 2] <- "type2"
+allYrs$river_type[allYrs$river_type == 3] <- "type3"
+allYrs$river_type[allYrs$river_type == 4] <- "type4"
+allYrs$river_type[allYrs$river_type == 5] <- "type5"
+
+# make factors
+allYrs$fYear <- factor(allYrs$year_wMissing)
+allYrs$fmodified <- as.factor(allYrs$Heavily_modified)
+allYrs$ftype <- as.factor(allYrs$river_type)
+allYrs$fEQC <- as.factor(allYrs$EQC)
+
 # Scale the covariates
 # function to add a new column onto the data with scaled vars (with s before their name)
 scaleVars <- function(df){
@@ -26,44 +39,65 @@ scaleVars <- function(df){
 }
 
 #apply function
-sPredictors <- scaleVars(allYrs[, c(3, 4, 58:72)])
+sPredictors <- scaleVars(allYrs[, c(3:4, 58:72)])
 sPredictors <- subset(sPredictors, select = -c(site_id, year, ssite_id, syear)) # remove ID variable
 sPredictors$ID <- rownames(sPredictors)
 allYrs$ID <- rownames(allYrs)
 allYrs <- dplyr::left_join(allYrs, sPredictors, by = "ID")
 allYrs <- subset(allYrs, select = -c(ID)) # remove ID variable
 
-# define new variable for nutrients
 # Construct PCA to check the environmental variables and their relationships
-pairs(allYrs[, c(73:87)], lower.panel = panel.smooth, upper.panel = panel.cor, diag.panel = panel.hist, main = "Pearson Correlation Matrix") # Check env data for collinearity
-pairs(allYrs[, c(75:87)], lower.panel = panel.smooth, upper.panel = panel.cor, diag.panel = panel.hist, main = "Pearson Correlation Matrix") # Check env data for collinearity
-pairs(allYrs[, c(76, 79, 82:87)], lower.panel = panel.smooth, upper.panel = panel.cor, diag.panel = panel.hist, main = "Pearson Correlation Matrix") # Check env data for collinearity
-allYrs_pca = princomp(na.omit(allYrs[, c(75:87)]), scores = TRUE) #computes PCA - gives us all the PCA results
+allYrs_pca = princomp(na.omit(allYrs[, c("salkalinity", "sEC", 
+                                         "sNO3.N", "sNO2.N", "smineral.N", "sTot.N",
+                                         "sPO4.P", "sTot.P")]), scores = TRUE) #computes PCA - gives us all the PCA results
 summary(allYrs_pca)
-plot(allYrs_pca$scores[, 1], allYrs_pca$scores[, 2], type = "n", xlab = "Axis.1", ylab = "Axis.2", las = 1) #empty PCA Plot
+# Define a pastel color palette
+color_palette <- c("#84bcda", "#ecc30b", "#f37748", "#283845", "#b6244f")
+# Define the two point shapes you want to use (adjust as needed)
+shape_palette <- c(19, 17)
+plot(allYrs_pca$scores[, 1], allYrs_pca$scores[, 2], type = "n", cex.axis = 1.5,
+     main = "Principal coordinate analysis of collinear environmental data", xlab = "PC1", ylab = "PC 2", cex.main = 2, cex.lab = 1.5) #empty PCA Plot
 abline(v = 0, lty = 3) #plots origin line verticle
 abline(h = 0, lty = 3) #plots origin line horizontal
-#text(allYrs_pca$scores[, 1], allYrs_pca$scores[, 2], allYrs$site_code, col = RivTypCols) #adds text for samples
-text(allYrs_pca$scores[, 1], allYrs_pca$scores[, 2], allYrs$site_id, col = "red", cex = 0.6) #adds text for samples
-#text(allYrs_pca$scores[, 1], allYrs_pca$scores[, 2], allYrs$ftype, col = "darkblue") #adds text for samples
-#text(allYrs_pca$scores[, 1], allYrs_pca$scores[, 2], allYrs$fmodified, col = "forestgreen") #adds text for samples
-vec = envfit(allYrs_pca, na.omit(allYrs[, c(75:87)]), choices = c(1, 2)) #computes the environmental variable vectors
-plot(vec, col = "blue", cex = 1) #plots vectors (environmetal variables)
-pc1_scores <- as.data.frame(allYrs_pca$scores[, 1]*-1) # reverse signs to help with interpretation later
-pc2_scores <- as.data.frame(allYrs_pca$scores[, 2]) # reverse signs to help with interpretation later
+points(allYrs_pca$scores[, 1], allYrs_pca$scores[, 2], col = color_palette[allYrs$ftype], pch = shape_palette[allYrs$fmodified], cex = 1.5)  # You can customize col, pch, and cex
+vec = envfit(allYrs_pca, na.omit(allYrs[, c("salkalinity", "sEC", 
+                                            "sNO3.N", "sNO2.N", "smineral.N", "sTot.N",
+                                            "sPO4.P", "sTot.P")]), choices = c(1, 2)) #computes the environmental variable vectors
+plot(vec, col = "#ECB246", cex = 1.5, font = 2, pos = 4) #plots vectors (environmetal variables)
+
+# Check broken stick model
+biplot(allYrs_pca)
+allYrs_pca_scores <- (scores(allYrs_pca)[,1])
+corr1 <- cor(na.omit(allYrs[, c(80, 83, 86:91)]), scores(allYrs_pca)[,1]) # correlation between original variables and principal components
+round(corr1, 3)
+corr2 <- cor(na.omit(allYrs[, c(80, 83, 86:91)]), scores(allYrs_pca)[,2]) # correlation between original variables and principal components
+round(corr2, 3)
+screeplot(allYrs_pca, bstick = TRUE, npcs = length(allYrs_pca$sdev))
+(ev <- allYrs_pca$sdev^2)
+n <- length (ev)
+bsm <- data.frame(j=seq(1:n), p=0)
+bsm$p[1] <- 1/n
+for (i in 2:n) {bsm$p[i] = bsm$p[i-1] + (1/(n+1-i))}
+bsm$p <- 100*bsm$p/n
+bsm
+barplot(t(cbind(100*ev/sum(ev),bsm$p[n:1])), beside=TRUE, main="Broken stick model", col=c("#95ccba",2), las=2)
+legend("topright", c("% eigenvalue", "Broken stick model"), pch=15, col=c("#95ccba",2), bty="n")
+
+# isolate pc axis for use as covariate in model
+pc1_scores <- as.data.frame(allYrs_pca$scores[, 1]) # reverse signs to help with interpretation later
 colnames(pc1_scores) <- c("PC_axis1")
-colnames(pc2_scores) <- c("PC_axis2")
 pc1_scores$ID <- rownames(pc1_scores)
-pc2_scores$ID <- rownames(pc2_scores)
 allYrs$ID <- rownames(allYrs)
 allYrs <- dplyr::left_join(allYrs, pc1_scores, by = "ID")
-allYrs <- dplyr::left_join(allYrs, pc2_scores, by = "ID")
 allYrs <- subset(allYrs, select = -c(ID)) # remove ID variable
 
-#choose which country for this task
+# # ### remove missing covariate data ####
+# allYrs_complete <- allYrs[complete.cases(allYrs[, c(58:72, 92)]),]
+
+# choose which country for this task
 TaskID <- read.csv("Data/LT_DriverTrends_TaskIDs.csv", as.is = T)
 
-task.id = as.integer(Sys.getenv("SLURM_ARRAY_TASK_ID", "6"))
+task.id = as.integer(Sys.getenv("SLURM_ARRAY_TASK_ID", "5"))
 myCountry <- TaskID$country[which(TaskID$TaskID==task.id)]
 allYrs <- subset(allYrs,country==myCountry)
 
@@ -75,37 +109,52 @@ hist(allYrs$Response)
 ### Check distributions of response variables
 # Main responses
 hist(allYrs$flow)
-summary(allYrs$flow)
 hist(log10(allYrs$flow))
 
-hist(allYrs$sflow)
-summary(allYrs$sflow)
-hist(log10(allYrs$sflow + 0.57))
-
 hist(allYrs$temp)
-hist(allYrs$stemp)
+hist(allYrs$alkalinity)
+hist(allYrs$o2_dis)
+hist(allYrs$pH)
+
+hist(allYrs$EC)
+hist(log10(allYrs$EC))
+
+hist(allYrs$NH4.N)
+hist(log10(allYrs$NH4.N))
+
+hist(allYrs$NO2.N)
+hist(log10(allYrs$NO2.N))
+
+hist(allYrs$NO3.N)
+hist(log10(allYrs$NO3.N))
+
+hist(allYrs$mineral.N)
+hist(log10(allYrs$mineral.N))
+
+hist(allYrs$Tot.N)
+hist(log10(allYrs$Tot.N))
+
+hist(allYrs$PO4.P)
+hist(log10(allYrs$PO4.P))
+
+hist(allYrs$Tot.P)
+hist(log10(allYrs$Tot.P))
 
 hist(allYrs$PC_axis1)
 summary(allYrs$PC_axis1)
-hist(log10(allYrs$PC_axis1 + 3.2))
+hist(log10(allYrs$PC_axis1 + 3.5))
 
-hist(allYrs$PC_axis2)
+# transform variables that are right-skewed
+#third run transformation
+if(myResponse %in% c("flow", "EC", "NH4.N", "NO2.N", "NO3.N", "mineral.N", "Tot.N", "PO4.P", "Tot.P")){
 
-# # transform variables that are right-skewed
-# #third run transformation
-# if(myResponse %in% c("flow")){
-# 
-#   allYrs$Response <- log10(allYrs$Response)
-# 
-# }else if(myResponse %in% "sflow"){
-# 
-#   allYrs$Response <- log10(allYrs$Response + 0.57)
-#   
-# }else if(myResponse %in% "PC_axis1"){
-#   
-#   allYrs$Response <- sqrt(allYrs$Response + 3.2)
-# 
-# }
+  allYrs$Response <- log10(allYrs$Response)
+
+}else if(myResponse %in% "PC_axis1"){
+
+  allYrs$Response <- log10(allYrs$Response + 3.5)
+
+}
 
 hist(allYrs$Response)
 
@@ -141,9 +190,9 @@ fitGLSModel_explan <- function(my_data){
   }   else {
   
   if(maxDiffDays < 30) {
-    myformula <- gls(Response ~ cYear, correlation = corAR1(form =~ iYear), data = my_data)
+    myformula <- gls(Response ~ cYear, correlation = corAR1(form =~ cYear), data = my_data)
   } else{
-    myformula <- gls(Response ~ cday_of_year + cYear, correlation = corAR1(form =~ iYear), data = my_data)
+    myformula <- gls(Response ~ cday_of_year + cYear, correlation = corAR1(form =~ cYear), data = my_data)
   }
   
   #fit model with gls
