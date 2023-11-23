@@ -1,7 +1,7 @@
 "","Response","probIncrease","probDecrease"
-"1","flow",0,1
+"1","flow",0.0225,0.9775
 "2","temp",1,0
 "3","pH",1,0
 "4","o2_dis",1,0
 "5","NH4.N",0,1
-"6","PC_axis1",0.9978,0.0022
+"6","PC_axis1",1,0

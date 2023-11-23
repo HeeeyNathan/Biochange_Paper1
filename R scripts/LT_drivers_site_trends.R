@@ -97,7 +97,7 @@ allYrs <- subset(allYrs, select = -c(ID)) # remove ID variable
 # choose which country for this task
 TaskID <- read.csv("Data/LT_DriverTrends_TaskIDs.csv", as.is = T)
 
-task.id = as.integer(Sys.getenv("SLURM_ARRAY_TASK_ID", "5"))
+task.id = as.integer(Sys.getenv("SLURM_ARRAY_TASK_ID", "6"))
 myCountry <- TaskID$country[which(TaskID$TaskID==task.id)]
 allYrs <- subset(allYrs,country==myCountry)
 
@@ -109,57 +109,38 @@ hist(allYrs$Response)
 ### Check distributions of response variables
 # Main responses
 hist(allYrs$flow)
-hist(log10(allYrs$flow))
+summary(allYrs$flow)
+hist(log10(allYrs$flow+0.1))
 
 hist(allYrs$temp)
-hist(allYrs$alkalinity)
-hist(allYrs$o2_dis)
 hist(allYrs$pH)
-
-hist(allYrs$EC)
-hist(log10(allYrs$EC))
+hist(allYrs$o2_dis)
 
 hist(allYrs$NH4.N)
-hist(log10(allYrs$NH4.N))
-
-hist(allYrs$NO2.N)
-hist(log10(allYrs$NO2.N))
-
-hist(allYrs$NO3.N)
-hist(log10(allYrs$NO3.N))
-
-hist(allYrs$mineral.N)
-hist(log10(allYrs$mineral.N))
-
-hist(allYrs$Tot.N)
-hist(log10(allYrs$Tot.N))
-
-hist(allYrs$PO4.P)
-hist(log10(allYrs$PO4.P))
-
-hist(allYrs$Tot.P)
-hist(log10(allYrs$Tot.P))
+summary(allYrs$NH4.N)
+hist(log10(allYrs$NH4.N + 0.02))
 
 hist(allYrs$PC_axis1)
 summary(allYrs$PC_axis1)
-hist(log10(allYrs$PC_axis1 + 3.5))
+hist(log10(allYrs$PC_axis1 + 3))
 
 # transform variables that are right-skewed
 #third run transformation
-if(myResponse %in% c("flow", "EC", "NH4.N", "NO2.N", "NO3.N", "mineral.N", "Tot.N", "PO4.P", "Tot.P")){
+if(myResponse %in% c("flow")){
 
-  allYrs$Response <- log10(allYrs$Response)
+  allYrs$Response <- log10(allYrs$Response + 0.1)
+
+}else if(myResponse %in% "NH4.N"){
+
+  allYrs$Response <- log10(allYrs$Response + 0.02)
 
 }else if(myResponse %in% "PC_axis1"){
-
-  allYrs$Response <- log10(allYrs$Response + 3.5)
-
+  
+  allYrs$Response <- log10(allYrs$Response + 3)
+  
 }
 
 hist(allYrs$Response)
-
-# order by site site year
-# allYrs <- allYrs[order(allYrs$year_wMissing),]
 
 #### two-stage models ####
 ### fitting gls #####
@@ -190,9 +171,9 @@ fitGLSModel_explan <- function(my_data){
   }   else {
   
   if(maxDiffDays < 30) {
-    myformula <- gls(Response ~ cYear, correlation = corAR1(form =~ cYear), data = my_data)
+    myformula <- gls(Response ~ cYear, correlation = corAR1(form =~ iYear), data = my_data)
   } else{
-    myformula <- gls(Response ~ cday_of_year + cYear, correlation = corAR1(form =~ cYear), data = my_data)
+    myformula <- gls(Response ~ cday_of_year + cYear, correlation = corAR1(form =~ iYear), data = my_data)
   }
   
   #fit model with gls
@@ -224,6 +205,7 @@ trends <- lapply(allsites, function(x){
 trends <- data.frame(do.call(rbind, trends))
 trends$siteID <- allsites
 rownames(trends) <- 1:41
+trends
 
 saveRDS(trends, file=paste0("Outputs/Driver_trends/trends__",myResponse,"__",myCountry,".RDS"))
 #write.csv(trends, file=paste0("outputs/trends__",myResponse,"__",myCountry,".csv"))

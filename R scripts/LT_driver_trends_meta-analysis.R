@@ -2,7 +2,7 @@
 ### get response for this task ######
 
 TaskID <- read.csv("Data/LT_DriverTrends_TaskIDs.csv",as.is=T)
-task.id = as.integer(Sys.getenv("SLURM_ARRAY_TASK_ID", "6"))
+task.id = as.integer(Sys.getenv("SLURM_ARRAY_TASK_ID", "1"))
 myResponse <- TaskID$Response[which(TaskID$TaskID==task.id)]
 
 ### get site-level values for this response ####
@@ -12,7 +12,6 @@ response_gls <- subset(response_gls, Response == myResponse)
 response_gls <- subset(response_gls, !is.na(estimate))
 
 ### site metadata ######
-
 d1 <- read.csv("Data/LT_siteYr_AllData_wNAs_modified.csv", header=T) 
 siteData <- unique(d1[,c("site_id", "country")])
 response_gls <- merge(siteData,response_gls,by="site_id")
@@ -52,7 +51,7 @@ plot(fit1)
 pp_check(fit1, ndraws = 100)
 loo(fit1, compare = T)
 
-# # fit unweighted model
+# # # fit unweighted model
 # fit2 <- brm(estimate ~ 1,
 #             data = response_gls, iter=5000, init = 0,
 #             chains = 4, prior = prior1,
@@ -67,15 +66,15 @@ loo(fit1, compare = T)
 ### save output ####
 saveRDS(fit1,file=paste0("Outputs/Driver_metaanalysis_trends/metaanalysis_",myResponse,".rds"))
 
-##### CLEAN UP --------------------
-library(pacman)
-# Clear data
-rm(list = ls())  # Removes all objects from environment
-# Clear packages
-p_unload(all)  # Remove all contributed packages
-# Clear plots
-graphics.off()  # Clears plots, closes all graphics devices
-# Clear console
-cat("\014")  # Mimics ctrl+L
-# Clear mind :)
+# ##### CLEAN UP --------------------
+# library(pacman)
+# # Clear data
+# rm(list = ls())  # Removes all objects from environment
+# # Clear packages
+# p_unload(all)  # Remove all contributed packages
+# # Clear plots
+# graphics.off()  # Clears plots, closes all graphics devices
+# # Clear console
+# cat("\014")  # Mimics ctrl+L
+# # Clear mind :)
 
