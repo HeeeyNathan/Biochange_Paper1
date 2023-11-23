@@ -119,7 +119,7 @@ last_years <- df_long_ephemeroptera_filtered %>%
 # Plot abundances by year with line colors grouped by taxonomic order
 tiff(filename = "Plots/Winner_Loser_ephemeroptera.tiff", width = 10, height = 10, units = 'in', res = 600, compression = 'lzw')
 ggplot(df_long_ephemeroptera_filtered, aes(x = year, y = log_abundance, color = estimate, group = taxonname)) +
-  geom_line(linewidth = 0.35, linetype = "dotted") +
+  geom_line(linewidth = 0.35, aes(linetype = ifelse(p.value < 0.05, "p < 0.05", "p > 0.05"))) +
   geom_smooth(method = "lm", se = FALSE, aes(linetype = ifelse(p.value < 0.05, "p < 0.05", "p > 0.05"))) +
   geom_point(size = 2, aes(shape = group)) +
   geom_text_repel(data = first_years, aes(label = taxonname), hjust = -0.1, vjust = 0, nudge_y = 0.01, size = 3) +
@@ -190,7 +190,7 @@ last_years <- df_long_plecoptera_filtered %>%
 # Plot abundances by year with line colors grouped by taxonomic order
 tiff(filename = "Plots/Winner_Loser_plecoptera.tiff", width = 10, height = 10, units = 'in', res = 600, compression = 'lzw')
 ggplot(df_long_plecoptera_filtered, aes(x = year, y = log_abundance, color = estimate, group = taxonname)) +
-  geom_line(linewidth = 0.35, linetype = "dotted") +
+  geom_line(linewidth = 0.35, linetype = "dotted") + # no significant changes in plecopterans were found
   geom_smooth(method = "lm", se = FALSE, linetype = "dashed") +
   geom_point(size = 2, aes(shape = group)) +
   geom_text_repel(data = first_years, aes(label = taxonname), hjust = -0.1, vjust = 0, nudge_y = 0.01, size = 3) +
@@ -261,7 +261,7 @@ last_years <- df_long_trichoptera_filtered %>%
 # Plot abundances by year with line colors grouped by taxonomic order
 tiff(filename = "Plots/Winner_Loser_trichoptera.tiff", width = 10, height = 10, units = 'in', res = 600, compression = 'lzw')
 ggplot(df_long_trichoptera_filtered, aes(x = year, y = log_abundance, color = estimate, group = taxonname)) +
-  geom_line(linewidth = 0.35, linetype = "dotted") +
+  geom_line(linewidth = 0.35, aes(linetype = ifelse(p.value < 0.05, "p < 0.05", "p > 0.05"))) +
   geom_smooth(method = "lm", se = FALSE, aes(linetype = ifelse(p.value < 0.05, "p < 0.05", "p > 0.05"))) +
   geom_point(size = 2, aes(shape = group)) +
   geom_text_repel(data = first_years, aes(label = taxonname), hjust = -0.1, vjust = 0, nudge_y = 0.01, size = 3) +
@@ -332,7 +332,7 @@ last_years <- df_long_diptera_filtered %>%
 # Plot abundances by year with line colors grouped by taxonomic order
 tiff(filename = "Plots/Winner_Loser_diptera.tiff", width = 10, height = 10, units = 'in', res = 600, compression = 'lzw')
 ggplot(df_long_diptera_filtered, aes(x = year, y = log_abundance, color = estimate, group = taxonname)) +
-  geom_line(linewidth = 0.35, linetype = "dotted") +
+  geom_line(linewidth = 0.35, aes(linetype = ifelse(p.value < 0.05, "p < 0.05", "p > 0.05"))) +
   geom_smooth(method = "lm", se = FALSE, aes(linetype = ifelse(p.value < 0.05, "p < 0.05", "p > 0.05"))) +
   geom_point(size = 2, aes(shape = group)) +
   geom_text_repel(data = first_years, aes(label = taxonname), hjust = -0.1, vjust = 0, nudge_y = 0.01, size = 3) +
@@ -403,7 +403,7 @@ last_years <- df_long_coleoptera_filtered %>%
 # Plot abundances by year with line colors grouped by taxonomic order
 tiff(filename = "Plots/Winner_Loser_coleoptera.tiff", width = 10, height = 10, units = 'in', res = 600, compression = 'lzw')
 ggplot(df_long_coleoptera_filtered, aes(x = year, y = log_abundance, color = estimate, group = taxonname)) +
-  geom_line(linewidth = 0.35, linetype = "dotted") +
+  geom_line(linewidth = 0.35, aes(linetype = ifelse(p.value < 0.05, "p < 0.05", "p > 0.05"))) +
   geom_smooth(method = "lm", se = FALSE, aes(linetype = ifelse(p.value < 0.05, "p < 0.05", "p > 0.05"))) +
   geom_point(size = 2, aes(shape = group)) +
   geom_text_repel(data = first_years, aes(label = taxonname), hjust = -0.1, vjust = 0, nudge_y = 0.01, size = 3) +
@@ -474,7 +474,7 @@ last_years <- df_long_insect_filtered %>%
 # Plot abundances by year with line colors grouped by taxonomic order
 tiff(filename = "Plots/Winner_Loser_insect.tiff", width = 10, height = 10, units = 'in', res = 600, compression = 'lzw')
 ggplot(df_long_insect_filtered, aes(x = year, y = log_abundance, color = estimate, group = taxonname)) +
-  geom_line(linewidth = 0.35, linetype = "dotted") +
+  geom_line(linewidth = 0.35, aes(linetype = ifelse(p.value < 0.05, "p < 0.05", "p > 0.05"))) +
   geom_smooth(method = "lm", se = FALSE, aes(linetype = ifelse(p.value < 0.05, "p < 0.05", "p > 0.05"))) +
   geom_point(size = 2, aes(shape = group)) +
   geom_text_repel(data = first_years, aes(label = taxonname), hjust = -0.1, vjust = 0, nudge_y = 0.01, size = 3) +
@@ -545,7 +545,7 @@ last_years <- df_long_crustacea_filtered %>%
 # Plot abundances by year with line colors grouped by taxonomic order
 tiff(filename = "Plots/Winner_Loser_crustacea.tiff", width = 10, height = 10, units = 'in', res = 600, compression = 'lzw')
 ggplot(df_long_crustacea_filtered, aes(x = year, y = log_abundance, color = estimate, group = taxonname)) +
-  geom_line(linewidth = 0.35, linetype = "dotted") +
+  geom_line(linewidth = 0.35, aes(linetype = ifelse(p.value < 0.05, "p < 0.05", "p > 0.05"))) +
   geom_smooth(method = "lm", se = FALSE, aes(linetype = ifelse(p.value < 0.05, "p < 0.05", "p > 0.05"))) +
   geom_point(size = 2, aes(shape = group)) +
   geom_text_repel(data = first_years, aes(label = taxonname), hjust = -0.1, vjust = 0, nudge_y = 0.01, size = 3) +
@@ -616,7 +616,7 @@ last_years <- df_long_mollusc_filtered %>%
 # Plot abundances by year with line colors grouped by taxonomic order
 tiff(filename = "Plots/Winner_Loser_mollusc.tiff", width = 10, height = 10, units = 'in', res = 600, compression = 'lzw')
 ggplot(df_long_mollusc_filtered, aes(x = year, y = log_abundance, color = estimate, group = taxonname)) +
-  geom_line(linewidth = 0.35, linetype = "dotted") +
+  geom_line(linewidth = 0.35, aes(linetype = ifelse(p.value < 0.05, "p < 0.05", "p > 0.05"))) +
   geom_smooth(method = "lm", se = FALSE, aes(linetype = ifelse(p.value < 0.05, "p < 0.05", "p > 0.05"))) +
   geom_point(size = 2, aes(shape = group)) +
   geom_text_repel(data = first_years, aes(label = taxonname), hjust = -0.1, vjust = 0, nudge_y = 0.01, size = 3) +
@@ -687,7 +687,7 @@ last_years <- df_long_annelid_filtered %>%
 # Plot abundances by year with line colors grouped by taxonomic order
 tiff(filename = "Plots/Winner_Loser_annelid.tiff", width = 10, height = 10, units = 'in', res = 600, compression = 'lzw')
 ggplot(df_long_annelid_filtered, aes(x = year, y = log_abundance, color = estimate, group = taxonname)) +
-  geom_line(linewidth = 0.35, linetype = "dotted") +
+  geom_line(linewidth = 0.35, linetype = "dotted") + # no significant changes in annelids were observed
   geom_smooth(method = "lm", se = FALSE, linetype = "dashed") +
   geom_point(size = 2, aes(shape = group)) +
   geom_text_repel(data = first_years, aes(label = taxonname), hjust = -0.1, vjust = 0, nudge_y = 0.01, size = 3) +
@@ -758,7 +758,7 @@ last_years <- df_long_other_filtered %>%
 # Plot abundances by year with line colors grouped by taxonomic order
 tiff(filename = "Plots/Winner_Loser_other.tiff", width = 10, height = 10, units = 'in', res = 600, compression = 'lzw')
 ggplot(df_long_other_filtered, aes(x = year, y = log_abundance, color = estimate, group = taxonname)) +
-  geom_line(linewidth = 0.35, linetype = "dotted") +
+  geom_line(linewidth = 0.35, aes(linetype = ifelse(p.value < 0.05, "p < 0.05", "p > 0.05"))) +
   geom_smooth(method = "lm", se = FALSE, aes(linetype = ifelse(p.value < 0.05, "p < 0.05", "p > 0.05"))) +
   geom_point(size = 2, aes(shape = group)) +
   geom_text_repel(data = first_years, aes(label = taxonname), hjust = -0.1, vjust = 0, nudge_y = 0.01, size = 3) +
