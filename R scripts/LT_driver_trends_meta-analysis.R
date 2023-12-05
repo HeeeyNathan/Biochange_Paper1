@@ -11,6 +11,8 @@ response_gls <- readRDS("outputs/glsTrends_site_level_drivers.rds")
 response_gls <- subset(response_gls, Response == myResponse)
 response_gls <- subset(response_gls, !is.na(estimate))
 
+# write.csv(response_gls, "outputs/glsTrends_site_level_drivers.csv")
+
 ### site metadata ######
 d1 <- read.csv("Data/LT_siteYr_AllData_wNAs_modified.csv", header=T) 
 siteData <- unique(d1[,c("site_id", "country")])

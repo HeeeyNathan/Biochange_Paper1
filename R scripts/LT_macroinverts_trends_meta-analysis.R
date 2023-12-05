@@ -12,6 +12,8 @@ response_gls <- readRDS("outputs/glsTrends_site_level.rds")
 response_gls <- subset(response_gls, Response == myResponse)
 response_gls <- subset(response_gls, !is.na(estimate))
 
+#write.csv(response_gls, "outputs/glsTrends_site_level.csv")
+
 ### site metadata ######
 
 d1 <- read.csv("Data/LT_siteYr_AllData_wNAs_modified.csv", header=T) 
