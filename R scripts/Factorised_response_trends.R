@@ -38,6 +38,55 @@ calculate_RivTyp <- function(df, response_type) {
     mutate(percentage = count / sum(count) * 100)
 }
 
+# Function to create a plot for a specific response type
+plot_response_RivTyp <- function(data, title) {
+  ggplot(data, aes(x = River_type, y = count, fill = EstimateCategory)) +
+    geom_bar(stat = "identity", position = "dodge") +
+    labs(title = title,
+         x = "River Type", y = "Number of sites",
+         fill = "GLS Estimates") +
+    scale_fill_manual(values = c("Positive trends" = "#95ccba", "Negative trends" = "#f2cc84")) +
+    theme_minimal() +
+    facet_wrap(~Response, scales = "free_y") +
+    guides(fill = guide_legend(title = "Estimate"))
+}
+
+# # Function to perform chi-squared test for each combination of response and river type
+# perform_chi_squared_test <- function(data) {
+#   result <- data %>%
+#     group_by(River_type, Response) %>%
+#     summarize(Positive = sum(count[EstimateCategory == "Positive trends"]),
+#               Negative = sum(count[EstimateCategory == "Negative trends"]))
+#   
+#   # Perform chi-squared test
+#   result <- result %>%
+#     rowwise() %>%
+#     mutate(p_value = chisq.test(c(Positive, Negative))$p.value)
+#   
+#   return(result)
+# }
+# 
+# # Create a list to store the results
+# taxo_chi <- lapply(taxo_responses, function(response) {
+#   data <- calculate_RivTyp(merged_df, response)
+#   perform_chi_squared_test(data)
+# })
+# 
+# func_chi <- lapply(func_responses, function(response) {
+#   data <- calculate_RivTyp(merged_df, response)
+#   perform_chi_squared_test(data)
+# })
+# 
+# group_chi <- lapply(group_responses, function(response) {
+#   data <- calculate_RivTyp(merged_df, response)
+#   perform_chi_squared_test(data)
+# })
+# 
+# # Combine the chi_squared results
+# taxo_chi_results <- bind_rows(taxo_chi)
+# func_chi_results <- bind_rows(func_chi)
+# group_chi_results <- bind_rows(group_chi)
+
 # Create a list to store the dataframes
 taxo_list <- lapply(taxo_responses, function(response) calculate_RivTyp(merged_df, response))
 func_list <- lapply(func_responses, function(response) calculate_RivTyp(merged_df, response))
@@ -58,39 +107,20 @@ taxo_RivTyp$Response <- factor(taxo_RivTyp$Response, levels = taxo_order)
 func_RivTyp$Response <- factor(func_RivTyp$Response, levels = func_order)
 group_RivTyp$Response <- factor(group_RivTyp$Response, levels = group_order)
 
-# Plot using facet_wrap
-ggplot(taxo_RivTyp, aes(x = River_type, y = count, fill = EstimateCategory)) +
-  geom_bar(stat = "identity", position = "dodge") +
-  labs(title = "Estimates above and below Zero by River Type",
-       x = "River Type", y = "Number of sites",
-       fill = "GLS Estimates") +
-  scale_fill_manual(values = c("Positive trends" = "#95ccba", "Negative trends" = "#f2cc84")) +
-  theme_minimal() +
-  facet_wrap(~Response, scales = "free_y")
-
-# Plot using facet_wrap
-ggplot(func_RivTyp, aes(x = River_type, y = count, fill = EstimateCategory)) +
-  geom_bar(stat = "identity", position = "dodge") +
-  labs(title = "Estimates above and below Zero by River Type",
-       x = "River Type", y = "Number of sites",
-       fill = "GLS Estimates") +
-  scale_fill_manual(values = c("Positive trends" = "#95ccba", "Negative trends" = "#f2cc84")) +
-  theme_minimal() +
-  facet_wrap(~Response, scales = "free_y")
-
-# Plot using facet_wrap
-ggplot(group_RivTyp, aes(x = River_type, y = count, fill = EstimateCategory)) +
-  geom_bar(stat = "identity", position = "dodge") +
-  labs(title = "Estimates above and below Zero by River Type",
-       x = "River Type", y = "Number of sites",
-       fill = "GLS Estimates") +
-  scale_fill_manual(values = c("Positive trends" = "#95ccba", "Negative trends" = "#f2cc84")) +
-  theme_minimal() +
-  facet_wrap(~Response, scales = "free_y")
+# Plot each response type
+tiff("Plots/Taxonomic responses by river type.tiff", width = 10, height = 10, units = 'in', res = 600, compression = 'lzw')
+plot_response_RivTyp(taxo_RivTyp, "Taxonomic responses by river type")
+dev.off()
+tiff("Plots/Functional responses by river type.tiff", width = 10, height = 10, units = 'in', res = 600, compression = 'lzw')
+plot_response_RivTyp(func_RivTyp, "Functional responses by river type")
+dev.off()
+tiff("Plots/Taxonomic group responses by river type.tiff", width = 10, height = 10, units = 'in', res = 600, compression = 'lzw')
+plot_response_RivTyp(group_RivTyp, "Group responses by river type")
+dev.off()
 
 # EXTENT OF MODIFICATION
-# Function to calculate counts and percentages for extent of modification
-calculate_summary_Mod <- function(df, response_type) {
+# Function to calculate counts and percentages for each river type
+calculate_Mod <- function(df, response_type) {
   df %>%
     filter(Response == response_type, !is.na(estimate)) %>%
     group_by(Heavily_modified, EstimateCategory, Response) %>%
@@ -99,27 +129,49 @@ calculate_summary_Mod <- function(df, response_type) {
     mutate(percentage = count / sum(count) * 100)
 }
 
+# Function to create a plot for a specific response type
+plot_response_Mod <- function(data, title) {
+  ggplot(data, aes(x = Heavily_modified, y = count, fill = EstimateCategory)) +
+    geom_bar(stat = "identity", position = "dodge") +
+    labs(title = title,
+         x = "Heavily modified", y = "Number of sites",
+         fill = "GLS Estimates") +
+    scale_fill_manual(values = c("Positive trends" = "#95ccba", "Negative trends" = "#f2cc84")) +
+    theme_minimal() +
+    facet_wrap(~Response, scales = "free_y") +
+    guides(fill = guide_legend(title = "Estimate"))
+}
+
 # Create a list to store the dataframes
-dfs_list <- lapply(responses, function(response) calculate_summary_Mod(merged_df, response))
+taxo_list <- lapply(taxo_responses, function(response) calculate_Mod(merged_df, response))
+func_list <- lapply(func_responses, function(response) calculate_Mod(merged_df, response))
+group_list <- lapply(group_responses, function(response) calculate_Mod(merged_df, response))
 
 # Combine the dataframes
-combined_df_Mod <- bind_rows(dfs_list)
+taxo_Mod <- bind_rows(taxo_list)
+func_Mod <- bind_rows(func_list)
+group_Mod <- bind_rows(group_list)
 
 # Define the desired order of responses
-response_order <- factor(responses, levels = responses, ordered = TRUE)
+taxo_order <- factor(taxo_responses, levels = taxo_responses, ordered = TRUE)
+func_order <- factor(func_responses, levels = func_responses, ordered = TRUE)
+group_order <- factor(group_responses, levels = group_responses, ordered = TRUE)
 
 # Convert 'Response' to an ordered factor
-combined_df_Mod$Response <- factor(combined_df_Mod$Response, levels = response_order)
+taxo_Mod$Response <- factor(taxo_Mod$Response, levels = taxo_order)
+func_Mod$Response <- factor(func_Mod$Response, levels = func_order)
+group_Mod$Response <- factor(group_Mod$Response, levels = group_order)
 
-# Plot using facet_wrap
-ggplot(combined_df_Mod, aes(x = Heavily_modified, y = count, fill = EstimateCategory)) +
-  geom_bar(stat = "identity", position = "dodge") +
-  labs(title = "Estimates above and below Zero by River Type",
-       x = "River Type", y = "Number of sites",
-       fill = "GLS Estimates") +
-  scale_fill_manual(values = c("Positive trends" = "#95ccba", "Negative trends" = "#f2cc84")) +
-  theme_minimal() +
-  facet_wrap(~Response, scales = "free_y")
+# Plot each response type
+tiff("Plots/Taxonomic responses by extent of modification.tiff", width = 10, height = 10, units = 'in', res = 600, compression = 'lzw')
+plot_response_Mod(taxo_Mod, "Taxonomic responses by extent of modification")
+dev.off()
+tiff("Plots/Functional responses by extent of modificatione.tiff", width = 10, height = 10, units = 'in', res = 600, compression = 'lzw')
+plot_response_Mod(func_Mod, "Functional responses by extent of modification")
+dev.off()
+tiff("Plots/Taxonomic group responses by extent of modification.tiff", width = 10, height = 10, units = 'in', res = 600, compression = 'lzw')
+plot_response_Mod(group_Mod, "Taxonomic group responses by extent of modification")
+dev.off()
 
 ##### CLEAN UP --------------------
 library(pacman)
