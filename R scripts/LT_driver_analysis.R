@@ -81,6 +81,7 @@ allYrs$flow <- log10(allYrs$flow)
 # transform year variable
 allYrs$cYear <- allYrs$year_wMissing - median(allYrs$year_wMissing)
 allYrs$iYear <- allYrs$year_wMissing - min(allYrs$year_wMissing)+1
+allYrs$fYear <- factor(allYrs$year_wMissing)
 
 # Check histograms of response variables agaiin after transformation
 hist(allYrs$abundance)
@@ -124,10 +125,11 @@ allYrs$EQC[allYrs$EQC == "Good"] <- "3Good"
 allYrs$EQC[allYrs$EQC == "Very good"] <- "3High"
 
 # make factors
+allYrs$fsite_id <- factor(allYrs$site_id)
 allYrs$fYear <- factor(allYrs$year_wMissing)
-allYrs$fmodified <- as.factor(allYrs$Heavily_modified)
-allYrs$ftype <- as.factor(allYrs$river_type)
-allYrs$fEQC <- as.factor(allYrs$EQC)
+allYrs$fmodified <- factor(allYrs$Heavily_modified)
+allYrs$ftype <- factor(allYrs$river_type)
+allYrs$fEQC <- factor(allYrs$EQC)
 
 # Scale the covariates
 # function to add a new column onto the data with scaled vars (with s before their name)
@@ -165,23 +167,23 @@ colnames(allYrs)
 pairs(allYrs[, c(82, 85, 88:93)], lower.panel = panel.smooth, upper.panel = panel.cor, diag.panel = panel.hist, main = "Pearson Correlation Matrix") # Check env data for collinearity
 
 # Construct PCA to check the environmental variables and their relationships
-allYrs_pca = princomp(na.omit(allYrs[, c(82, 85, 88:93)]), scores = TRUE) #computes PCA - gives us all the PCA results
+allYrs_pca = princomp(na.omit(allYrs[, c(83, 86, 89:94)]), scores = TRUE) #computes PCA - gives us all the PCA results
 summary(allYrs_pca)
 allYrs_pca
 plot(allYrs_pca$scores[, 1], allYrs_pca$scores[, 2], type = "n", xlab = "Axis.1", ylab = "Axis.2", las = 1) #empty PCA Plot
 abline(v = 0, lty = 3) #plots origin line verticle
 abline(h = 0, lty = 3) #plots origin line horizontal
 points(allYrs_pca$scores[, 1], allYrs_pca$scores[, 2], col = "red", cex = 0.6, pch = 3) #adds text for samples
-vec = envfit(allYrs_pca, na.omit(allYrs[, c(82, 85, 88:93)]), choices = c(1, 2)) #computes the environmental variable vectors
+vec = envfit(allYrs_pca, na.omit(allYrs[, c(83, 86, 89:94)]), choices = c(1, 2)) #computes the environmental variable vectors
 plot(vec, col = "blue", cex = 1) #plots vectors (environmetal variables)
 
 # Check broken stick model
 biplot(allYrs_pca)
 summary(allYrs_pca)
 allYrs_pca_scores <- (scores(allYrs_pca)[,1])
-corr1 <- cor(na.omit(allYrs[, c(82, 85, 88:93)]), scores(allYrs_pca)[,1]) # correlation between original variables and principal components
+corr1 <- cor(na.omit(allYrs[, c(83, 86, 89:94)]), scores(allYrs_pca)[,1]) # correlation between original variables and principal components
 round(corr1, 3)
-corr2 <- cor(na.omit(allYrs[, c(82, 85, 88:93)]), scores(allYrs_pca)[,2]) # correlation between original variables and principal components
+corr2 <- cor(na.omit(allYrs[, c(83, 86, 89:94)]), scores(allYrs_pca)[,2]) # correlation between original variables and principal components
 round(corr2, 3)
 screeplot(allYrs_pca, bstick = TRUE, npcs = length(allYrs_pca$sdev))
 (ev <- allYrs_pca$sdev^2)
@@ -321,14 +323,14 @@ pairs(allYrs[,VarToFit], lower.panel = panel.smooth, upper.panel = panel.cor, di
 # pairs(allYrs[,unique(rownames(BigCorrs))], lower.panel = panel.smooth, upper.panel = panel.cor, diag.panel = panel.hist, main = "Pearson Correlation Matrix") # Check env data for collinearity
 
 ### remove missing covariate data ####
-allYrs_complete <- allYrs[complete.cases(allYrs[, c(79:93, 97)]),]
+allYrs_complete <- allYrs[complete.cases(allYrs[, c(80:94, 98)]),]
 
 ### Fitting models with lme4 ####
 ### With river type factor ####
 VarToFit
 FixedEffects
 form.fixedS_type <- paste("(", paste(FixedEffects, collapse = " + "), ")*ftype", collapse = "")
-form.randomlme <- "(1|site_id) + (1|year)" # (1|year) according to Weiss et al. (2023) & Daskalova et al. (2021)
+form.randomlme <- "(1|fsite_id) + (1|fYear)" # (1|year) according to Weiss et al. (2023) & Daskalova et al. (2021)
 
 ## Make functions
 FitModelContrasts <- function(resp, fixed, random, data) {

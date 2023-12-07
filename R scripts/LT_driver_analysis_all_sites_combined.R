@@ -31,10 +31,11 @@ allYrs$river_type[allYrs$river_type == 4] <- "type4"
 allYrs$river_type[allYrs$river_type == 5] <- "type5"
 
 # make factors
+allYrs$fsite_id <- factor(allYrs$site_id)
 allYrs$fYear <- factor(allYrs$year_wMissing)
-allYrs$fmodified <- as.factor(allYrs$Heavily_modified)
-allYrs$ftype <- as.factor(allYrs$river_type)
-allYrs$fEQC <- as.factor(allYrs$EQC)
+allYrs$fmodified <- factor(allYrs$Heavily_modified)
+allYrs$ftype <- factor(allYrs$river_type)
+allYrs$fEQC <- factor(allYrs$EQC)
 
 # Scale the covariates
 # function to add a new column onto the data with scaled vars (with s before their name)
@@ -61,22 +62,22 @@ allYrs <- subset(allYrs, select = -c(ID)) # remove ID variable
 # pairs(allYrs[, c(80, 83, 86:91)], lower.panel = panel.smooth, upper.panel = panel.cor, diag.panel = panel.hist, main = "Pearson Correlation Matrix") # Check env data for collinearity
 
 # Construct PCA to check the environmental variables and their relationships
-allYrs_pca = princomp(na.omit(allYrs[, c(80, 83, 86:91)]), scores = TRUE) #computes PCA - gives us all the PCA results
+allYrs_pca = princomp(na.omit(allYrs[, c(81, 84, 87:92)]), scores = TRUE) #computes PCA - gives us all the PCA results
 summary(allYrs_pca)
 allYrs_pca
 plot(allYrs_pca$scores[, 1], allYrs_pca$scores[, 2], type = "n", xlab = "Axis.1", ylab = "Axis.2", las = 1) #empty PCA Plot
 abline(v = 0, lty = 3) #plots origin line verticle
 abline(h = 0, lty = 3) #plots origin line horizontal
 points(allYrs_pca$scores[, 1], allYrs_pca$scores[, 2], col = "red", cex = 0.6, pch = 3) #adds text for samples
-vec = envfit(allYrs_pca, na.omit(allYrs[, c(80, 83, 86:91)]), choices = c(1, 2)) #computes the environmental variable vectors
+vec = envfit(allYrs_pca, na.omit(allYrs[, c(81, 84, 87:92)]), choices = c(1, 2)) #computes the environmental variable vectors
 plot(vec, col = "blue", cex = 1) #plots vectors (environmetal variables)
 
 # Check broken stick model
 biplot(allYrs_pca)
 allYrs_pca_scores <- (scores(allYrs_pca)[,1])
-corr1 <- cor(na.omit(allYrs[, c(80, 83, 86:91)]), scores(allYrs_pca)[,1]) # correlation between original variables and principal components
+corr1 <- cor(na.omit(allYrs[, c(81, 84, 87:92)]), scores(allYrs_pca)[,1]) # correlation between original variables and principal components
 round(corr1, 3)
-corr2 <- cor(na.omit(allYrs[, c(80, 83, 86:91)]), scores(allYrs_pca)[,2]) # correlation between original variables and principal components
+corr2 <- cor(na.omit(allYrs[, c(81, 84, 87:92)]), scores(allYrs_pca)[,2]) # correlation between original variables and principal components
 round(corr2, 3)
 screeplot(allYrs_pca, bstick = TRUE, npcs = length(allYrs_pca$sdev))
 (ev <- allYrs_pca$sdev^2)
@@ -107,7 +108,7 @@ response_lmer <- unique(allYrs[,c("site_code", "site_id", "year",
                                  "FRic", "FEve", "FDis", "FRed", "F_turnover",
                                  "FRic.SES", "FEve.SES", "FDis.SES",
                                  "sflow", "stemp", "sNH4.N", "ssus_solid", "so2_dis", "spH", "sBOD7", "PC_axis1",
-                                 "fmodified", "ftype", "fEQC")])
+                                 "fsite_id", "fYear", "fmodified", "ftype", "fEQC")])
 
 ### remove missing covariate data ####
 response_lmer <- response_lmer[complete.cases(response_lmer[, c(30:37)]),]
@@ -184,7 +185,7 @@ if(myResponse %in% c("abundance", "ept_abundance", "diptera_abundance",
 hist(response_lmer$Response)
 
 ### run model ###
-fit1 <- lmer(Response ~ sflow + spH + stemp + so2_dis + sNH4.N + PC_axis1 + (1|site_id) + (1|year), data = response_lmer)
+fit1 <- lmer(Response ~ sflow + spH + stemp + so2_dis + sNH4.N + PC_axis1 + (1|fsite_id) + (1|fYear), data = response_lmer)
 
 summ <- summary(fit1)$coefficients
 (summ <- data.frame(summ))
