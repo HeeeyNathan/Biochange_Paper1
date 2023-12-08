@@ -97,7 +97,7 @@ allYrs <- subset(allYrs, select = -c(ID)) # remove ID variable
 # choose which country for this task
 TaskID <- read.csv("Data/LT_DriverTrends_TaskIDs.csv", as.is = T)
 
-task.id = as.integer(Sys.getenv("SLURM_ARRAY_TASK_ID", "6"))
+task.id = as.integer(Sys.getenv("SLURM_ARRAY_TASK_ID", "14"))
 myCountry <- TaskID$country[which(TaskID$TaskID==task.id)]
 allYrs <- subset(allYrs,country==myCountry)
 
@@ -124,9 +124,32 @@ hist(allYrs$PC_axis1)
 summary(allYrs$PC_axis1)
 hist(log10(allYrs$PC_axis1 + 3))
 
+hist(allYrs$alkalinity)
+
+hist(allYrs$EC)
+hist(log10(allYrs$EC + 0.1))
+
+hist(allYrs$NO3.N)
+hist(log10(allYrs$NO3.N + 0.1))
+
+hist(allYrs$NO2.N)
+hist(log10(allYrs$NO2.N + 0.1))
+
+hist(allYrs$mineral.N)
+hist(log10(allYrs$mineral.N + 0.1))
+
+hist(allYrs$Tot.N)
+hist(log10(allYrs$Tot.N + 0.1))
+
+hist(allYrs$PO4.P)
+hist(log10(allYrs$PO4.P + 0.1))
+
+hist(allYrs$Tot.P)
+hist(log10(allYrs$Tot.P + 0.1))
+
 # transform variables that are right-skewed
 #third run transformation
-if(myResponse %in% c("flow")){
+if(myResponse %in% c("flow", "EC", "NO3.N", "NO2.N", "mineral.N", "Tot.N", "PO4.P", "Tot.P")){
 
   allYrs$Response <- log10(allYrs$Response + 0.1)
 
