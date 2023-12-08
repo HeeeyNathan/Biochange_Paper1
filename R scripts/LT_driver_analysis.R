@@ -440,26 +440,37 @@ Models.lme1 <- lapply(VarToFit, FitModelContrasts, fixed=form.fixedS_type,
 # }
 
 PlotEffects <- function(name, summs, label.y=TRUE, title=TRUE, removeInt=FALSE) {
+  # Extract the summary information for the specified variable
   summ <- data.frame(summs[[name]])
+  # If specified, remove the intercept term from the summary
   if(removeInt) summ <- summ[rownames(summ)!="(Intercept)",]
-  # Set the rownames to the specified values
+  # Set custom row names for the summary dataframe
   new_rownames <- c("Flow", "pH", "Temperature", "Diss. oxygen", "Ammonium", "Nutrients PCA")
   rownames(summ) <- new_rownames
+  # Create new columns for lower and upper limits
   summ$LLim <- summ[, 4]
   summ$ULim <- summ[, 5]
+  # Create a sequence for the y-axis values
   At.Y <- 1:nrow(summ)
-  # # Set line end style to square globally
-  # par(lend = 2)
+  # Check if confidence intervals include the null hypothesis
+  include_null <- (summ$LLim <= 0) & (summ$ULim >= 0)
+  # Plot the effect estimates with different colors based on null hypothesis inclusion
   plot(summ$Estimate, At.Y, yaxt="n", ann=FALSE, 
-       xlim=c(min(summ$LLim), max(summ$ULim)), ylim=c(0.5, nrow(summ)+0.5), col = ifelse(summ$Estimate >= 0, "#95ccba", "#f2cc84"), cex = 2)
+       xlim=c(min(summ$LLim), max(summ$ULim)), ylim=c(0.5, nrow(summ)+0.5),
+       col = ifelse(include_null, "gray90", ifelse(summ$Estimate >= 0, "#95ccba", "#f2cc84")), pch = 16, cex = 2)
   # Plot segments to the left of zero in "#f2cc84" with square ends
   left_of_zero <- summ$LLim < 0
-  segments(summ$LLim[left_of_zero], At.Y[left_of_zero], pmin(0, summ$ULim[left_of_zero]), At.Y[left_of_zero], col = "#f2cc84", lwd = 2, lend = 2)  # Use lend = 2 for square ends
+  segments(summ$LLim[left_of_zero], At.Y[left_of_zero], pmin(0, summ$ULim[left_of_zero]), At.Y[left_of_zero],
+           col = ifelse(include_null[left_of_zero], "gray90", "#f2cc84"), lwd = 3, lend = 2)
   # Plot segments to the right of zero in "#95ccba" with square ends
   right_of_zero <- summ$ULim > 0
-  segments(pmax(0, summ$LLim[right_of_zero]), At.Y[right_of_zero], summ$ULim[right_of_zero], At.Y[right_of_zero], col = "#95ccba", lwd = 2, lend = 2)  # Use lend = 2 for square ends
+  segments(pmax(0, summ$LLim[right_of_zero]), At.Y[right_of_zero], summ$ULim[right_of_zero], At.Y[right_of_zero],
+           col = ifelse(include_null[right_of_zero], "gray90", "#95ccba"), lwd = 3, lend = 2)
+  # Add a vertical dashed line at zero
   abline(v=0, lty=3)
+  # If specified, label the y-axis with custom names
   if(label.y) axis(2, at=At.Y, labels = rownames(summ), las=1)
+  # If specified, add a title to the plot
   if(title) title(main=name)
 }
 
@@ -475,6 +486,45 @@ PlotRiverTypes <- function(wh, mod) {
   sapply(names(AbundEsts)[-1], PlotEffects, summs=AbundEsts, 
          label.y=FALSE, title=TRUE, removeInt = TRUE)
   mtext(wh, 4, outer=FALSE, line=2)
+}
+
+# Figure 4 - selected metrics by river type
+VarToPlot <- c(1:2, 4, 10, 7)
+par(mfrow=c(length(VarToPlot),5), mar=c(2,2,2,2), oma=c(2,4,2,2))
+sapply(names(Models.lme1)[VarToPlot], PlotRiverTypes, mod=Models.lme1)
+mtext("River Type", 3, outer=TRUE, font = 2)
+
+# select taxon indices
+tiff(filename = "Plots/LT_Driver_Est_RivTyp_SelectIndices.tiff", width = 10, height = 10, units = 'in', res = 600, compression = 'lzw')
+VarToPlot <- c(1:2, 4, 10, 7)
+par(mfrow=c(length(VarToPlot),5), mar=c(2,0.5,2,2), oma=c(2,6,2,2))
+sapply(names(Models.lme1)[VarToPlot], PlotRiverTypes, mod=Models.lme1)
+mtext("River Type", 3, outer=TRUE, font = 2)
+mtext("Estimate", 1, outer = TRUE, line = 1)
+dev.off()
+
+PlotEffects <- function(name, summs, label.y=TRUE, title=TRUE, removeInt=FALSE) {
+  summ <- data.frame(summs[[name]])
+  if(removeInt) summ <- summ[rownames(summ)!="(Intercept)",]
+  # Set the rownames to the specified values
+  new_rownames <- c("Flow", "pH", "Temperature", "Diss. oxygen", "Ammonium", "Nutrients PCA")
+  rownames(summ) <- new_rownames
+  summ$LLim <- summ[, 4]
+  summ$ULim <- summ[, 5]
+  At.Y <- 1:nrow(summ)
+  # # Set line end style to square globally
+  # par(lend = 2)
+  plot(summ$Estimate, At.Y, yaxt="n", ann=FALSE,
+       xlim=c(min(summ$LLim), max(summ$ULim)), ylim=c(0.5, nrow(summ)+0.5), col = ifelse(summ$Estimate >= 0, "#95ccba", "#f2cc84"), cex = 2)
+  # Plot segments to the left of zero in "#f2cc84" with square ends
+  left_of_zero <- summ$LLim < 0
+  segments(summ$LLim[left_of_zero], At.Y[left_of_zero], pmin(0, summ$ULim[left_of_zero]), At.Y[left_of_zero], col = "#f2cc84", lwd = 2, lend = 2)  # Use lend = 2 for square ends
+  # Plot segments to the right of zero in "#95ccba" with square ends
+  right_of_zero <- summ$ULim > 0
+  segments(pmax(0, summ$LLim[right_of_zero]), At.Y[right_of_zero], summ$ULim[right_of_zero], At.Y[right_of_zero], col = "#95ccba", lwd = 2, lend = 2)  # Use lend = 2 for square ends
+  abline(v=0, lty=3)
+  if(label.y) axis(2, at=At.Y, labels = rownames(summ), las=1)
+  if(title) title(main=name)
 }
 
 # all taxon indices
