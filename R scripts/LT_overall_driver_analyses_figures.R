@@ -44,12 +44,15 @@ Group1$fResponse <- factor(Group1$fResponse, levels=c("Total abundance", "Taxon 
 p1 <- ggplot(Group1, aes(x = Estimate, y = fDriver)) +
   scale_color_identity() +
   geom_point(
-    shape = 21, size = 4, fill = "white",
-    aes(color = ifelse(Estimate >= 0, "#95ccba", "#f2cc84"))
+    shape = 16, size = 4, 
+    aes(color = ifelse((0 >= `2.5 %` & 0 <= `97.5 %`) | (0 <= `2.5 %` & 0 >= `97.5 %`), "gray90", ifelse(Estimate >= 0, "#95ccba", "#f2cc84")))
   ) +
   geom_errorbar(
-    width = 0, linewidth = 1,
-    aes(xmax = (`2.5 %`), xmin = (`97.5 %`), color = ifelse(Estimate >= 0, "#95ccba", "#f2cc84"))
+    width = 0, linewidth = 1.5,
+    aes(
+      xmax = (`2.5 %`), xmin = (`97.5 %`),
+      color = ifelse((0 >= `2.5 %` & 0 <= `97.5 %`) | (0 <= `2.5 %` & 0 >= `97.5 %`), "gray90", ifelse(Estimate >= 0, "#95ccba", "#f2cc84"))
+    )
   ) +
   facet_wrap(~ fResponse, nrow = 5, scales = "free_x") +
   theme_bw() +
@@ -68,34 +71,10 @@ p1 <- ggplot(Group1, aes(x = Estimate, y = fDriver)) +
   xlab("")
 p1
 
-# svg(filename = "Plots/Overall_drivers_TaxoIndices.svg", width = 8, height = 12, bg = "white")
-# p1 <- ggplot(Group1, aes(x = Estimate, y = fDriver)) +
-#   scale_color_identity() +
-#   geom_point(
-#     shape = 21, size = 4, fill = "white",
-#     aes(color = ifelse(Estimate >= 0, "#95ccba", "#f2cc84"))
-#   ) +
-#   geom_errorbar(
-#     width = 0, linewidth = 1,
-#     aes(xmin = (`2.5 %`), xmax = (`97.5 %`), color = ifelse(Estimate >= 0, "#95ccba", "#f2cc84"))
-#   ) +
-#   facet_wrap(~ fResponse, nrow = 5, scales = "free_x") +
-#   theme_bw() +
-#   theme(
-#     panel.grid = element_blank(),
-#     strip.background = element_blank(),
-#     plot.margin = unit(c(0, 0.5, 0.5, 0), "cm"),
-#     legend.position = "none",
-#     text = element_text(size = 12),  # Adjust the size of all text elements
-#     axis.title = element_blank(),    # Remove axis titles
-#     axis.text = element_text(size = 12),  # Adjust the size of tick mark labels
-#     strip.text = element_text(size = 12, face = "bold")  # Adjust the size and face of facet labels
-#   ) +
-#   geom_vline(xintercept = 0, lty = 3) +
-#   ylab("") +
-#   xlab("")
-# p1
-# dev.off()
+svg(filename = "Plots/LT_OverallDrivers_TaxoIndices.svg", width = 6, height = 10, bg = "white")
+tiff(filename = "Plots/LT_OverallDrivers_TaxoIndices.tiff", width = 6, height = 10, units = 'in', res = 600, compression = 'lzw')
+p1
+dev.off()
 
 # Change response names to match other plots (consistency)
 nrow(Group2)
@@ -108,12 +87,15 @@ Group2$fResponse <- factor(Group2$fResponse, levels=c("Func. redundancy", "Func.
 p2 <- ggplot(Group2, aes(x = Estimate, y = fDriver)) +
   scale_color_identity() +
   geom_point(
-    shape = 21, size = 4, fill = "white",
-    aes(color = ifelse(Estimate >= 0, "#95ccba", "#f2cc84"))
+    shape = 16, size = 4, 
+    aes(color = ifelse((0 >= `2.5 %` & 0 <= `97.5 %`) | (0 <= `2.5 %` & 0 >= `97.5 %`), "gray90", ifelse(Estimate >= 0, "#95ccba", "#f2cc84")))
   ) +
   geom_errorbar(
-    width = 0, linewidth = 1,
-    aes(xmin = (`2.5 %`), xmax = (`97.5 %`), color = ifelse(Estimate >= 0, "#95ccba", "#f2cc84"))
+    width = 0, linewidth = 1.5,
+    aes(
+      xmax = (`2.5 %`), xmin = (`97.5 %`),
+      color = ifelse((0 >= `2.5 %` & 0 <= `97.5 %`) | (0 <= `2.5 %` & 0 >= `97.5 %`), "gray90", ifelse(Estimate >= 0, "#95ccba", "#f2cc84"))
+    )
   ) +
   facet_wrap(~ fResponse, nrow = 5, scales = "free_x") +
   theme_bw() +
@@ -131,6 +113,11 @@ p2 <- ggplot(Group2, aes(x = Estimate, y = fDriver)) +
   ylab("") +
   xlab("")
 p2
+
+svg(filename = "Plots/LT_OverallDrivers_funcIndices.svg", width = 6, height = 10, bg = "white")
+tiff(filename = "Plots/LT_OverallDrivers_FuncIndices.tiff", width = 6, height = 10, units = 'in', res = 600, compression = 'lzw')
+p2
+dev.off()
 
 # svg(filename = "Plots/Overall_drivers_FuncIndices.svg", width = 8, height = 12, bg = "white")
 # p2 <- ggplot(Group2, aes(x = Estimate, y = fDriver)) +

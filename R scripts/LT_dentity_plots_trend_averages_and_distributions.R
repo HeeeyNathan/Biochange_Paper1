@@ -12,8 +12,8 @@ Ests <- Ests[, -1]
 d1 <- read.csv("Data/LT_siteYr_AllData_wNAs_modified.csv", header=T) 
 allYrs <- d1[!is.na(d1$site_id_wMissing),]
 
-tiff(filename = "Plots/LT_slopeDistributions_TaxoFuncIndices.tiff", width = 12, height = 10, units = 'in', res = 600, compression = 'lzw')
-# svg(filename = "Plots/LT_slopeDistributions_TaxoFuncIndices.svg", width = 12, height = 10, bg = "white")
+#tiff(filename = "Plots/LT_slopeDistributions_TaxoFuncIndices.tiff", width = 12, height = 10, units = 'in', res = 600, compression = 'lzw')
+svg(filename = "Plots/Figure2_and_3_slopedistributions.svg", width = 12, height = 10, bg = "white")
 
 par(mar=c(4,0.4,0.4,0.4), mfrow=c(1,2))
 
@@ -49,7 +49,7 @@ polygon(x=c(stand_abund$Q10, stand_abund$Q10, stand_abund$Q90, stand_abund$Q90),
         y=c((yy-yy/6),(yy+yy/6),(yy+yy/6),(yy-yy/6)),
         col = 1,border = 0,lwd =1)
 legend(x=-50, y=(4/4*(b-a)+a), legend=("a, Abundance"), bty="n", cex=1.3)
-legend(x=25, y=(4/4*(b-a)+a), legend=expression(paste("+3.53% ",y^-1, sep = "")), bty="n", cex=1.3)
+legend(x=25, y=(4/4*(b-a)+a), legend=expression(paste("+3.46% ",y^-1, sep = "")), bty="n", cex=1.3)
 
 #### Spp Richness #####
 # sqrt(x)
@@ -86,7 +86,7 @@ polygon(x=c(stand_SppRich$Q10, stand_SppRich$Q10, stand_SppRich$Q90, stand_SppRi
         y=c((yy-yy/6),(yy+yy/6),(yy+yy/6),(yy-yy/6)),
         col = 1,border = 0,lwd = 1)
 legend(x=-50, y=(3.2/4*(b-a)+a), legend=("b, Taxon richness"), bty="n", cex=1.3)
-legend(x=25, y=(3.2/4*(b-a)+a), legend=expression(paste("+3.28% ",y^-1, sep = "")), bty="n", cex=1.3)
+legend(x=25, y=(3.2/4*(b-a)+a), legend=expression(paste("+3.29% ",y^-1, sep = "")), bty="n", cex=1.3)
 
 #### Shannon's Evenness #####
 # none
@@ -122,7 +122,7 @@ polygon(x=c(stand_E10$Q10, stand_E10$Q10, stand_E10$Q90, stand_E10$Q90),
         y=c((yy-yy/6),(yy+yy/6),(yy+yy/6),(yy-yy/6)),
         col = 1,border = 0,lwd =1)
 legend(x=-50, y=(2.4/4*(b-a)+a), legend=("c, Evenness"), bty="n", cex=1.3)
-legend(x=25, y=(2.4/4*(b-a)+a), legend=expression(paste("-1.90% ",y^-1, sep = "")), bty="n", cex=1.3)
+legend(x=25, y=(2.4/4*(b-a)+a), legend=expression(paste("-1.91% ",y^-1, sep = "")), bty="n", cex=1.3)
 
 #### ShannonsH #####
 # none
@@ -373,7 +373,7 @@ polygon(x=c(stand_F_to$Q10, stand_F_to$Q10, stand_F_to$Q90, stand_F_to$Q90),
         y=c((yy-yy/6),(yy+yy/6),(yy+yy/6),(yy-yy/6)),
         col = 1,border = 0,lwd =1)
 legend(x=-50, y=(0.8/4*(b-a)+a), legend=("e, Func. turnover"), bty="n", cex=1.3)
-legend(x=25, y=(0.8/4*(b-a)+a), legend=expression(paste("-1.10% ",y^-1, sep = "")), bty="n", cex=1.3)
+legend(x=25, y=(0.8/4*(b-a)+a), legend=expression(paste("-1.11% ",y^-1, sep = "")), bty="n", cex=1.3)
 
 ##
 box(lwd=2,col="white")
