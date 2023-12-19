@@ -89,7 +89,7 @@ allYrs <- dplyr::left_join(allYrs, pc1_scores, by = "ID")
 allYrs <- subset(allYrs, select = -c(ID)) # remove ID variable
 
 # Create plot
-tiff(filename = "Plots/LT_slopeDistributions_Drivers.tiff", width = 12, height = 7.5, units = 'in', res = 600, compression = 'lzw')
+tiff(filename = "Plots/LT_slopeDistributions_Drivers.tiff", width = 12, height = 6, units = 'in', res = 600, compression = 'lzw')
 # svg(filename = "Plots/LT_slopeDistributions_TaxoFuncIndices.svg", width = 12, height = 10, bg = "white")
 
 # set plotting parametres
@@ -302,7 +302,7 @@ polygon(x=c(stand_PC_axis1$Q5, stand_PC_axis1$Q5, stand_PC_axis1$Q95, stand_PC_a
 polygon(x=c(stand_PC_axis1$Q10, stand_PC_axis1$Q10, stand_PC_axis1$Q90, stand_PC_axis1$Q90),
         y=c((yy-yy/6),(yy+yy/6),(yy+yy/6),(yy-yy/6)),
         col = 1,border = 0,lwd =1)
-legend(x=-26, y=(1.3/4*(b-a)+a), legend=("e, Nutrients PC axis 1"), bty="n", cex=1.3)
+legend(x=-26, y=(1.3/4*(b-a)+a), legend=("f, Nutrients PCA axis 1"), bty="n", cex=1.3)
 legend(x=2, y=(1.3/4*(b-a)+a), legend=expression(paste("1.50% ",y^-1, sep = "")), bty="n", cex=1.3)
 
 ##

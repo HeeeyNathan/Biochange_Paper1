@@ -10,7 +10,7 @@ Ests <- Ests[, -1]
 d1 <- read.csv("Data/LT_siteYr_AllData_wNAs_modified.csv", header=T) 
 allYrs <- d1[!is.na(d1$site_id_wMissing),]
 
-tiff(filename = "Plots/LT_slopeDistributions_Nutrients.tiff", width = 12, height = 10, units = 'in', res = 600, compression = 'lzw')
+tiff(filename = "Plots/LT_slopeDistributions_Nutrients.tiff", width = 12, height = 8, units = 'in', res = 600, compression = 'lzw')
 # svg(filename = "Plots/LT_slopeDistributions_TaxoFuncIndices.svg", width = 12, height = 10, bg = "white")
 
 par(mar=c(4,0.4,0.4,0.4), mfrow=c(1,2))
@@ -194,7 +194,7 @@ polygon(x=c(stand_mineral.N$Q5, stand_mineral.N$Q5, stand_mineral.N$Q95, stand_m
 polygon(x=c(stand_mineral.N$Q10, stand_mineral.N$Q10, stand_mineral.N$Q90, stand_mineral.N$Q90),
         y=c((yy-yy/6),(yy+yy/6),(yy+yy/6),(yy-yy/6)),
         col = 1,border = 0,lwd =1)
-legend(x=-22.5, y=(4/4*(b-a)+a), legend=expression(paste("e, Mineralized Nitrogen (",mg, sep = ".", l^-1,")")), bty="n", cex=1.3)
+legend(x=-22.5, y=(4/4*(b-a)+a), legend=expression(paste("e, Mineralized nitrogen (",mg, sep = ".", l^-1,")")), bty="n", cex=1.3)
 legend(x=7.5, y=(4/4*(b-a)+a), legend=expression(paste("+3.53% ",y^-1, sep = "")), bty="n", cex=1.3)
 
 #### Tot.N #####
@@ -228,7 +228,7 @@ polygon(x=c(stand_Tot.N$Q5, stand_Tot.N$Q5, stand_Tot.N$Q95, stand_Tot.N$Q95),
 polygon(x=c(stand_Tot.N$Q10, stand_Tot.N$Q10, stand_Tot.N$Q90, stand_Tot.N$Q90),
         y=c((yy-yy/6),(yy+yy/6),(yy+yy/6),(yy-yy/6)),
         col = 1,border = 0,lwd =1)
-legend(x=-22.5, y=(3/4*(b-a)+a), legend=expression(paste("f, Total Nitrogen (",mg, sep = ".", l^-1,")")), bty="n", cex=1.3)
+legend(x=-22.5, y=(3/4*(b-a)+a), legend=expression(paste("f, Total nitrogen (",mg, sep = ".", l^-1,")")), bty="n", cex=1.3)
 legend(x=7.5, y=(3/4*(b-a)+a), legend=expression(paste("+1.95% ",y^-1, sep = "")), bty="n", cex=1.3)
 
 #### PO4.P #####
@@ -263,7 +263,7 @@ polygon(x=c(stand_PO4.P$Q5, stand_PO4.P$Q5, stand_PO4.P$Q95, stand_PO4.P$Q95),
 polygon(x=c(stand_PO4.P$Q10, stand_PO4.P$Q10, stand_PO4.P$Q90, stand_PO4.P$Q90),
         y=c((yy-yy/6),(yy+yy/6),(yy+yy/6),(yy-yy/6)),
         col = 1,border = 0,lwd =1)
-legend(x=-22.5, y=(2/4*(b-a)+a), legend=expression(paste("g, Phosphate (",mg, sep = ".", l^-1,")")), bty="n", cex=1.3)
+legend(x=-22.5, y=(2/4*(b-a)+a), legend=expression(paste("g, Ortho-phosphate (",mg, sep = ".", l^-1,")")), bty="n", cex=1.3)
 legend(x=7.5, y=(2/4*(b-a)+a), legend=expression(paste("-0.36% ",y^-1, sep = "")), bty="n", cex=1.3)
 
 #### Tot.P #####
@@ -299,7 +299,7 @@ polygon(x=c(stand_Tot.P$Q5, stand_Tot.P$Q5, stand_Tot.P$Q95, stand_Tot.P$Q95),
 polygon(x=c(stand_Tot.P$Q10, stand_Tot.P$Q10, stand_Tot.P$Q90, stand_Tot.P$Q90),
         y=c((yy-yy/6),(yy+yy/6),(yy+yy/6),(yy-yy/6)),
         col = 1,border = 0,lwd =1)
-legend(x=-22.5, y=(1/4*(b-a)+a), legend=expression(paste("h, Total Phosphorus (",mg, sep = ".", l^-1,")")), bty="n", cex=1.3)
+legend(x=-22.5, y=(1/4*(b-a)+a), legend=expression(paste("h, Total phosphorus (",mg, sep = ".", l^-1,")")), bty="n", cex=1.3)
 legend(x=7.5, y=(1/4*(b-a)+a), legend=expression(paste("-0.55% ",y^-1, sep = "")), bty="n", cex=1.3)
 
 ##

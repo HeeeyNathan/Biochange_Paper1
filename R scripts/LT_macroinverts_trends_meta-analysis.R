@@ -7,18 +7,22 @@ task.id = as.integer(Sys.getenv("SLURM_ARRAY_TASK_ID", "1"))
 myResponse <- TaskID$Response[which(TaskID$TaskID==task.id)]
 
 ### get site-level values for this response ####
-
 response_gls <- readRDS("outputs/glsTrends_site_level.rds")
 response_gls <- subset(response_gls, Response == myResponse)
 response_gls <- subset(response_gls, !is.na(estimate))
 
-#write.csv(response_gls, "outputs/glsTrends_site_level.csv")
-
 ### site metadata ######
-
+library(dplyr)
 d1 <- read.csv("Data/LT_siteYr_AllData_wNAs_modified.csv", header=T) 
-siteData <- unique(d1[,c("site_id", "country")])
+d1 <- d1 %>% select(-(c(7:18, 21:72))) # keep only necessary columns
+d1 <- subset(d1, !is.na(d1$river_type)) # remove NAs
+d1$Heavily_modified <- factor(d1$Heavily_modified)
+d1$river_type <- factor(d1$river_type)
+siteData <- unique(d1[,c("site_id", "country", "river_type", "Heavily_modified")])
 response_gls <- merge(siteData,response_gls,by="site_id")
+
+# ### Create river_type subsets
+# response_gls <- subset(response_gls, response_gls$river_type == 1) # remove NAs
 
 ### run model ####
 
@@ -58,6 +62,7 @@ qqnorm(resid)
 qqline(resid, col = "red")
 plot(fitted(fit1), resid, main = "Residuals vs. Fitted values")
 abline(h = 0, lty = 2, col = "red")
+
 
 ### save output ####
 saveRDS(fit1,file=paste0("Outputs/Metaanalysis_trends/metaanalysis_noRandom_",myResponse,".rds"))
