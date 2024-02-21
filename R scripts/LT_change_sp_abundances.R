@@ -36,20 +36,14 @@ df_long <- df_short %>%
     )
   )
 
-# Creating subsets
-df_long_ephemeroptera <- filter(df_long, group == "Ephemeroptera")
-df_long_plecoptera <- filter(df_long, group == "Plecoptera")
-df_long_trichoptera <- filter(df_long, group == "Trichoptera")
-df_long_insect <- filter(df_long, group2 == "Insect")
-df_long_mollusc <- filter(df_long, group2 == "Mollusc")
-df_long_annelid <- filter(df_long, group2 == "Annelid")
-df_long_crustacea <- filter(df_long, group2 == "Crustacea")
+attach(df_long)
 
 # ephemeroptera
+df_long_ephemeroptera <- filter(df_long, group == "Ephemeroptera")
 # Filter the dataset, only keeping species present in at least 2 years
 df_long_ephemeroptera <- df_long_ephemeroptera %>%
   group_by(taxonname) %>%
-  filter(n_distinct(year) >= 2) %>%
+  filter(n_distinct(year) >= 4) %>%
   ungroup()
 
 # Group the data by species and fit linear regression model for each group
@@ -118,10 +112,11 @@ ggplot(df_long_ephemeroptera_filtered, aes(x = year, y = log_abundance, color = 
 dev.off()
 
 # plecoptera
+df_long_plecoptera <- filter(df_long, group == "Plecoptera")
 # Filter the dataset, only keeping species present in at least 2 years
 df_long_plecoptera <- df_long_plecoptera %>%
   group_by(taxonname) %>%
-  filter(n_distinct(year) >= 2) %>%
+  filter(n_distinct(year) >= 4) %>%
   ungroup()
 
 # Group the data by species and fit linear regression model for each group
@@ -190,10 +185,11 @@ ggplot(df_long_plecoptera_filtered, aes(x = year, y = log_abundance, color = est
 dev.off()
 
 # trichoptera
+df_long_trichoptera <- filter(df_long, group == "Trichoptera")
 # Filter the dataset, only keeping species present in at least 2 years
 df_long_trichoptera <- df_long_trichoptera %>%
   group_by(taxonname) %>%
-  filter(n_distinct(year) >= 2) %>%
+  filter(n_distinct(year) >= 4) %>%
   ungroup()
 
 # Group the data by species and fit linear regression model for each group
@@ -262,10 +258,11 @@ ggplot(df_long_trichoptera_filtered, aes(x = year, y = log_abundance, color = es
 dev.off()
 
 # insect
+df_long_insect <- filter(df_long, group2 == "Insect")
 # Filter the dataset, only keeping species present in at least 2 years
 df_long_insect <- df_long_insect %>%
   group_by(taxonname) %>%
-  filter(n_distinct(year) >= 2) %>%
+  filter(n_distinct(year) >= 4) %>%
   ungroup()
 
 # Group the data by species and fit linear regression model for each group
@@ -334,10 +331,11 @@ ggplot(df_long_insect_filtered, aes(x = year, y = log_abundance, color = estimat
 dev.off()
 
 # crustacea
+df_long_crustacea <- filter(df_long, group2 == "Crustacea")
 # Filter the dataset, only keeping species present in at least 2 years
 df_long_crustacea <- df_long_crustacea %>%
   group_by(taxonname) %>%
-  filter(n_distinct(year) >= 2) %>%
+  filter(n_distinct(year) >= 4) %>%
   ungroup()
 
 # Group the data by species and fit linear regression model for each group
@@ -406,10 +404,11 @@ ggplot(df_long_crustacea_filtered, aes(x = year, y = log_abundance, color = esti
 dev.off()
 
 # mollusc
+df_long_mollusc <- filter(df_long, group2 == "Mollusc")
 # Filter the dataset, only keeping species present in at least 2 years
 df_long_mollusc <- df_long_mollusc %>%
   group_by(taxonname) %>%
-  filter(n_distinct(year) >= 2) %>%
+  filter(n_distinct(year) >= 4) %>%
   ungroup()
 
 # Group the data by species and fit linear regression model for each group
@@ -478,10 +477,11 @@ ggplot(df_long_mollusc_filtered, aes(x = year, y = log_abundance, color = estima
 dev.off()
 
 # annelid
+df_long_annelid <- filter(df_long, group2 == "Annelid")
 # Filter the dataset, only keeping species present in at least 2 years
 df_long_annelid <- df_long_annelid %>%
   group_by(taxonname) %>%
-  filter(n_distinct(year) >= 2) %>%
+  filter(n_distinct(year) >= 4) %>%
   ungroup()
 
 # Group the data by species and fit linear regression model for each group
@@ -549,15 +549,6 @@ ggplot(df_long_annelid_filtered, aes(x = year, y = log_abundance, color = estima
   theme(plot.title = element_text(hjust = 0.5, face = "bold"))
 dev.off()
 
-### create combined dataset of winners and losers
-df_long_ephemeroptera <- df_long %>% filter(group == "Ephemeroptera")
-df_long_plecoptera <- df_long %>% filter(group == "Plecoptera")
-df_long_trichoptera <- df_long %>% filter(group == "Trichoptera")
-df_long_insect <- df_long %>% filter(group2 == "Insect")
-df_long_mollusc <- df_long %>% filter(group2 == "Mollusc")
-df_long_annelid <- df_long %>% filter(group2 == "Annelid")
-df_long_crustacea <- df_long %>% filter(group2 == "Crustacea")
-
 # create combined table of all winners and losers
 winners_losers <- bind_rows(df_long_ephemeroptera_filtered,
                             df_long_plecoptera_filtered,
@@ -566,7 +557,6 @@ winners_losers <- bind_rows(df_long_ephemeroptera_filtered,
                             df_long_mollusc_filtered,
                             df_long_annelid_filtered,
                             df_long_crustacea_filtered)
-
 # make better looking table
 # removing duplicate rows (some species are covered by two or more datasets e.g., ephemeroptera and insect)
 winners_losers <- distinct(winners_losers)
