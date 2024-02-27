@@ -333,8 +333,26 @@ form.fixedS_type <- paste("(", paste(FixedEffects, collapse = " + "), ")*ftype",
 form.randomlme <- "(1|fsite_id) + (1|fYear)" # (1|year) according to Weiss et al. (2023) & Daskalova et al. (2021)
 
 ## Make functions
+# FitModelContrasts <- function(resp, fixed, random, data) {
+#   require(lme4) # isSingular(mod, tol = 1e-4) # a logical test to determine if the fitted mixed model is (almost/near) singular
+#   if(!grepl("ftype", fixed)) stop("No river type variable in fixed effect")
+#   Levels <- levels(data$ftype)
+#   form <- formula(paste0(resp, " ~ ", fixed, "+", random))
+#   Summs <- lapply(Levels, function(lvl, dat, ff) {
+#     dat$ftype <- relevel(dat$ftype, ref=lvl)
+#     mod <- lmer(ff, data=dat)
+#     summ <- summary(mod)$coefficients
+#     summ <- summ[!grepl("ftype", rownames(summ)),]
+#     CI <- confint(mod) # calculates confidence intervals (CI) for each model
+#     summ <- cbind(summ, CI[4:10,]) # binds the CI to each summary table
+#     summ 
+#   }, dat=data, ff=form)
+#   names(Summs) <- Levels
+#   Summs
+# }
+
 FitModelContrasts <- function(resp, fixed, random, data) {
-  require(lme4)
+  require(lme4) # isSingular(mod, tol = 1e-4) # a logical test to determine if the fitted mixed model is (almost/near) singular
   if(!grepl("ftype", fixed)) stop("No river type variable in fixed effect")
   Levels <- levels(data$ftype)
   form <- formula(paste0(resp, " ~ ", fixed, "+", random))
@@ -344,9 +362,11 @@ FitModelContrasts <- function(resp, fixed, random, data) {
     summ <- summary(mod)$coefficients
     summ <- summ[!grepl("ftype", rownames(summ)),]
     CI <- confint(mod) # calculates confidence intervals (CI) for each model
-    summ <- cbind(summ, CI[4:10,]) # binds the CI to each summary table
+    # Match the rownames of summ with CI indices
+    matchedCI <- CI[rownames(summ), ]
+    # Bind the matched CIs to the summary
+    summ <- cbind(summ, matchedCI)
     summ
-    # isSingular(mod, tol = 1e-4) # a logical test to determine if the fitted mixed model is (almost/near) singular
   }, dat=data, ff=form)
   names(Summs) <- Levels
   Summs
@@ -613,7 +633,7 @@ form.fixedS_mod <- paste("(", paste(FixedEffects, collapse = " + "), ")*fmodifie
 
 ## Make functions
 FitModelContrasts2 <- function(resp, fixed, random, data) {
-  require(lme4)
+  require(lme4) # isSingular(mod, tol = 1e-4) # a logical test to determine if the fitted mixed model is (almost/near) singular
   if(!grepl("fmodified", fixed)) stop("No modification variable in fixed effect")
   Levels <- levels(data$fmodified)
   form <- formula(paste0(resp, " ~ ", fixed, "+", random))
@@ -623,9 +643,11 @@ FitModelContrasts2 <- function(resp, fixed, random, data) {
     summ <- summary(mod)$coefficients
     summ <- summ[!grepl("fmodified", rownames(summ)),]
     CI <- confint(mod) # calculates confidence intervals (CI) for each model
-    summ <- cbind(summ, CI[4:10,]) # binds the CI to each summary table
+    # Match the rownames of summ with CI indices
+    matchedCI <- CI[rownames(summ), ]
+    # Bind the matched CIs to the summary
+    summ <- cbind(summ, matchedCI)
     summ
-    # isSingular(mod, tol = 1e-4) # a logical test to determine if the fitted mixed model is (almost/near) singular
   }, dat=data, ff=form)
   names(Summs) <- Levels
   Summs
@@ -901,7 +923,7 @@ FixedEffects
 
 ## Make functions
 FitModelContrasts3 <- function(resp, fixed, random, data) {
-  require(lme4)
+  require(lme4) # isSingular(mod, tol = 1e-4) # a logical test to determine if the fitted mixed model is (almost/near) singular
   if(!grepl("fEQC", fixed)) stop("No EQC variable in fixed effect")
   Levels <- levels(data$fEQC)
   form <- formula(paste0(resp, " ~ ", fixed, "+", random))
@@ -911,9 +933,11 @@ FitModelContrasts3 <- function(resp, fixed, random, data) {
     summ <- summary(mod)$coefficients
     summ <- summ[!grepl("fEQC", rownames(summ)),]
     CI <- confint(mod) # calculates confidence intervals (CI) for each model
-    summ <- cbind(summ, CI[4:10,]) # binds the CI to each summary table
+    # Match the rownames of summ with CI indices
+    matchedCI <- CI[rownames(summ), ]
+    # Bind the matched CIs to the summary
+    summ <- cbind(summ, matchedCI)
     summ
-    # isSingular(mod, tol = 1e-4) # a logical test to determine if the fitted mixed model is (almost/near) singular
   }, dat=data, ff=form)
   names(Summs) <- Levels
   Summs
