@@ -37,9 +37,9 @@ Anopheles_sp.,Diptera,0,0,1,0,2,1,0,0,0,0
 Apatania_auricula,Trichoptera,0,0,0,0,0,0,0,8,0,0
 Apatania_sp.,Trichoptera,0,0,0,0,0,3,0,0,0,0
 Aphelocheirus_aestivalis,Hemiptera,549,0,915,933,753,823,351,536,0,527
-Asellus_aquaticus,Crustacea,224,51,317,487,314,284,626,526,149,793
-Astacus_leptodactylus,Crustacea,0,0,0,0,1,1,0,0,0,0
-Astacus_sp.,Crustacea,0,0,0,0,0,2,0,0,0,5
+Asellus_aquaticus,Isopoda,224,51,317,487,314,284,626,526,149,793
+Astacus_leptodactylus,Decapoda,0,0,0,0,1,1,0,0,0,0
+Astacus_sp.,Decapoda,0,0,0,0,0,2,0,0,0,5
 Athericidae_Gen._sp.,Diptera,0,0,3,0,0,6,0,0,0,2
 Atherix_ibis,Diptera,104,0,489,449,255,98,192,152,0,84
 Atherix_sp.,Diptera,59,0,110,87,23,106,13,5,0,0
@@ -91,10 +91,10 @@ Ceraclea_annulicornis,Trichoptera,1,0,794,44,0,29,18,61,0,0
 Ceraclea_fulva,Trichoptera,0,0,1,0,0,0,0,0,0,0
 Ceraclea_sp.,Trichoptera,2,0,0,0,0,0,12,7,0,0
 Ceratopogonidae_Gen._sp.,Diptera,0,4,0,6,0,0,9,32,0,26
-Chaetogammarus_warpachowskyi,Crustacea,0,0,0,0,1,147,55,0,0,409
+Chaetogammarus_warpachowskyi,Amphipoda,0,0,0,0,1,147,55,0,0,409
 Chaetopteryx_villosa_ssp.,Trichoptera,2,0,153,0,27,0,0,1,0,0
 Chaoborus_crystallinus,Diptera,0,0,0,0,1,0,0,0,0,0
-Chelicorophium_curvispinum,Crustacea,0,128,39,398,31,258,22,29,0,820
+Chelicorophium_curvispinum,Amphipoda,0,128,39,398,31,258,22,29,0,820
 Cheumatopsyche_lepida,Trichoptera,122,0,634,120,176,63,340,144,0,0
 Chironomidae_Gen._sp.,Diptera,1191,710,2020,2559,1709,1225,2413,1295,407,6046
 Chironominae_Gen._sp.,Diptera,0,0,6,22,10,76,231,1,0,158
@@ -119,7 +119,7 @@ Cordulegaster_boltonii,Odonata,2,0,0,3,1,2,1,0,0,2
 Cordulia_aenea,Odonata,0,0,2,17,0,0,3,1,0,25
 Corixa_sp.,Hemiptera,0,0,209,234,108,164,73,89,0,57
 Corixidae_Gen._sp.,Hemiptera,0,0,197,0,0,0,0,0,0,0
-Corophiidae_Gen._sp.,Crustacea,31,0,0,0,0,0,0,0,0,0
+Corophiidae_Gen._sp.,Amphipoda,31,0,0,0,0,0,0,0,0,0
 Cricotopus_sp.,Diptera,0,0,0,0,0,8,0,0,0,20
 Cricotopus_sylvestris,Diptera,0,0,0,0,0,12,0,0,0,0
 Crunoecia_irrorata_ssp.,Trichoptera,0,0,182,40,355,101,64,0,0,0
@@ -170,9 +170,9 @@ Erythromma_najas,Odonata,1,0,1,8,3,1,3,1,0,11
 Erythromma_viridulum,Odonata,0,0,0,1,0,0,0,0,0,4
 Esolus_sp._Ad.,Coleoptera,0,0,0,0,14,0,0,0,0,0
 Galba_truncatula,Gastropoda,0,0,0,2,0,18,4,0,0,1
-Gammarus_lacustris,Crustacea,417,0,365,486,373,244,216,175,0,156
-Gammarus_pulex,Crustacea,13,0,5,33,5,2,37,482,0,566
-Gammarus_sp.,Crustacea,131,68,58,30,57,42,5,1,0,0
+Gammarus_lacustris,Amphipoda,417,0,365,486,373,244,216,175,0,156
+Gammarus_pulex,Amphipoda,13,0,5,33,5,2,37,482,0,566
+Gammarus_sp.,Amphipoda,131,68,58,30,57,42,5,1,0,0
 Gerris_lacustris,Hemiptera,2,0,0,4,8,16,0,9,0,4
 Gerris_sp.,Hemiptera,0,0,0,0,8,3,0,0,0,0
 Glossiphonia_complanata,Hirudinea,13,22,22,30,14,37,20,25,0,33
@@ -288,7 +288,7 @@ Limnephilus_stigma,Trichoptera,90,0,44,287,106,29,50,218,0,34
 Limnephilus_vittatus,Trichoptera,0,0,72,0,0,0,0,0,0,0
 Limnius_sp._Ad.,Coleoptera,86,0,117,177,238,457,39,112,0,59
 Limnius_volckmari_Ad.,Coleoptera,159,0,895,968,725,269,885,199,0,100
-Limnomysis_benedeni,Crustacea,0,0,0,41,63,431,161,599,0,1125
+Limnomysis_benedeni,Mysida,0,0,0,41,63,431,161,599,0,1125
 Limoniidae_Gen._sp.,Diptera,5,0,3,56,0,8,20,46,0,7
 Lithax_obscurus,Trichoptera,25,0,232,50,2,8,90,19,0,32
 Lithoglyphus_naticoides,Gastropoda,48,1830,211,255,284,542,784,235,0,248
@@ -311,7 +311,7 @@ Molanna_angustata,Trichoptera,43,0,53,87,124,33,5,41,0,28
 Molanna_sp.,Trichoptera,1,0,0,0,0,0,0,0,0,0
 Muscidae_Gen._sp.,Diptera,14,0,0,0,0,44,12,14,0,2
 Musculium_lacustre,Bivalvia,0,0,0,0,0,0,0,0,0,1
-Mysidae_Gen._sp.,Crustacea,0,8,0,0,0,0,0,0,0,0
+Mysidae_Gen._sp.,Mysida,0,8,0,0,0,0,0,0,0,0
 Mystacides_azurea,Trichoptera,4,0,10,214,37,125,70,0,0,24
 Mystacides_longicornis,Trichoptera,5,0,28,21,68,6,58,50,0,25
 Mystacides_nigra,Trichoptera,0,0,28,0,0,0,44,4,0,0
@@ -330,7 +330,7 @@ Notiphila_riparia,Diptera,0,0,0,64,0,13,0,0,0,0
 Notonecta_glauca_ssp.,Hemiptera,4,0,18,11,16,10,37,17,0,26
 Notonecta_lutea,Hemiptera,0,0,0,0,0,0,0,0,0,4
 Notonecta_sp.,Hemiptera,0,0,0,0,2,2,3,0,0,0
-Obesogammarus_crassus,Crustacea,0,0,0,0,13,304,119,0,0,1500
+Obesogammarus_crassus,Amphipoda,0,0,0,0,13,304,119,0,0,1500
 Ochthebius_sp._Ad.,Coleoptera,0,0,0,0,2,0,0,0,0,0
 Odontomyia_sp.,Diptera,0,0,0,0,0,1,0,0,0,0
 Oecetis_furva,Trichoptera,0,0,0,24,0,0,0,0,0,0
@@ -341,7 +341,7 @@ Oligochaeta_Gen._sp.,Oligochaeta,1803,558,3322,2498,2393,1526,2939,3135,803,3631
 Onychogomphus_forcipatus,Odonata,10,0,9,51,49,17,14,14,0,20
 Ophiogomphus_cecilia,Odonata,0,0,0,29,23,9,9,0,0,8
 Oplodontha_viridula,Diptera,0,0,0,0,0,0,0,0,0,1
-Orconectes_limosus,Crustacea,0,0,2,1,0,0,1,0,0,2
+Orconectes_limosus,Decapoda,0,0,2,1,0,0,1,0,0,2
 Orectochilus_villosus_Ad.,Coleoptera,0,0,0,0,0,17,6,54,0,59
 Orthetrum_cancellatum,Odonata,1,0,0,0,0,0,0,0,0,0
 Orthocladiinae_Gen._sp.,Diptera,0,0,0,6,472,117,55,26,0,1325
@@ -356,7 +356,7 @@ Paraleptophlebia_cincta,Ephemeroptera,53,0,80,628,63,10,22,0,0,40
 Paraleptophlebia_sp.,Ephemeroptera,117,0,36,2,56,81,5,2,0,0
 Paraleptophlebia_submarginata,Ephemeroptera,29,0,369,575,241,115,282,495,0,185
 Paraleptophlebia_werneri,Ephemeroptera,0,0,0,0,0,0,0,80,0,0
-Paramysis_lacustris,Crustacea,0,0,498,1,13,43,0,12,0,0
+Paramysis_lacustris,Mysida,0,0,498,1,13,43,0,12,0,0
 Parapoynx_stratiotata,Lepidoptera,0,1,4,84,1,0,1,4,0,34
 Pedicia_sp.,Diptera,0,0,0,0,0,0,0,5,0,0
 Peregriana_peregra,Gastropoda,0,0,3,0,0,5,0,15,0,29
@@ -398,7 +398,7 @@ Polycentropus_irroratus,Trichoptera,6,0,0,0,14,18,0,0,0,0
 Polycentropus_sp.,Trichoptera,14,0,0,0,5,0,0,12,0,0
 Polypedilum_exsectum,Diptera,0,0,0,0,18,0,0,0,0,23
 Polypedilum_sp.,Diptera,0,0,0,0,0,0,0,0,0,71
-Pontogammarus_robustoides,Crustacea,0,0,0,75,1,229,122,475,0,1901
+Pontogammarus_robustoides,Amphipoda,0,0,0,75,1,229,122,475,0,1901
 Potamanthus_luteus,Ephemeroptera,113,0,335,30,176,115,25,44,0,42
 Potamophylax_latipennis,Trichoptera,17,0,28,27,1,14,0,39,0,0
 Potamophylax_rotundipennis,Trichoptera,22,0,62,56,23,0,30,83,0,3

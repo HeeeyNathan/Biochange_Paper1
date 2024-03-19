@@ -11,6 +11,7 @@ d1 <- read.csv("Data/LT_siteYr_AllData_wNAs_modified.csv", header=T)
 allYrs <- d1[!is.na(d1$site_id_wMissing),]
 
 tiff(filename = "Plots/LT_slopeDistributions_TaxoGroups.tiff", width = 12, height = 10, units = 'in', res = 600, compression = 'lzw')
+# svg(filename = "Plots/LT_slopeDistributions_TaxoGroups.svg", width = 12, height = 10, bg = "white")
 
 par(mar=c(4,0.4,0.4,0.4), mfrow=c(1,2))
 
