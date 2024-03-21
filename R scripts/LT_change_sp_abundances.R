@@ -1,13 +1,7 @@
 # load packages
 library(tidyverse)
-library(ggplot2)
-library(dplyr)
-library(RColorBrewer)
-library(ggbreak)
-library(patchwork)
-library(ggrepel)
 library(broom)
-library(vegan)
+library(tidyr)
 
 # Read in data
 df_short <- read_csv("Data/LT_annual_taxalist_short_wGroup.csv", show_col_types = FALSE)
@@ -25,51 +19,56 @@ df_long <- df_short %>%
          relative_abundance_perc = round(relative_abundance * 100, 2), # Convert to percentage and round
          log_abundance = log(abundance + 1)) %>%
   ungroup() %>%
+  # mutate(cYear = year - mean(year, na.rm = TRUE)) %>%
+  # mutate(iYear = year - min(year) + 1) %>%
   mutate(
     group2 = case_when(
-      group %in% c("insect", "Plecoptera", "Trichoptera") ~ "EPT",
-      group %in% c("Diptera", "Coleoptera", "Odonata", "Hemiptera", "Lepidoptera", "Megaloptera") ~ "Insect",
+      group %in% c("Ephemeroptera") ~ "Ephemeroptera",
+      group %in% c("Plecoptera") ~ "Plecoptera",
+      group %in% c("Trichoptera") ~ "Trichoptera",
+      group %in% c("Diptera", "Coleoptera", "Odonata", "Hemiptera", "Lepidoptera", "Megaloptera") ~ "Non-EPT Insect",
       group %in% c("Gastropoda", "Bivalvia") ~ "Mollusc",
       group %in% c("Oligochaeta", "Hirudinea") ~ "Annelid",
       group %in% c("Isopoda", "Decapoda", "Amphipoda", "Mysida") ~ "Crustacea",
-      TRUE ~ group
-    )
-  )
+      TRUE ~ group))
 
-# ephemeroptera
-df_long_ephemeroptera <- filter(df_long, group == "Ephemeroptera")
-# Filter the dataset, only keeping species present in at least 2 years
-df_long_ephemeroptera <- df_long_ephemeroptera %>%
-  filter(abundance >= 1) %>% # First, filter out taxa with an abundance of 0
+# Filter the dataset, only keeping species present in at least 6 years
+df_long <- df_long %>%
+  filter(abundance >= 1) %>%
   group_by(taxonname) %>%
-  filter(n_distinct(year) >= 6) %>% # Then, keep taxa present in at least 6 distinct years
+  filter(n_distinct(year) >= 6) %>%
   ungroup()
 
-# Group the data by species and fit linear regression model for each group
-model_outputs <- df_long_ephemeroptera %>%
+# Calculate trends for each species
+model_outputs <- df_long %>%
   group_by(taxonname) %>%
   do(tidy(lm(log_abundance ~ year, data = .))) %>%
   filter(term != "(Intercept)") %>%
   ungroup()
+# bind trends to main dataframe
+df_long <- left_join(df_long, model_outputs, by = "taxonname")
 
-df_long_ephemeroptera <- left_join(df_long_ephemeroptera, model_outputs, by = "taxonname")
+# ephemeroptera
+df_long_ephemeroptera <- filter(df_long, group == "Ephemeroptera")
 
 # Select the five unique species with the highest amount of change from the first to the last year
 top_species <- df_long_ephemeroptera %>%
   distinct(taxonname, .keep_all = TRUE) %>%  # Ensure unique species, keeping all data for now
   filter(estimate > 0) %>%  # Keep only rows with positive estimates
   mutate(priority = ifelse(p.value <= 0.05, 1, 2)) %>%  # Assign priority based on p-value
+  # mutate(bmwp_priority = ifelse(bmwp <= 5, 1, 2)) %>% #assign priority based on bmwp score
   arrange(priority, desc(estimate)) %>%  # Arrange by priority, then by descending estimates
   slice_head(n = 6) %>%  # Select the top 6 species after arrangement
-  select(taxonname, estimate, p.value)  # Keep only species names, estimates, and p-values
+  select(taxonname, priority, estimate, p.value)  # Keep only species names, estimates, and p-values
 
 bottom_species <- df_long_ephemeroptera %>%
   distinct(taxonname, .keep_all = TRUE) %>%  # Ensure unique species, keeping all data for now
   filter(estimate < 0) %>%  # Keep only rows with negative estimates
   mutate(priority = ifelse(p.value <= 0.05, 1, 2)) %>%  # Assign priority based on p-value
+  # mutate(bmwp_priority = ifelse(bmwp >= 5, 1, 2)) %>% #assign priority based on bmwp score
   arrange(priority, estimate) %>%  # Arrange by priority, then by ascending estimates
   slice_head(n = 6) %>%  # Select the bottom 6 species after arrangement
-  select(taxonname, estimate, p.value)  # Keep only species names, estimates, p-values, and priority
+  select(taxonname, priority, estimate, p.value)  # Keep only species names, estimates, p-values, and priority
 
 # Join the top and bottom species datasets
 selected_species <- bind_rows(top_species, bottom_species)
@@ -78,74 +77,57 @@ selected_species <- bind_rows(top_species, bottom_species)
 df_long_ephemeroptera_filtered <- df_long_ephemeroptera %>%
   semi_join(selected_species, by = "taxonname")
 
-unique(df_long_ephemeroptera_filtered$taxonname)
-
-# Determine the taxonnames to display for the first and last year
-first_years <- df_long_ephemeroptera_filtered %>%
-  group_by(taxonname) %>%
-  filter(year == min(year)) %>%
-  ungroup()
-
-last_years <- df_long_ephemeroptera_filtered %>%
-  group_by(taxonname) %>%
-  filter(n() > 1) %>%
-  filter(year == max(year)) %>%
-  ungroup()
-
 # Plot abundances by year with line colors grouped by taxonomic order
-tiff(filename = "Plots/Winner_Loser_ephemeroptera_new.tiff", width = 20, height = 15, units = 'in', res = 600, compression = 'lzw')
+tiff(filename = "Plots/Winner_Loser_ephemeroptera_abundance.tiff", width = 10, height = 8, units = 'in', res = 300, compression = 'lzw')
 ggplot(df_long_ephemeroptera_filtered, aes(x = year, y = log_abundance)) +
-  geom_line(aes(color = estimate), linewidth = 0.5) +  # Color line by estimate value
-  geom_point(shape = 16, aes(color = estimate), size = 3) +  # Use different shapes for groups
-  geom_smooth(method = "lm", se = FALSE, aes(color = estimate, linetype = ifelse(p.value < 0.05, "p < 0.05", "p > 0.05"))) +
-  scale_color_gradient(low = "#f0bb00ff", high = "#00ccbaff") +  # Gradient color scale for lines
-  facet_wrap(~taxonname, scales = "free_y") +  # Create a facet for each species, with free y scales
+  geom_line(aes(color = estimate), linewidth = 0.5) +
+  geom_point(shape = 16, aes(color = estimate), size = 3) +
+  geom_smooth(method = "lm", se = FALSE, aes(color = estimate, linetype = ifelse(p.value <= 0.05, "p < 0.05", "p > 0.05"))) +
+  scale_color_gradient(low = "#f0bb00ff", high = "#00ccbaff") +
+  facet_wrap(~taxonname, scales = "free_y") +
   labs(
-    x = "Year", 
-    y = "Log(abundance + 1)", 
-    title = "Change in ephemeropteran abundance through time by species",
-    caption = "If available, only 12 species with the strongest estimates, negative or positive, are plotted.\nAnalysis only includes species present in at least 6 years of sampling."
+    x = "Year",
+    y = "Log(abundance + 1)",
+    title = "Change in ephemeroptera abundance through time by species",
+    caption = "Analysis includes species present in at least 6 years of sampling. BMWP scores are annotated on each plot.\n Species with strongest estimates (positive or negative) plotted. Priority given to species significantly (p \u2264 0.05) changing through time"
   ) +
   theme_minimal() +
-  theme(legend.position = "right", plot.title = element_text(hjust = 0.5, face = "bold")) +
+  theme(
+    legend.position = "right",
+    plot.title = element_text(hjust = 0.5, face = "bold"),
+    axis.text.x = element_text(angle = 45, hjust = 1), # Slant year labels at 45 degrees
+    panel.grid.major = element_blank(), # Remove major gridlines
+    # panel.grid.minor = element_blank(), # Remove minor gridlines
+    axis.ticks = element_line(color = "gray90"), # Add tick marks
+    # axis.line = element_line(color = "gray90"), # Add x and y axis lines
+    panel.border = element_rect(colour = "gray90", fill=NA, size=0.5)
+  ) +
   scale_x_continuous(breaks = seq(min(df_long_ephemeroptera_filtered$year), max(df_long_ephemeroptera_filtered$year), by = 1)) +
-  guides(color = guide_legend(title = "Estimate"), linetype = guide_legend(title = "P Value"))
+  guides(color = guide_legend(title = "Estimate"), linetype = guide_legend(title = "P Value")) +
+  geom_text(aes(label = paste("BMWP:", bmwp), x = Inf, y = Inf), position = position_nudge(y = -0.5), hjust = 1.1, vjust = 2, check_overlap = TRUE, size = 2, fontface = "bold")
 dev.off()
 
 # plecoptera
 df_long_plecoptera <- filter(df_long, group == "Plecoptera")
-# Filter the dataset, only keeping species present in at least 2 years
-df_long_plecoptera <- df_long_plecoptera %>%
-  filter(abundance >= 1) %>% # First, filter out taxa with an abundance of 0
-  group_by(taxonname) %>%
-  filter(n_distinct(year) >= 6) %>% # Then, keep taxa present in at least 6 distinct years (75% of time)
-  ungroup()
-
-# Group the data by species and fit linear regression model for each group
-model_outputs <- df_long_plecoptera %>%
-  group_by(taxonname) %>%
-  do(tidy(lm(log_abundance ~ year, data = .))) %>%
-  filter(term != "(Intercept)") %>%
-  ungroup()
-
-df_long_plecoptera <- left_join(df_long_plecoptera, model_outputs, by = "taxonname")
 
 # Select the five unique species with the highest amount of change from the first to the last year
 top_species <- df_long_plecoptera %>%
   distinct(taxonname, .keep_all = TRUE) %>%  # Ensure unique species, keeping all data for now
   filter(estimate > 0) %>%  # Keep only rows with positive estimates
   mutate(priority = ifelse(p.value <= 0.05, 1, 2)) %>%  # Assign priority based on p-value
-  arrange(priority, desc(estimate)) %>%  # Arrange by priority, then by descending estimates
-  slice_head(n = 6) %>%  # Select the top 6 species after arrangement
-  select(taxonname, estimate, p.value)  # Keep only species names, estimates, and p-values
+  # mutate(bmwp_priority = ifelse(bmwp <= 5, 1, 2)) %>% #assign priority based on bmwp score
+  arrange(priority, estimate) %>%  # Arrange by priority, then by ascending estimates
+  slice_head(n = 6) %>%  # Select the bottom 6 species after arrangement
+  select(taxonname, priority, estimate, p.value)  # Keep only species names, estimates, p-values, and priority
 
 bottom_species <- df_long_plecoptera %>%
   distinct(taxonname, .keep_all = TRUE) %>%  # Ensure unique species, keeping all data for now
   filter(estimate < 0) %>%  # Keep only rows with negative estimates
   mutate(priority = ifelse(p.value <= 0.05, 1, 2)) %>%  # Assign priority based on p-value
+  # mutate(bmwp_priority = ifelse(bmwp >= 5, 1, 2)) %>% #assign priority based on bmwp score
   arrange(priority, estimate) %>%  # Arrange by priority, then by ascending estimates
   slice_head(n = 6) %>%  # Select the bottom 6 species after arrangement
-  select(taxonname, estimate, p.value)  # Keep only species names, estimates, p-values, and priority
+  select(taxonname, priority, estimate, p.value)  # Keep only species names, estimates, p-values, and priority
 
 # Join the top and bottom species datasets
 selected_species <- bind_rows(top_species, bottom_species)
@@ -153,23 +135,10 @@ selected_species <- bind_rows(top_species, bottom_species)
 # Filter df_long to include only the rows for the selected species
 df_long_plecoptera_filtered <- df_long_plecoptera %>%
   semi_join(selected_species, by = "taxonname")
-
 unique(df_long_plecoptera_filtered$taxonname)
 
-# Determine the taxonnames to display for the first and last year
-first_years <- df_long_plecoptera_filtered %>%
-  group_by(taxonname) %>%
-  filter(year == min(year)) %>%
-  ungroup()
-
-last_years <- df_long_plecoptera_filtered %>%
-  group_by(taxonname) %>%
-  filter(n() > 1) %>%
-  filter(year == max(year)) %>%
-  ungroup()
-
 # Plot abundances by year with line colors grouped by taxonomic order
-tiff(filename = "Plots/Winner_Loser_plecoptera_new.tiff", width = 20, height = 15, units = 'in', res = 600, compression = 'lzw')
+tiff(filename = "Plots/Winner_Loser_plecoptera_abundance.tiff", width = 10, height = 8, units = 'in', res = 300, compression = 'lzw')
 ggplot(df_long_plecoptera_filtered, aes(x = year, y = log_abundance)) +
   geom_line(aes(color = estimate), linewidth = 0.5) +  # Color line by estimate value
   geom_point(shape = 16, aes(color = estimate), size = 3) +  # Use different shapes for groups
@@ -177,51 +146,47 @@ ggplot(df_long_plecoptera_filtered, aes(x = year, y = log_abundance)) +
   scale_color_gradient(low = "#f0bb00ff", high = "#00ccbaff") +  # Gradient color scale for lines
   facet_wrap(~taxonname, scales = "free_y") +  # Create a facet for each species, with free y scales
   labs(
-    x = "Year", 
-    y = "Log(abundance + 1)", 
-    title = "Change in plecopteran abundance through time by species",
-    caption = "If available, only 12 species with the strongest estimates, negative or positive, are plotted.\nAnalysis only includes species present in at least 6 years of sampling."
+    x = "Year",
+    y = "Log(abundance + 1)",
+    title = "Change in plecoptera abundance through time by species",
+    caption = "Analysis includes species present in at least 6 years of sampling. BMWP scores are annotated on each plot.\n Species with strongest estimates (positive or negative) plotted. Priority given to species significantly (p \u2264 0.05) changing through time"
   ) +
   theme_minimal() +
-  theme(legend.position = "right", plot.title = element_text(hjust = 0.5, face = "bold")) +
+  theme(
+    legend.position = "right",
+    plot.title = element_text(hjust = 0.5, face = "bold"),
+    axis.text.x = element_text(angle = 45, hjust = 1), # Slant year labels at 45 degrees
+    panel.grid.major = element_blank(), # Remove major gridlines
+    # panel.grid.minor = element_blank(), # Remove minor gridlines
+    axis.ticks = element_line(color = "gray90"), # Add tick marks
+    panel.border = element_rect(colour = "gray90", fill=NA, size=0.5)
+  ) +
   scale_x_continuous(breaks = seq(min(df_long_plecoptera_filtered$year), max(df_long_plecoptera_filtered$year), by = 1)) +
-  guides(color = guide_legend(title = "Estimate"), linetype = guide_legend(title = "P Value"))
+  guides(color = guide_legend(title = "Estimate"), linetype = guide_legend(title = "P Value")) +
+  geom_text(aes(label = paste("BMWP:", bmwp), x = Inf, y = Inf), position = position_nudge(y = -0.5), hjust = 1.1, vjust = 2, check_overlap = TRUE, size = 2.5, fontface = "bold")
 dev.off()
 
 # trichoptera
 df_long_trichoptera <- filter(df_long, group == "Trichoptera")
-# Filter the dataset, only keeping species present in at least 2 years
-df_long_trichoptera <- df_long_trichoptera %>%
-  filter(abundance >= 1) %>% # First, filter out taxa with an abundance of 0
-  group_by(taxonname) %>%
-  filter(n_distinct(year) >= 6) %>% # Then, keep taxa present in at least 6 distinct years (75%)
-  ungroup()
-
-# Group the data by species and fit linear regression model for each group
-model_outputs <- df_long_trichoptera %>%
-  group_by(taxonname) %>%
-  do(tidy(lm(log_abundance ~ year, data = .))) %>%
-  filter(term != "(Intercept)") %>%
-  ungroup()
-
-df_long_trichoptera <- left_join(df_long_trichoptera, model_outputs, by = "taxonname")
 
 # Select the five unique species with the highest amount of change from the first to the last year
 top_species <- df_long_trichoptera %>%
   distinct(taxonname, .keep_all = TRUE) %>%  # Ensure unique species, keeping all data for now
   filter(estimate > 0) %>%  # Keep only rows with positive estimates
   mutate(priority = ifelse(p.value <= 0.05, 1, 2)) %>%  # Assign priority based on p-value
-  arrange(priority, desc(estimate)) %>%  # Arrange by priority, then by descending estimates
-  slice_head(n = 6) %>%  # Select the top 6 species after arrangement
-  select(taxonname, estimate, p.value)  # Keep only species names, estimates, and p-values
+  # mutate(bmwp_priority = ifelse(bmwp <= 5, 1, 2)) %>% #assign priority based on bmwp score
+  arrange(priority, estimate) %>%  # Arrange by priority, then by ascending estimates
+  slice_head(n = 6) %>%  # Select the bottom 6 species after arrangement
+  select(taxonname, priority, estimate, p.value)  # Keep only species names, estimates, p-values, and priority
 
 bottom_species <- df_long_trichoptera %>%
   distinct(taxonname, .keep_all = TRUE) %>%  # Ensure unique species, keeping all data for now
   filter(estimate < 0) %>%  # Keep only rows with negative estimates
   mutate(priority = ifelse(p.value <= 0.05, 1, 2)) %>%  # Assign priority based on p-value
+  # mutate(bmwp_priority = ifelse(bmwp >= 5, 1, 2)) %>% #assign priority based on bmwp score
   arrange(priority, estimate) %>%  # Arrange by priority, then by ascending estimates
   slice_head(n = 6) %>%  # Select the bottom 6 species after arrangement
-  select(taxonname, estimate, p.value)  # Keep only species names, estimates, p-values, and priority
+  select(taxonname, priority, estimate, p.value)  # Keep only species names, estimates, p-values, and priority
 
 # Join the top and bottom species datasets
 selected_species <- bind_rows(top_species, bottom_species)
@@ -229,75 +194,58 @@ selected_species <- bind_rows(top_species, bottom_species)
 # Filter df_long to include only the rows for the selected species
 df_long_trichoptera_filtered <- df_long_trichoptera %>%
   semi_join(selected_species, by = "taxonname")
-
 unique(df_long_trichoptera_filtered$taxonname)
 
-# Determine the taxonnames to display for the first and last year
-first_years <- df_long_trichoptera_filtered %>%
-  group_by(taxonname) %>%
-  filter(year == min(year)) %>%
-  ungroup()
-
-last_years <- df_long_trichoptera_filtered %>%
-  group_by(taxonname) %>%
-  filter(n() > 1) %>%
-  filter(year == max(year)) %>%
-  ungroup()
-
 # Plot abundances by year with line colors grouped by taxonomic order
-tiff(filename = "Plots/Winner_Loser_trichoptera_new.tiff", width = 20, height = 15, units = 'in', res = 600, compression = 'lzw')
+tiff(filename = "Plots/Winner_Loser_trichoptera_abundance.tiff", width = 10, height = 8, units = 'in', res = 300, compression = 'lzw')
 ggplot(df_long_trichoptera_filtered, aes(x = year, y = log_abundance)) +
   geom_line(aes(color = estimate), linewidth = 0.5) +  # Color line by estimate value
   geom_point(shape = 16, aes(color = estimate), size = 3) +  # Use different shapes for groups
-  geom_smooth(method = "lm", se = FALSE, aes(color = estimate, linetype = ifelse(p.value < 0.05, "p < 0.05", "p > 0.05"))) +
+  geom_smooth(method = "lm", se = FALSE, aes(color = estimate, linetype = ifelse(p.value <= 0.05, "p < 0.05", "p > 0.05"))) +
   scale_color_gradient(low = "#f0bb00ff", high = "#00ccbaff") +  # Gradient color scale for lines
   facet_wrap(~taxonname, scales = "free_y") +  # Create a facet for each species, with free y scales
   labs(
-    x = "Year", 
-    y = "Log(abundance + 1)", 
-    title = "Change in Trichopteran abundance through time by species",
-    caption = "If available, only 12 species with the strongest estimates, negative or positive, are plotted.\nAnalysis only includes species present in at least 6 years of sampling."
+    x = "Year",
+    y = "Log(abundance + 1)",
+    title = "Change in trichoptera abundance through time by species",
+    caption = "Analysis includes species present in at least 6 years of sampling. BMWP scores are annotated on each plot.\n Species with strongest estimates (positive or negative) plotted. Priority given to species significantly (p \u2264 0.05) changing through time"
   ) +
   theme_minimal() +
-  theme(legend.position = "right", plot.title = element_text(hjust = 0.5, face = "bold")) +
+  theme(
+    legend.position = "right",
+    plot.title = element_text(hjust = 0.5, face = "bold"),
+    axis.text.x = element_text(angle = 45, hjust = 1), # Slant year labels at 45 degrees
+    panel.grid.major = element_blank(), # Remove major gridlines
+    # panel.grid.minor = element_blank(), # Remove minor gridlines
+    axis.ticks = element_line(color = "gray90"), # Add tick marks
+    panel.border = element_rect(colour = "gray90", fill=NA, size=0.5)
+  ) +
   scale_x_continuous(breaks = seq(min(df_long_trichoptera_filtered$year), max(df_long_trichoptera_filtered$year), by = 1)) +
-  guides(color = guide_legend(title = "Estimate"), linetype = guide_legend(title = "P Value"))
+  guides(color = guide_legend(title = "Estimate"), linetype = guide_legend(title = "P Value")) +
+  geom_text(aes(label = paste("BMWP:", bmwp), x = Inf, y = Inf), position = position_nudge(y = -0.5), hjust = 1.1, vjust = 2, check_overlap = TRUE, size = 2.5, fontface = "bold")
 dev.off()
 
 # insect
-df_long_insect <- filter(df_long, group2 == "Insect")
-# Filter the dataset, only keeping species present in at least 2 years
-df_long_insect <- df_long_insect %>%
-  filter(abundance >= 1) %>% # First, filter out taxa with an abundance of 0
-  group_by(taxonname) %>%
-  filter(n_distinct(year) >= 6) %>% # Then, keep taxa present in at least 6 distinct years (75%)
-  ungroup()
-
-# Group the data by species and fit linear regression model for each group
-model_outputs <- df_long_insect %>%
-  group_by(taxonname) %>%
-  do(tidy(lm(log_abundance ~ year, data = .))) %>%
-  filter(term != "(Intercept)") %>%
-  ungroup()
-
-df_long_insect <- left_join(df_long_insect, model_outputs, by = "taxonname")
+df_long_insect <- filter(df_long, group2 == "Non-EPT Insect")
 
 # Select the five unique species with the highest amount of change from the first to the last year
 top_species <- df_long_insect %>%
   distinct(taxonname, .keep_all = TRUE) %>%  # Ensure unique species, keeping all data for now
   filter(estimate > 0) %>%  # Keep only rows with positive estimates
   mutate(priority = ifelse(p.value <= 0.05, 1, 2)) %>%  # Assign priority based on p-value
-  arrange(priority, desc(estimate)) %>%  # Arrange by priority, then by descending estimates
-  slice_head(n = 6) %>%  # Select the top 6 species after arrangement
-  select(taxonname, estimate, p.value)  # Keep only species names, estimates, and p-values
+  # mutate(bmwp_priority = ifelse(bmwp <= 5, 1, 2)) %>% #assign priority based on bmwp score
+  arrange(priority, estimate) %>%  # Arrange by priority, then by ascending estimates
+  slice_head(n = 6) %>%  # Select the bottom 6 species after arrangement
+  select(taxonname, priority, estimate, p.value)  # Keep only species names, estimates, p-values, and priority
 
 bottom_species <- df_long_insect %>%
   distinct(taxonname, .keep_all = TRUE) %>%  # Ensure unique species, keeping all data for now
   filter(estimate < 0) %>%  # Keep only rows with negative estimates
   mutate(priority = ifelse(p.value <= 0.05, 1, 2)) %>%  # Assign priority based on p-value
+  # mutate(bmwp_priority = ifelse(bmwp >= 5, 1, 2)) %>% #assign priority based on bmwp score
   arrange(priority, estimate) %>%  # Arrange by priority, then by ascending estimates
   slice_head(n = 6) %>%  # Select the bottom 6 species after arrangement
-  select(taxonname, estimate, p.value)  # Keep only species names, estimates, p-values, and priority
+  select(taxonname, priority, estimate, p.value)  # Keep only species names, estimates, p-values, and priority
 
 # Join the top and bottom species datasets
 selected_species <- bind_rows(top_species, bottom_species)
@@ -305,55 +253,39 @@ selected_species <- bind_rows(top_species, bottom_species)
 # Filter df_long to include only the rows for the selected species
 df_long_insect_filtered <- df_long_insect %>%
   semi_join(selected_species, by = "taxonname")
-
 unique(df_long_insect_filtered$taxonname)
 
-# Determine the taxonnames to display for the first and last year
-first_years <- df_long_insect_filtered %>%
-  group_by(taxonname) %>%
-  filter(year == min(year)) %>%
-  ungroup()
-
-last_years <- df_long_insect_filtered %>%
-  group_by(taxonname) %>%
-  filter(n() > 1) %>%
-  filter(year == max(year)) %>%
-  ungroup()
-
 # Plot abundances by year with line colors grouped by taxonomic order
-tiff(filename = "Plots/Winner_Loser_insect_new.tiff", width = 20, height = 15, units = 'in', res = 600, compression = 'lzw')
+tiff(filename = "Plots/Winner_Loser_insect_abundance.tiff", width = 10, height = 8, units = 'in', res = 300, compression = 'lzw')
 ggplot(df_long_insect_filtered, aes(x = year, y = log_abundance)) +
   geom_line(aes(color = estimate), linewidth = 0.5) +  # Color line by estimate value
   geom_point(aes(color = estimate, shape = group), size = 3) +  # Use different shapes for groups
-  geom_smooth(method = "lm", se = FALSE, aes(color = estimate, linetype = ifelse(p.value < 0.05, "p < 0.05", "p > 0.05"))) +
+  geom_smooth(method = "lm", se = FALSE, aes(color = estimate, linetype = ifelse(p.value <= 0.05, "p < 0.05", "p > 0.05"))) +
   scale_color_gradient(low = "#f0bb00ff", high = "#00ccbaff") +  # Gradient color scale for lines
   facet_wrap(~taxonname, scales = "free_y") +  # Create a facet for each species, with free y scales
-  labs(x = "Year", y = "Log(abundance + 1)", 
-    title = "Change in Insect abundance through time by species",
-    caption = "If available, only 12 species with the strongest estimates, negative or positive, are plotted.\nAnalysis only includes species present in at least 6 years of sampling.") +
+  labs(
+    x = "Year",
+    y = "Log(abundance + 1)",
+    title = "Change in insect abundance through time by species",
+    caption = "Analysis includes species present in at least 6 years of sampling. BMWP scores are annotated on each plot.\n Species with strongest estimates (positive or negative) plotted. Priority given to species significantly (p \u2264 0.05) changing through time"
+  ) +
   theme_minimal() +
-  theme(legend.position = "right", plot.title = element_text(hjust = 0.5, face = "bold")) +
+  theme(
+    legend.position = "right",
+    plot.title = element_text(hjust = 0.5, face = "bold"),
+    axis.text.x = element_text(angle = 45, hjust = 1), # Slant year labels at 45 degrees
+    panel.grid.major = element_blank(), # Remove major gridlines
+    # panel.grid.minor = element_blank(), # Remove minor gridlines
+    axis.ticks = element_line(color = "gray90"), # Add tick marks
+    panel.border = element_rect(colour = "gray90", fill=NA, size=0.5)
+  ) +
   scale_x_continuous(breaks = seq(min(df_long_insect_filtered$year), max(df_long_insect_filtered$year), by = 1)) +
-  guides(color = guide_legend(title = "Estimate"), linetype = guide_legend(title = "P Value"))
+  guides(color = guide_legend(title = "Estimate"), linetype = guide_legend(title = "P Value")) +
+  geom_text(aes(label = paste("BMWP:", bmwp), x = Inf, y = Inf), position = position_nudge(y = -0.5), hjust = 1.1, vjust = 2, check_overlap = TRUE, size = 2.5, fontface = "bold")
 dev.off()
 
 # crustacea
 df_long_crustacea <- filter(df_long, group2 == "Crustacea")
-# Filter the dataset, only keeping species present in at least 2 years
-df_long_crustacea <- df_long_crustacea %>%
-  filter(abundance >= 1) %>% # First, filter out taxa with an abundance of 0
-  group_by(taxonname) %>%
-  filter(n_distinct(year) >= 6) %>% # Then, keep taxa present in at least 6 distinct years (75%)
-  ungroup()
-
-# Group the data by species and fit linear regression model for each group
-model_outputs <- df_long_crustacea %>%
-  group_by(taxonname) %>%
-  do(tidy(lm(log_abundance ~ year, data = .))) %>%
-  filter(term != "(Intercept)") %>%
-  ungroup()
-
-df_long_crustacea <- left_join(df_long_crustacea, model_outputs, by = "taxonname")
 
 # Select the five unique species with the highest amount of change from the first to the last year
 top_species <- df_long_crustacea %>%
@@ -378,55 +310,39 @@ selected_species <- bind_rows(top_species, bottom_species)
 # Filter df_long to include only the rows for the selected species
 df_long_crustacea_filtered <- df_long_crustacea %>%
   semi_join(selected_species, by = "taxonname")
-
 unique(df_long_crustacea_filtered$taxonname)
 
-# Determine the taxonnames to display for the first and last year
-first_years <- df_long_crustacea_filtered %>%
-  group_by(taxonname) %>%
-  filter(year == min(year)) %>%
-  ungroup()
-
-last_years <- df_long_crustacea_filtered %>%
-  group_by(taxonname) %>%
-  filter(n() > 1) %>%
-  filter(year == max(year)) %>%
-  ungroup()
-
 # Plot abundances by year with line colors grouped by taxonomic order
-tiff(filename = "Plots/Winner_Loser_crustacean_new.tiff", width = 20, height = 15, units = 'in', res = 600, compression = 'lzw')
+tiff(filename = "Plots/Winner_Loser_crustacean_abundance.tiff", width = 10, height = 8, units = 'in', res = 300, compression = 'lzw')
 ggplot(df_long_crustacea_filtered, aes(x = year, y = log_abundance)) +
   geom_line(aes(color = estimate), linewidth = 0.5) +  # Color line by estimate value
   geom_point(aes(color = estimate, shape = group), size = 3) +  # Use different shapes for groups
-  geom_smooth(method = "lm", se = FALSE, aes(color = estimate, linetype = ifelse(p.value < 0.05, "p < 0.05", "p > 0.05"))) +
+  geom_smooth(method = "lm", se = FALSE, aes(color = estimate, linetype = ifelse(p.value <= 0.05, "p < 0.05", "p > 0.05"))) +
   scale_color_gradient(low = "#f0bb00ff", high = "#00ccbaff") +  # Gradient color scale for lines
   facet_wrap(~taxonname, scales = "free_y") +  # Create a facet for each species, with free y scales
-  labs(x = "Year", y = "Log(abundance + 1)", 
-       title = "Change in crustacea abundance through time by species",
-       caption = "If available, only 12 species with the strongest estimates, negative or positive, are plotted.\nAnalysis only includes species present in at least 6 years of sampling.") +
+  labs(
+    x = "Year",
+    y = "Log(abundance + 1)",
+    title = "Change in crustacea abundance through time by species",
+    caption = "Analysis includes species present in at least 6 years of sampling. BMWP scores are annotated on each plot.\n Species with strongest estimates (positive or negative) plotted. Priority given to species significantly (p \u2264 0.05) changing through time"
+  ) +
   theme_minimal() +
-  theme(legend.position = "right", plot.title = element_text(hjust = 0.5, face = "bold")) +
+  theme(
+    legend.position = "right",
+    plot.title = element_text(hjust = 0.5, face = "bold"),
+    axis.text.x = element_text(angle = 45, hjust = 1), # Slant year labels at 45 degrees
+    panel.grid.major = element_blank(), # Remove major gridlines
+    # panel.grid.minor = element_blank(), # Remove minor gridlines
+    axis.ticks = element_line(color = "gray90"), # Add tick marks
+    panel.border = element_rect(colour = "gray90", fill=NA, size=0.5)
+  ) +
   scale_x_continuous(breaks = seq(min(df_long_crustacea_filtered$year), max(df_long_crustacea_filtered$year), by = 1)) +
-  guides(color = guide_legend(title = "Estimate"), linetype = guide_legend(title = "P Value"))
+  guides(color = guide_legend(title = "Estimate"), linetype = guide_legend(title = "P Value")) +
+  geom_text(aes(label = paste("BMWP:", bmwp), x = Inf, y = Inf), position = position_nudge(y = -0.5), hjust = 1.1, vjust = 2, check_overlap = TRUE, size = 2.5, fontface = "bold")
 dev.off()
 
 # mollusc
 df_long_mollusc <- filter(df_long, group2 == "Mollusc")
-# Filter the dataset, only keeping species present in at least 2 years
-df_long_mollusc <- df_long_mollusc %>%
-  filter(abundance >= 1) %>% # First, filter out taxa with an abundance of 0
-  group_by(taxonname) %>%
-  filter(n_distinct(year) >= 6) %>% # Then, keep taxa present in at least 2 distinct years
-  ungroup()
-
-# Group the data by species and fit linear regression model for each group
-model_outputs <- df_long_mollusc %>%
-  group_by(taxonname) %>%
-  do(tidy(lm(log_abundance ~ year, data = .))) %>%
-  filter(term != "(Intercept)") %>%
-  ungroup()
-
-df_long_mollusc <- left_join(df_long_mollusc, model_outputs, by = "taxonname")
 
 # Select the five unique species with the highest amount of change from the first to the last year
 top_species <- df_long_mollusc %>%
@@ -451,55 +367,39 @@ selected_species <- bind_rows(top_species, bottom_species)
 # Filter df_long to include only the rows for the selected species
 df_long_mollusc_filtered <- df_long_mollusc %>%
   semi_join(selected_species, by = "taxonname")
-
 unique(df_long_mollusc_filtered$taxonname)
 
-# Determine the taxonnames to display for the first and last year
-first_years <- df_long_mollusc_filtered %>%
-  group_by(taxonname) %>%
-  filter(year == min(year)) %>%
-  ungroup()
-
-last_years <- df_long_mollusc_filtered %>%
-  group_by(taxonname) %>%
-  filter(n() > 1) %>%
-  filter(year == max(year)) %>%
-  ungroup()
-
 # Plot abundances by year with line colors grouped by taxonomic order
-tiff(filename = "Plots/Winner_Loser_mollusc_new.tiff", width = 20, height = 15, units = 'in', res = 600, compression = 'lzw')
+tiff(filename = "Plots/Winner_Loser_mollusc_abundance.tiff", width = 10, height = 8, units = 'in', res = 300, compression = 'lzw')
 ggplot(df_long_mollusc_filtered, aes(x = year, y = log_abundance)) +
   geom_line(aes(color = estimate), linewidth = 0.5) +  # Color line by estimate value
   geom_point(aes(color = estimate, shape = group), size = 3) +  # Use different shapes for groups
-  geom_smooth(method = "lm", se = FALSE, aes(color = estimate, linetype = ifelse(p.value < 0.05, "p < 0.05", "p > 0.05"))) +
+  geom_smooth(method = "lm", se = FALSE, aes(color = estimate, linetype = ifelse(p.value <= 0.05, "p < 0.05", "p > 0.05"))) +
   scale_color_gradient(low = "#f0bb00ff", high = "#00ccbaff") +  # Gradient color scale for lines
   facet_wrap(~taxonname, scales = "free_y") +  # Create a facet for each species, with free y scales
-  labs(x = "Year", y = "Log(abundance + 1)", 
-       title = "Change in mollusc abundance through time by species",
-       caption = "If available, only 12 species with the strongest estimates, negative or positive, are plotted.\nAnalysis only includes species present in at least 6 years of sampling.") +
+  labs(
+    x = "Year",
+    y = "Log(abundance + 1)",
+    title = "Change in mollusc abundance through time by species",
+    caption = "Analysis includes species present in at least 6 years of sampling. BMWP scores are annotated on each plot.\n Species with strongest estimates (positive or negative) plotted. Priority given to species significantly (p \u2264 0.05) changing through time"
+  ) +
   theme_minimal() +
-  theme(legend.position = "right", plot.title = element_text(hjust = 0.5, face = "bold")) +
+  theme(
+    legend.position = "right",
+    plot.title = element_text(hjust = 0.5, face = "bold"),
+    axis.text.x = element_text(angle = 45, hjust = 1), # Slant year labels at 45 degrees
+    panel.grid.major = element_blank(), # Remove major gridlines
+    # panel.grid.minor = element_blank(), # Remove minor gridlines
+    axis.ticks = element_line(color = "gray90"), # Add tick marks
+    panel.border = element_rect(colour = "gray90", fill=NA, size=0.5)
+  ) +
   scale_x_continuous(breaks = seq(min(df_long_mollusc_filtered$year), max(df_long_mollusc_filtered$year), by = 1)) +
-  guides(color = guide_legend(title = "Estimate"), linetype = guide_legend(title = "P Value"))
+  guides(color = guide_legend(title = "Estimate"), linetype = guide_legend(title = "P Value")) +
+  geom_text(aes(label = paste("BMWP:", bmwp), x = Inf, y = Inf), position = position_nudge(y = -0.5), hjust = 1.1, vjust = 2, check_overlap = TRUE, size = 2.5, fontface = "bold")
 dev.off()
 
 # annelid
 df_long_annelid <- filter(df_long, group2 == "Annelid")
-# Filter the dataset, only keeping species present in at least 2 years
-df_long_annelid <- df_long_annelid %>%
-  filter(abundance >= 1) %>% # First, filter out taxa with an abundance of 0
-  group_by(taxonname) %>%
-  filter(n_distinct(year) >= 6) %>% # Then, keep taxa present in at least 2 distinct years
-  ungroup()
-
-# Group the data by species and fit linear regression model for each group
-model_outputs <- df_long_annelid %>%
-  group_by(taxonname) %>%
-  do(tidy(lm(log_abundance ~ year, data = .))) %>%
-  filter(term != "(Intercept)") %>%
-  ungroup()
-
-df_long_annelid <- left_join(df_long_annelid, model_outputs, by = "taxonname")
 
 # Select the five unique species with the highest amount of change from the first to the last year
 top_species <- df_long_annelid %>%
@@ -524,56 +424,91 @@ selected_species <- bind_rows(top_species, bottom_species)
 # Filter df_long to include only the rows for the selected species
 df_long_annelid_filtered <- df_long_annelid %>%
   semi_join(selected_species, by = "taxonname")
-
 unique(df_long_annelid_filtered$taxonname)
 
-# Determine the taxonnames to display for the first and last year
-first_years <- df_long_annelid_filtered %>%
-  group_by(taxonname) %>%
-  filter(year == min(year)) %>%
-  ungroup()
-
-last_years <- df_long_annelid_filtered %>%
-  group_by(taxonname) %>%
-  filter(n() > 1) %>%
-  filter(year == max(year)) %>%
-  ungroup()
-
 # Plot abundances by year with line colors grouped by taxonomic order
-tiff(filename = "Plots/Winner_Loser_annelid_new.tiff", width = 20, height = 15, units = 'in', res = 600, compression = 'lzw')
+tiff(filename = "Plots/Winner_Loser_annelid_abundance.tiff", width = 10, height = 8, units = 'in', res = 300, compression = 'lzw')
 ggplot(df_long_annelid_filtered, aes(x = year, y = log_abundance)) +
   geom_line(aes(color = estimate), linewidth = 0.5) +  # Color line by estimate value
   geom_point(aes(color = estimate, shape = group), size = 3) +  # Use different shapes for groups
   geom_smooth(method = "lm", se = FALSE, aes(color = estimate), linetype = "dashed") +
   scale_color_gradient(low = "#f0bb00ff", high = "#00ccbaff") +  # Gradient color scale for lines
   facet_wrap(~taxonname, scales = "free_y") +  # Create a facet for each species, with free y scales
-  labs(x = "Year", y = "Log(abundance + 1)", 
-       title = "Change in annelid abundance through time by species",
-       caption = "If available, only 12 species with the strongest estimates, negative or positive, are plotted.\nAnalysis only includes species present in at least 6 years of sampling.") +
+  labs(
+    x = "Year",
+    y = "Log(abundance + 1)",
+    title = "Change in annedlid abundance through time by species",
+    caption = "Analysis includes species present in at least 6 years of sampling. BMWP scores are annotated on each plot.\n Species with strongest estimates (positive or negative) plotted. Priority given to species significantly (p \u2264 0.05) changing through time"
+  ) +
   theme_minimal() +
-  theme(legend.position = "right", plot.title = element_text(hjust = 0.5, face = "bold")) +
+  theme(
+    legend.position = "right",
+    plot.title = element_text(hjust = 0.5, face = "bold"),
+    axis.text.x = element_text(angle = 45, hjust = 1), # Slant year labels at 45 degrees
+    panel.grid.major = element_blank(), # Remove major gridlines
+    # panel.grid.minor = element_blank(), # Remove minor gridlines
+    axis.ticks = element_line(color = "gray90"), # Add tick marks
+    panel.border = element_rect(colour = "gray90", fill=NA, size=0.5)
+  ) +
   scale_x_continuous(breaks = seq(min(df_long_annelid_filtered$year), max(df_long_annelid_filtered$year), by = 1)) +
-  guides(color = guide_legend(title = "Estimate"), linetype = guide_legend(title = "P Value"))
+  guides(color = guide_legend(title = "Estimate"), linetype = guide_legend(title = "P Value")) +
+  geom_text(aes(label = paste("BMWP:", bmwp), x = Inf, y = Inf), position = position_nudge(y = -0.5), hjust = 1.1, vjust = 2, check_overlap = TRUE, size = 2.5, fontface = "bold")
 dev.off()
 
 # create combined table of all winners and losers
-winners_losers <- bind_rows(df_long_insect_filtered,
-                            df_long_plecoptera_filtered,
-                            df_long_trichoptera_filtered,
-                            df_long_insect_filtered,
-                            df_long_crustacea_filtered,
-                            df_long_mollusc_filtered,
-                            df_long_annelid_filtered)
-# make better looking table
-# removing duplicate rows (some species are covered by two or more datasets e.g., insect and insect)
-winners_losers <- distinct(winners_losers)
-# remove unnecessary columns
-winners_losers <- winners_losers %>%
-  select(-year, -abundance, -relative_abundance, -relative_abundance_perc, -log_abundance, -term)
-# remove species duplicates (the information is the same in every line)
-winners_losers <- distinct(winners_losers, taxonname, .keep_all = TRUE)
-# save the final table
-write.csv(winners_losers, "Outputs/LT_2010-2020_winners_losers.csv", row.names = F)
+winners_losers <- bind_rows(df_long_insect,
+                            df_long_ephemeroptera,
+                            df_long_plecoptera,
+                            df_long_trichoptera,
+                            df_long_insect,
+                            df_long_crustacea,
+                            df_long_mollusc,
+                            df_long_annelid)
+
+winners_losers_filtered <- winners_losers %>%
+  filter(taxonname %in% c("Caenis_macrura", "Heptagenia_sulphurea", 
+                          "Leuctra_sp.", "Taeniopteryx_nebulosa", 
+                          "Neureclipsis_bimaculata", "Hydropsyche_siltalai", 
+                          "Notonecta_glauca_ssp.", "Ischnura_elegans",
+                          "Asellus_aquaticus", "Gammarus_lacustris",
+                          "Radix_auricularia", "Unio_tumidus_ssp."))
+
+# control plotting order
+ordering_list <- winners_losers_filtered %>%
+  arrange(group2, taxonname) %>%
+  pull(taxonname) %>%
+  unique()
+
+winners_losers_filtered$taxonname <- factor(winners_losers_filtered$taxonname, levels = ordering_list)
+
+# Plot abundances by year with line colors grouped by taxonomic order
+tiff(filename = "Plots/Winner_Loser_abundance.tiff", width = 10, height = 8, units = 'in', res = 300, compression = 'lzw')
+ggplot(winners_losers_filtered, aes(x = year, y = log_abundance)) +
+  geom_line(aes(color = estimate), linewidth = 0.5) +  # Color line by estimate value
+  geom_smooth(method = "lm", se = F, aes(color = estimate, linetype = ifelse(p.value <= 0.05, "p < 0.05", "p > 0.05"))) +
+  geom_point(aes(color = estimate, shape = group2), size = 3) +  # Use different shapes for groups
+  scale_color_gradient(low = "#f0bb00ff", high = "#00ccbaff") +  # Gradient color scale for lines
+  facet_wrap(~taxonname, scales = "free_y") +  # Create a facet for each species, with free y scales
+  labs(
+    x = "Year",
+    y = "Log(abundance + 1)",
+    title = "Change in abundance through time by species",
+    caption = "Analysis only includes species present in at least 6 years of sampling.\nOnly select species shown.Priority given to species significantly (p \u2264 0.05) changing through time."
+  ) +
+  theme_minimal() +
+  theme(
+    legend.position = "right",
+    plot.title = element_text(hjust = 0.5, face = "bold"),
+    axis.text.x = element_text(angle = 45, hjust = 1), # Slant year labels at 45 degrees
+    panel.grid.major = element_blank(), # Remove major gridlines
+    # panel.grid.minor = element_blank(), # Remove minor gridlines
+    axis.ticks = element_line(color = "gray90"), # Add tick marks
+    panel.border = element_rect(colour = "gray90", fill=NA, size=0.5)
+  ) +
+  scale_x_continuous(breaks = seq(min(winners_losers_filtered$year), max(winners_losers_filtered$year), by = 1)) +
+  guides(color = guide_legend(title = "Estimate"), linetype = guide_legend(title = "P Value", override.aes = list(color = "black"))) +
+  geom_text(aes(label = paste("BMWP:", bmwp), x = Inf, y = Inf), position = position_nudge(y = -0.5), hjust = 1.1, vjust = 2, check_overlap = TRUE, size = 2.5, fontface = "bold")
+dev.off()
 
 ##### CLEAN UP --------------------
 library(pacman)
