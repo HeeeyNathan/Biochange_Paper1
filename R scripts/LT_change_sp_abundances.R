@@ -45,6 +45,7 @@ model_outputs <- df_long %>%
   do(tidy(lm(log_abundance ~ year, data = .))) %>%
   filter(term != "(Intercept)") %>%
   ungroup()
+
 # bind trends to main dataframe
 df_long <- left_join(df_long, model_outputs, by = "taxonname")
 
@@ -103,7 +104,7 @@ ggplot(df_long_ephemeroptera_filtered, aes(x = year, y = log_abundance)) +
     panel.border = element_rect(colour = "gray90", fill=NA, size=0.5)
   ) +
   scale_x_continuous(breaks = seq(min(df_long_ephemeroptera_filtered$year), max(df_long_ephemeroptera_filtered$year), by = 1)) +
-  guides(color = guide_legend(title = "Estimate"), linetype = guide_legend(title = "P Value")) +
+  guides(color = guide_legend(title = "Estimate"), shape = guide_legend(title = "Taxonomic group"),linetype = guide_legend(title = "P Value", override.aes = list(color = "black"))) +
   geom_text(aes(label = paste("BMWP:", bmwp), x = Inf, y = Inf), position = position_nudge(y = -0.5), hjust = 1.1, vjust = 2, check_overlap = TRUE, size = 2, fontface = "bold")
 dev.off()
 
@@ -135,7 +136,6 @@ selected_species <- bind_rows(top_species, bottom_species)
 # Filter df_long to include only the rows for the selected species
 df_long_plecoptera_filtered <- df_long_plecoptera %>%
   semi_join(selected_species, by = "taxonname")
-unique(df_long_plecoptera_filtered$taxonname)
 
 # Plot abundances by year with line colors grouped by taxonomic order
 tiff(filename = "Plots/Winner_Loser_plecoptera_abundance.tiff", width = 10, height = 8, units = 'in', res = 300, compression = 'lzw')
@@ -162,7 +162,7 @@ ggplot(df_long_plecoptera_filtered, aes(x = year, y = log_abundance)) +
     panel.border = element_rect(colour = "gray90", fill=NA, size=0.5)
   ) +
   scale_x_continuous(breaks = seq(min(df_long_plecoptera_filtered$year), max(df_long_plecoptera_filtered$year), by = 1)) +
-  guides(color = guide_legend(title = "Estimate"), linetype = guide_legend(title = "P Value")) +
+  guides(color = guide_legend(title = "Estimate"), shape = guide_legend(title = "Taxonomic group"),linetype = guide_legend(title = "P Value", override.aes = list(color = "black"))) +
   geom_text(aes(label = paste("BMWP:", bmwp), x = Inf, y = Inf), position = position_nudge(y = -0.5), hjust = 1.1, vjust = 2, check_overlap = TRUE, size = 2.5, fontface = "bold")
 dev.off()
 
@@ -194,7 +194,6 @@ selected_species <- bind_rows(top_species, bottom_species)
 # Filter df_long to include only the rows for the selected species
 df_long_trichoptera_filtered <- df_long_trichoptera %>%
   semi_join(selected_species, by = "taxonname")
-unique(df_long_trichoptera_filtered$taxonname)
 
 # Plot abundances by year with line colors grouped by taxonomic order
 tiff(filename = "Plots/Winner_Loser_trichoptera_abundance.tiff", width = 10, height = 8, units = 'in', res = 300, compression = 'lzw')
@@ -221,7 +220,7 @@ ggplot(df_long_trichoptera_filtered, aes(x = year, y = log_abundance)) +
     panel.border = element_rect(colour = "gray90", fill=NA, size=0.5)
   ) +
   scale_x_continuous(breaks = seq(min(df_long_trichoptera_filtered$year), max(df_long_trichoptera_filtered$year), by = 1)) +
-  guides(color = guide_legend(title = "Estimate"), linetype = guide_legend(title = "P Value")) +
+  guides(color = guide_legend(title = "Estimate"), shape = guide_legend(title = "Taxonomic group"),linetype = guide_legend(title = "P Value", override.aes = list(color = "black"))) +
   geom_text(aes(label = paste("BMWP:", bmwp), x = Inf, y = Inf), position = position_nudge(y = -0.5), hjust = 1.1, vjust = 2, check_overlap = TRUE, size = 2.5, fontface = "bold")
 dev.off()
 
@@ -253,7 +252,6 @@ selected_species <- bind_rows(top_species, bottom_species)
 # Filter df_long to include only the rows for the selected species
 df_long_insect_filtered <- df_long_insect %>%
   semi_join(selected_species, by = "taxonname")
-unique(df_long_insect_filtered$taxonname)
 
 # Plot abundances by year with line colors grouped by taxonomic order
 tiff(filename = "Plots/Winner_Loser_insect_abundance.tiff", width = 10, height = 8, units = 'in', res = 300, compression = 'lzw')
@@ -280,7 +278,7 @@ ggplot(df_long_insect_filtered, aes(x = year, y = log_abundance)) +
     panel.border = element_rect(colour = "gray90", fill=NA, size=0.5)
   ) +
   scale_x_continuous(breaks = seq(min(df_long_insect_filtered$year), max(df_long_insect_filtered$year), by = 1)) +
-  guides(color = guide_legend(title = "Estimate"), linetype = guide_legend(title = "P Value")) +
+  guides(color = guide_legend(title = "Estimate"), shape = guide_legend(title = "Taxonomic group"),linetype = guide_legend(title = "P Value", override.aes = list(color = "black"))) +
   geom_text(aes(label = paste("BMWP:", bmwp), x = Inf, y = Inf), position = position_nudge(y = -0.5), hjust = 1.1, vjust = 2, check_overlap = TRUE, size = 2.5, fontface = "bold")
 dev.off()
 
@@ -310,7 +308,6 @@ selected_species <- bind_rows(top_species, bottom_species)
 # Filter df_long to include only the rows for the selected species
 df_long_crustacea_filtered <- df_long_crustacea %>%
   semi_join(selected_species, by = "taxonname")
-unique(df_long_crustacea_filtered$taxonname)
 
 # Plot abundances by year with line colors grouped by taxonomic order
 tiff(filename = "Plots/Winner_Loser_crustacean_abundance.tiff", width = 10, height = 8, units = 'in', res = 300, compression = 'lzw')
@@ -337,7 +334,7 @@ ggplot(df_long_crustacea_filtered, aes(x = year, y = log_abundance)) +
     panel.border = element_rect(colour = "gray90", fill=NA, size=0.5)
   ) +
   scale_x_continuous(breaks = seq(min(df_long_crustacea_filtered$year), max(df_long_crustacea_filtered$year), by = 1)) +
-  guides(color = guide_legend(title = "Estimate"), linetype = guide_legend(title = "P Value")) +
+  guides(color = guide_legend(title = "Estimate"), shape = guide_legend(title = "Taxonomic group"),linetype = guide_legend(title = "P Value", override.aes = list(color = "black"))) +
   geom_text(aes(label = paste("BMWP:", bmwp), x = Inf, y = Inf), position = position_nudge(y = -0.5), hjust = 1.1, vjust = 2, check_overlap = TRUE, size = 2.5, fontface = "bold")
 dev.off()
 
@@ -367,7 +364,6 @@ selected_species <- bind_rows(top_species, bottom_species)
 # Filter df_long to include only the rows for the selected species
 df_long_mollusc_filtered <- df_long_mollusc %>%
   semi_join(selected_species, by = "taxonname")
-unique(df_long_mollusc_filtered$taxonname)
 
 # Plot abundances by year with line colors grouped by taxonomic order
 tiff(filename = "Plots/Winner_Loser_mollusc_abundance.tiff", width = 10, height = 8, units = 'in', res = 300, compression = 'lzw')
@@ -394,7 +390,7 @@ ggplot(df_long_mollusc_filtered, aes(x = year, y = log_abundance)) +
     panel.border = element_rect(colour = "gray90", fill=NA, size=0.5)
   ) +
   scale_x_continuous(breaks = seq(min(df_long_mollusc_filtered$year), max(df_long_mollusc_filtered$year), by = 1)) +
-  guides(color = guide_legend(title = "Estimate"), linetype = guide_legend(title = "P Value")) +
+  guides(color = guide_legend(title = "Estimate"), shape = guide_legend(title = "Taxonomic group"),linetype = guide_legend(title = "P Value", override.aes = list(color = "black"))) +
   geom_text(aes(label = paste("BMWP:", bmwp), x = Inf, y = Inf), position = position_nudge(y = -0.5), hjust = 1.1, vjust = 2, check_overlap = TRUE, size = 2.5, fontface = "bold")
 dev.off()
 
@@ -424,7 +420,6 @@ selected_species <- bind_rows(top_species, bottom_species)
 # Filter df_long to include only the rows for the selected species
 df_long_annelid_filtered <- df_long_annelid %>%
   semi_join(selected_species, by = "taxonname")
-unique(df_long_annelid_filtered$taxonname)
 
 # Plot abundances by year with line colors grouped by taxonomic order
 tiff(filename = "Plots/Winner_Loser_annelid_abundance.tiff", width = 10, height = 8, units = 'in', res = 300, compression = 'lzw')
@@ -451,7 +446,7 @@ ggplot(df_long_annelid_filtered, aes(x = year, y = log_abundance)) +
     panel.border = element_rect(colour = "gray90", fill=NA, size=0.5)
   ) +
   scale_x_continuous(breaks = seq(min(df_long_annelid_filtered$year), max(df_long_annelid_filtered$year), by = 1)) +
-  guides(color = guide_legend(title = "Estimate"), linetype = guide_legend(title = "P Value")) +
+  guides(color = guide_legend(title = "Estimate"), shape = guide_legend(title = "Taxonomic group"),linetype = guide_legend(title = "P Value", override.aes = list(color = "black"))) +
   geom_text(aes(label = paste("BMWP:", bmwp), x = Inf, y = Inf), position = position_nudge(y = -0.5), hjust = 1.1, vjust = 2, check_overlap = TRUE, size = 2.5, fontface = "bold")
 dev.off()
 
@@ -506,7 +501,7 @@ ggplot(winners_losers_filtered, aes(x = year, y = log_abundance)) +
     panel.border = element_rect(colour = "gray90", fill=NA, size=0.5)
   ) +
   scale_x_continuous(breaks = seq(min(winners_losers_filtered$year), max(winners_losers_filtered$year), by = 1)) +
-  guides(color = guide_legend(title = "Estimate"), linetype = guide_legend(title = "P Value", override.aes = list(color = "black"))) +
+  guides(color = guide_legend(title = "Estimate"), shape = guide_legend(title = "Taxonomic group"),linetype = guide_legend(title = "P Value", override.aes = list(color = "black"))) +
   geom_text(aes(label = paste("BMWP:", bmwp), x = Inf, y = Inf), position = position_nudge(y = -0.5), hjust = 1.1, vjust = 2, check_overlap = TRUE, size = 2.5, fontface = "bold")
 dev.off()
 
