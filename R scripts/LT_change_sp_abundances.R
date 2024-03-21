@@ -487,7 +487,7 @@ ggplot(winners_losers_filtered, aes(x = year, y = log_abundance)) +
   labs(
     x = "Year",
     y = "Log(abundance + 1)",
-    title = "Change in abundance through time by species",
+    title = "Change in the abundance of select species through time",
     caption = "Analysis only includes species present in at least 6 years of sampling.\nOnly select species shown.Priority given to species significantly (p \u2264 0.05) changing through time."
   ) +
   theme_minimal() +

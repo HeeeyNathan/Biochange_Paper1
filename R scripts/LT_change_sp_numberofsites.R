@@ -446,6 +446,61 @@ ggplot(df_long_annelid_filtered, aes(x = year, y = site_count)) +
   geom_text(aes(label = paste("BMWP:", bmwp), x = Inf, y = Inf), position = position_nudge(y = -0.5), hjust = 1.1, vjust = 2, check_overlap = TRUE, size = 2.5, fontface = "bold")
 dev.off()
 
+# create combined table of all winners and losers
+winners_losers <- bind_rows(df_long_insect,
+                            df_long_ephemeroptera,
+                            df_long_plecoptera,
+                            df_long_trichoptera,
+                            df_long_insect,
+                            df_long_crustacea,
+                            df_long_mollusc,
+                            df_long_annelid)
+
+winners_losers_filtered <- winners_losers %>%
+  filter(taxonname %in% c("Cloeon_dipterum", "Heptagenia_sulphurea", 
+                          "Leuctra_sp.", "Nemoura_sp.", 
+                          "Oxyethira_sp.", "Hydropsyche_pellucidula", 
+                          "Notonecta_glauca_ssp.", "Calopteryx_virgo",
+                          "Erpobdella_octoculata", "Helobdella_stagnalis",
+                          "Radix_auricularia", "Unio_sp."))
+
+# control plotting order
+ordering_list <- winners_losers_filtered %>%
+  arrange(group2, taxonname) %>%
+  pull(taxonname) %>%
+  unique()
+
+winners_losers_filtered$taxonname <- factor(winners_losers_filtered$taxonname, levels = ordering_list)
+
+# Plot abundances by year with line colors grouped by taxonomic order
+tiff(filename = "Plots/Winner_Loser_distribution.tiff", width = 10, height = 8, units = 'in', res = 300, compression = 'lzw')
+ggplot(winners_losers_filtered, aes(x = year, y = site_count)) +
+  geom_line(aes(color = estimate), linewidth = 0.5) +  # Color line by estimate value
+  geom_smooth(method = "lm", se = F, aes(color = estimate, linetype = ifelse(p.value <= 0.05, "p < 0.05", "p > 0.05"))) +
+  geom_point(aes(color = estimate, shape = group2), size = 3) +  # Use different shapes for groups
+  scale_color_gradient(low = "#f0bb00ff", high = "#00ccbaff") +  # Gradient color scale for lines
+  facet_wrap(~taxonname, scales = "free_y") +  # Create a facet for each species, with free y scales
+  labs(
+    x = "Year",
+    y = "Site count",
+    title = "Change in the distribution of select species through time",
+    caption = "Analysis only includes species present in at least 6 years of sampling.\nOnly select species shown.Priority given to species significantly (p \u2264 0.05) changing through time."
+  ) +
+  theme_minimal() +
+  theme(
+    legend.position = "right",
+    plot.title = element_text(hjust = 0.5, face = "bold"),
+    axis.text.x = element_text(angle = 45, hjust = 1), # Slant year labels at 45 degrees
+    panel.grid.major = element_blank(), # Remove major gridlines
+    # panel.grid.minor = element_blank(), # Remove minor gridlines
+    axis.ticks = element_line(color = "gray90"), # Add tick marks
+    panel.border = element_rect(colour = "gray90", fill=NA, size=0.5)
+  ) +
+  scale_x_continuous(breaks = seq(min(winners_losers_filtered$year), max(winners_losers_filtered$year), by = 1)) +
+  guides(color = guide_legend(title = "Estimate"), shape = guide_legend(title = "Taxonomic group"),linetype = guide_legend(title = "P Value", override.aes = list(color = "black"))) +
+  geom_text(aes(label = paste("BMWP:", bmwp), x = Inf, y = Inf), position = position_nudge(y = -0.5), hjust = 1.1, vjust = 2, check_overlap = TRUE, size = 2.5, fontface = "bold")
+dev.off()
+
 # Create combined table of alien species
 # Filter the dataset, only keeping species present in at least 6 years
 df_long_alien <- df_long %>%
@@ -491,7 +546,7 @@ ggplot(df_long_alien_count, aes(x = year, y = site_count)) +
   labs(
     x = "Year",
     y = "Site count",
-    title = "Change in distribution alien species through time",
+    title = "Change in the distribution of select alien species through time",
     caption = "Analysis only includes species present in at least 4 years of sampling.\nOnly alien species shown. Priority given to species significantly (p \u2264 0.05) changing through time."
   ) +
   theme_minimal() +
@@ -546,7 +601,7 @@ ggplot(df_long_alien_abund, aes(x = year, y = log_abundance)) +
   labs(
     x = "Year",
     y = "Log(abundance + 1)",
-    title = "Change in abundance of alien species through time",
+    title = "Change in the abundance of select alien species through time",
     caption = "Analysis only includes species present in at least 4 years of sampling.\nOnly alien species shown. Priority given to species significantly (p \u2264 0.05) changing through time."
   ) +
   theme_minimal() +
