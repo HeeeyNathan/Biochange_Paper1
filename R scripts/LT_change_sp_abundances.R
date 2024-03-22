@@ -463,7 +463,7 @@ winners_losers <- bind_rows(df_long_insect,
 winners_losers_filtered <- winners_losers %>%
   filter(taxonname %in% c("Caenis_macrura", "Heptagenia_sulphurea", 
                           "Leuctra_sp.", "Taeniopteryx_nebulosa", 
-                          "Neureclipsis_bimaculata", "Hydropsyche_siltalai", 
+                          "Neureclipsis_bimaculata", "Lepidostoma_basale", 
                           "Notonecta_glauca_ssp.", "Ischnura_elegans",
                           "Asellus_aquaticus", "Gammarus_lacustris",
                           "Radix_auricularia", "Unio_tumidus_ssp."))
