@@ -26,10 +26,6 @@ comm_raw <- comm_raw[, -21] # remove 'Ametropus_sp.' because it has no trait inf
 comm <- comm_raw[, -1] # remove some columns that are needed now
 rownames(comm) <- comm_raw$sample_id
 
-### Grouped by year
-Yr.mat <- read.table("Data/LT_annual_taxalist.csv", header = TRUE, sep = ",", row.names = 1)
-Yr.mat <- Yr.mat[,-20] # remove 'Ametropus_sp.' because it has no trait information
-
 #### FUNCITONAL DATA
 ### Full species-by-trait matrix for functional analysis
 traits_raw <- read.csv("Data/LT_traits_2010-2020_short.csv", header = TRUE) # Add "LT_taxalist_2010-2020_tachet_bio_traits.csv"

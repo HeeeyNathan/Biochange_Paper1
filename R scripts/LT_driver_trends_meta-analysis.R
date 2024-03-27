@@ -68,15 +68,15 @@ loo(fit1, compare = T)
 ### save output ####
 saveRDS(fit1,file=paste0("Outputs/Driver_metaanalysis_trends/metaanalysis_",myResponse,".rds"))
 
-# ##### CLEAN UP --------------------
-# library(pacman)
-# # Clear data
-# rm(list = ls())  # Removes all objects from environment
-# # Clear packages
-# p_unload(all)  # Remove all contributed packages
-# # Clear plots
-# graphics.off()  # Clears plots, closes all graphics devices
-# # Clear console
-# cat("\014")  # Mimics ctrl+L
-# # Clear mind :)
+##### CLEAN UP --------------------
+library(pacman)
+# Clear data
+rm(list = ls())  # Removes all objects from environment
+# Clear packages
+p_unload(all)  # Remove all contributed packages
+# Clear plots
+graphics.off()  # Clears plots, closes all graphics devices
+# Clear console
+cat("\014")  # Mimics ctrl+L
+# Clear mind :)
 

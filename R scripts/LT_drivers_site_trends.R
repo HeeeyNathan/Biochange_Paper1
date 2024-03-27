@@ -231,7 +231,6 @@ rownames(trends) <- 1:41
 trends
 
 saveRDS(trends, file=paste0("Outputs/Driver_trends/trends__",myResponse,"__",myCountry,".RDS"))
-#write.csv(trends, file=paste0("outputs/trends__",myResponse,"__",myCountry,".csv"))
 
 ##### CLEAN UP --------------------
 library(pacman)

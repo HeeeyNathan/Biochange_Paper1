@@ -3,7 +3,7 @@ library(pacman)
 library(vegan)
 library(RColorBrewer)
 library(dplyr)
-source("HighstatLibV10.R")
+source("Additional functions/HighstatLibV10.R")
 
 ##### read in data & format #####
 d1 <- read.csv("Data/LT_siteYr_AllData_wNAs_modified.csv", header=T)

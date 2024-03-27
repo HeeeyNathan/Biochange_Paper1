@@ -227,7 +227,6 @@ qqline(residuals, col = "red")
 # #### save output ###
 # 
 saveRDS(summ, file=paste0("Outputs/Drivers_all_sites/drivers__",myResponse,"__Lithuania_new.RDS"))
-# write.csv(summ,file=paste0("Outputs/Drivers_all_sites/drivers__",myResponse,"__Lithuania.csv"))
 
 ##### CLEAN UP --------------------
 library(pacman)
