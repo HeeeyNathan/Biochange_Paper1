@@ -3,6 +3,7 @@ library(pacman)
 library(vegan)
 library(RColorBrewer)
 library(dplyr)
+source("HighstatLibV10.R")
 
 ##### read in data & format #####
 d1 <- read.csv("Data/LT_siteYr_AllData_wNAs_modified.csv", header=T)
@@ -64,6 +65,14 @@ allYrs_renamed <- allYrs %>%
          "Total nitrogen" = sTot.N,
          "Phosphate" = sPO4.P,
          "Total phosphorus" = sTot.P)
+
+# check correlations
+pairs(allYrs_renamed[, c("Dissolved oxygen", "Ammonium", "Nitrite", "Nitrate","Mineralized nitrogen", "Total nitrogen", "Phosphate", "Total phosphorus")], lower.panel = panel.smooth, upper.panel = panel.cor, diag.panel = panel.hist, main = "Pearson Correlation Matrix") # Check env data for collinearity
+cor_spearman <- cor(allYrs_renamed[, c("Dissolved oxygen", "Ammonium", "Nitrite", "Nitrate", "Mineralized nitrogen", "Total nitrogen", "Phosphate", "Total phosphorus")], 
+                    use = "complete.obs", 
+                    method = "spearman")
+# Viewing the correlation of Dissolved Oxygen with all specified species
+cor_spearman["Dissolved oxygen",]
 
 # Construct PCA to check the environmental variables and their relationships
 allYrs_pca = princomp(na.omit(allYrs_renamed[, c("Alkalinity", "Electrical conductivity", 

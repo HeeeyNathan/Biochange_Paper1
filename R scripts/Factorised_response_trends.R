@@ -51,42 +51,6 @@ plot_response_RivTyp <- function(data, title) {
     guides(fill = guide_legend(title = "Estimate"))
 }
 
-# # Function to perform chi-squared test for each combination of response and river type
-# perform_chi_squared_test <- function(data) {
-#   result <- data %>%
-#     group_by(River_type, Response) %>%
-#     summarize(Positive = sum(count[EstimateCategory == "Positive trends"]),
-#               Negative = sum(count[EstimateCategory == "Negative trends"]))
-#   
-#   # Perform chi-squared test
-#   result <- result %>%
-#     rowwise() %>%
-#     mutate(p_value = chisq.test(c(Positive, Negative))$p.value)
-#   
-#   return(result)
-# }
-# 
-# # Create a list to store the results
-# taxo_chi <- lapply(taxo_responses, function(response) {
-#   data <- calculate_RivTyp(merged_df, response)
-#   perform_chi_squared_test(data)
-# })
-# 
-# func_chi <- lapply(func_responses, function(response) {
-#   data <- calculate_RivTyp(merged_df, response)
-#   perform_chi_squared_test(data)
-# })
-# 
-# group_chi <- lapply(group_responses, function(response) {
-#   data <- calculate_RivTyp(merged_df, response)
-#   perform_chi_squared_test(data)
-# })
-# 
-# # Combine the chi_squared results
-# taxo_chi_results <- bind_rows(taxo_chi)
-# func_chi_results <- bind_rows(func_chi)
-# group_chi_results <- bind_rows(group_chi)
-
 # Create a list to store the dataframes
 taxo_list <- lapply(taxo_responses, function(response) calculate_RivTyp(merged_df, response))
 func_list <- lapply(func_responses, function(response) calculate_RivTyp(merged_df, response))

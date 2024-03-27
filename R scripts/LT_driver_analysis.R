@@ -465,7 +465,7 @@ PlotEffects <- function(name, summs, label.y=TRUE, title=TRUE, removeInt=FALSE) 
   # If specified, remove the intercept term from the summary
   if(removeInt) summ <- summ[rownames(summ)!="(Intercept)",]
   # Set custom row names for the summary dataframe
-  new_rownames <- c("Flow", "pH", "Temperature", "Diss. oxygen", "Ammonium", "Nutrients PCA")
+  new_rownames <- c("Discharge", "pH", "Temperature", "Diss. oxygen", "Ammonium", "Nutrients PCA")
   rownames(summ) <- new_rownames
   # Create new columns for lower and upper limits
   summ$LLim <- summ[, 4]
@@ -515,7 +515,7 @@ sapply(names(Models.lme1)[VarToPlot], PlotRiverTypes, mod=Models.lme1)
 mtext("River Type", 3, outer=TRUE, font = 2)
 
 # select taxon indices
-tiff(filename = "Plots/LT_Driver_Est_RivTyp_SelectIndices.tiff", width = 10, height = 10, units = 'in', res = 600, compression = 'lzw')
+tiff(filename = "Plots/LT_Driver_Est_RivTyp_SelectIndices_updated.tiff", width = 10, height = 10, units = 'in', res = 600, compression = 'lzw')
 VarToPlot <- c(1:2, 4, 3, 7, 10)
 par(mfrow=c(length(VarToPlot),5), mar=c(2,0.5,2,2), oma=c(2,6,2,2))
 sapply(names(Models.lme1)[VarToPlot], PlotRiverTypes, mod=Models.lme1)

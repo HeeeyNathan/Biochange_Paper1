@@ -502,7 +502,7 @@ ggplot(winners_losers_filtered, aes(x = year, y = site_count)) +
 dev.off()
 
 # Create combined table of alien species
-# Filter the dataset, only keeping species present in at least 6 years
+# Filter the dataset, only keeping species present in at least 4 years
 df_long_alien <- df_long %>%
   filter(abundance >= 1) %>%
   group_by(taxonname) %>%

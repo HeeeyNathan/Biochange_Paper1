@@ -25,6 +25,9 @@ allYrs$fmodified <- as.factor(allYrs$Heavily_modified)
 allYrs$ftype <- as.factor(allYrs$river_type)
 allYrs$fEQC <- as.factor(allYrs$EQC)
 
+# # Change flow to discharge
+# names(allYrs)[names(allYrs) == "flow"] <- "discharge"
+
 # Scale the covariates
 # function to add a new column onto the data with scaled vars (with s before their name)
 scaleVars <- function(df){
@@ -89,7 +92,7 @@ allYrs <- dplyr::left_join(allYrs, pc1_scores, by = "ID")
 allYrs <- subset(allYrs, select = -c(ID)) # remove ID variable
 
 # Create plot
-tiff(filename = "Plots/LT_slopeDistributions_Drivers.tiff", width = 12, height = 6, units = 'in', res = 600, compression = 'lzw')
+tiff(filename = "Plots/LT_slopeDistributions_Drivers_updated.tiff", width = 12, height = 6, units = 'in', res = 900, compression = 'lzw')
 # svg(filename = "Plots/LT_slopeDistributions_TaxoFuncIndices.svg", width = 12, height = 10, bg = "white")
 
 # set plotting parametres
@@ -126,7 +129,7 @@ polygon(x=c(stand_flow$Q5, stand_flow$Q5, stand_flow$Q95, stand_flow$Q95),
 polygon(x=c(stand_flow$Q10, stand_flow$Q10, stand_flow$Q90, stand_flow$Q90),
         y=c((yy-yy/6),(yy+yy/6),(yy+yy/6),(yy-yy/6)),
         col = 1,border = 0,lwd = 1)
-legend(x=-18, y=(4/4*(b-a)+a), legend=expression(paste("a, Flow (",m^3, sep = ".", s^-1,")")), bty="n", cex=1.3)
+legend(x=-18, y=(4/4*(b-a)+a), legend=expression(paste("a, Discharge (",m^3, sep = ".", s^-1,")")), bty="n", cex=1.3)
 legend(x=5, y=(4/4*(b-a)+a), legend=expression(paste("-0.44%",y^-1, sep = "")), bty="n", cex=1.3)
 
 #### Temperature #####
