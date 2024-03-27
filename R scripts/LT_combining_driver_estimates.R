@@ -1,7 +1,6 @@
 ### whole time series ####
 
 #combine driver estimates
-
 DriverDir <- "Outputs/Drivers_all_sites"
 
 #make sure it is just the rds trend files
@@ -22,10 +21,8 @@ DriverEsts <- do.call(rbind,DriverEsts)
 names(DriverEsts)[which(names(DriverEsts)=="covariate")] <- "driver"
 DriverEsts
 saveRDS(DriverEsts,file="outputs/glsTrends_drivers_site_level.rds")
-# write.csv(DriverEsts,file="outputs/glsTrends_drivers_site_level_all.rds")
 
 #check we have all data
-
 #get lists of tasks
 TaskID <- read.csv("data/LT_ResponseTrends_TaskIDs.csv",as.is=T)
 sort(unique(TaskID$Response))

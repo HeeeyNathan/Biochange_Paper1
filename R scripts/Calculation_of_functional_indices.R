@@ -114,7 +114,7 @@ plot(esto12, cont = seq(1, 100, by = 2.25), display  = "filled.contour", add = F
      cex.axis = 0.75, ylim = c(-0.4, 0.6), xlim = c(-0.4, 0.6) , las = 1)
 
 ## FIGURE S1B: TRAIT PROBABILITY DENSITY PLOT #####
-# svg(file="Plots/Supraregional_FS_density_vectors.svg", onefile = T, width = 12, height = 12)
+svg(file="Plots/Supraregional_FS_density_vectors.svg", onefile = T, width = 12, height = 12)
 par(mfrow = c(1,1), cex.axis = 1.85, cex.lab = 2, cex.main = 2, mar = c(5,5,4,1))
 plot(esto12, cont = seq(1, 100, by = 2.25), display = "filled.contour", add = FALSE, 
      ylab = paste("PCo-2"), 
@@ -130,21 +130,21 @@ plot(esto12, abs.cont = clo12[2], labels = c(0.95), labcex = 0.75, add = TRUE, l
 plot(esto12, abs.cont = clo12[3], labels = c(0.99), labcex = 0.75, add = TRUE, lwd = 0.5, col = "grey60")
 points(pco12[,], pch = 16, cex = 0.25, col = "black")
 plot(fit12, cex = 0.90, col = 1)
-# dev.off()
+dev.off()
 
 ## FIGURE S1C: POSITION OF TAXONOMIC GROUPS WITHIN THE FS #####
 library(adegraphics)
 supra.gr <- data.frame(group2 = traits_raw$group2, traits)[(intersect(rownames(traits), colnames(comm))),]
 
-# svg(file = "Plots/Supraregional_FS_taxa_grouping.svg", onefile = T, width = 7, height = 7)
+svg(file = "Plots/Supraregional_FS_taxa_grouping.svg", onefile = T, width = 7, height = 7)
 par(mfrow = c(1,1), mar = c(5,5,4,1))
 # Define a vector of pastel colors
 pastel_colors <- c("#FFC0CB", "#FFD700", "#87CEEB", "#98FB98", "#FFA07A", "#9370DB", "#F0E68C", "#FF69B4", "#00CED1", "#B0E0E6", "#DDA0DD", "#20B2AA", "#FFE4B5", "#00FF7F", "#7B68EE", "#AFEEEE", "#F08080", "#40E0D0")
 s.class(supreg.pco$li, fac = as.factor(supra.gr$group2[which(rowSums(traits)==11)]), plines.col = 1:18, col = pastel_colors)
-# dev.off()
+dev.off()
 
 ## FIGURE S1A: REPRESENTATION OF THE SUPRAREGIONAL FS #####
-# svg(file = "Plots/Supraregional_FS_convexhull.svg",onefile = T, width = 12, height = 12) 
+svg(file = "Plots/Supraregional_FS_convexhull.svg",onefile = T, width = 12, height = 12)
 par(mfrow = c(1,1), cex.axis = 1.85, cex.lab = 2, cex.main = 2, mar = c(5,5,3,1))
 plot(range(supreg.pco$li[1]), range(supreg.pco$li[2]),type = "n", main="Supraregional FS",xlab = "PCo-1", cex.axis = 1, ylab = "PCo-1")
 points(supreg.pco$li[,c(1,2)],col="#4D4D4D",pch=".",cex=7)
@@ -153,7 +153,7 @@ colMeans(supreg.pco$li[,c(1,2)])->cent_ov
 points(cent_ov[1],cent_ov[2],col="black",pch="+",cex=4)
 colMeans(supreg.pco$li[(intersect(rownames(supreg.pco$li), colnames(comm))),c(1,2)])->cent_r
 points(cent_r[1],cent_r[2],col="red",pch="+",cex=2.5)
-# dev.off()
+dev.off()
 
 ### COMPUTING FD METRICS (FRIC, FDIS, FEVE)#####
 # Using supraregional-scale FS
@@ -283,13 +283,13 @@ colnames(FDis_output) <- c("FDis.SES", "FDis.SES.sig")
 boxplot(FDis.obs.null.output.shuff[,1], FDis_output[,1])# obsevred vs standardised FDis
 
 # create combined dataframe of null model results
-null.outputs <- cbind(FRic_output, FEve_output, FDis_output)
+null_outputs <- cbind(FRic_output, FEve_output, FDis_output)
 
 # Save null model outputs
-write.csv(null.outputs, "Outputs/null_model_outputs.csv", row.names = F)
+write.csv(null_outputs, "Outputs/null_model_outputs.csv", row.names = F)
 
 # Read in computed null model values - This will save you from having to rerun the null models
-null.outputs <- read.csv("Outputs/null_model_outputs_wNAs.csv", h = TRUE, sep = ",", row.names = c(1) ,stringsAsFactors = FALSE)
+null.outputs <- read.csv("Outputs/null_model_outputs_wNAs.csv", h = TRUE, sep = ",", row.names = c(1) ,stringsAsFactors = FALSE) # I deliberatly changed the name here so not to get confused
 
 # Substituting NAs by 0 (only if necessary)
 null.outputs$FRic.SES[which(is.na(null.outputs$FRic.SES) == T)] <- 0

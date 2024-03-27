@@ -31,7 +31,6 @@ head(d1)
 siteData <- unique(d1[,c("site_id","study_id","Country","season","TaxonomicRes", "Year_count", "Starting_year","Ending_year", "Sampling_years","River_type", "Heavily_modified", "Heavily_modified_code", "River_type_fact", "Heavily_modified_fact")])
 response_gls_pivot <- merge(siteData,response_gls_pivot,by="site_id")
 head(response_gls_pivot)
-# write.csv(response_gls_pivot,"Outputs/GLS_trends_all.csv")
 
 ### meta-analysis ####
 getwd()

@@ -12,7 +12,7 @@ driver_gls <- driver_gls[driver_gls$driver != "(Intercept)",] # removes the inte
 # Change the how the driver names appear in the figures
 driver_gls <- driver_gls %>%
   mutate(driver = case_when(
-    driver == "sflow" ~ "Flow",
+    driver == "sflow" ~ "Discharge",
     driver == "spH" ~ "pH",
     driver == "stemp" ~ "Temperature",
     # driver == "ssus_solid" ~ "Susp. solids",
@@ -24,7 +24,7 @@ driver_gls <- driver_gls %>%
   ))
 
 # # Reorder the driver names so that they appear in ggplot the way we want
-driver_gls$fDriver <- factor(driver_gls$driver, levels=c("Flow", "pH", "Temperature", "Diss. oxygen", "Ammonium", "Nutrients PCA"), ordered = T) # reorder the driver names so that they appear in ggplot the way we want
+driver_gls$fDriver <- factor(driver_gls$driver, levels=c("Discharge", "pH", "Temperature", "Diss. oxygen", "Ammonium", "Nutrients PCA"), ordered = T) # reorder the driver names so that they appear in ggplot the way we want
 
 # generate groups for plotting
 unique(driver_gls$Response)
@@ -71,10 +71,10 @@ p1 <- ggplot(Group1, aes(x = Estimate, y = fDriver)) +
   xlab("")
 p1
 
-svg(filename = "Plots/LT_OverallDrivers_TaxoIndices.svg", width = 6, height = 10, bg = "white")
-tiff(filename = "Plots/LT_OverallDrivers_TaxoIndices.tiff", width = 6, height = 10, units = 'in', res = 600, compression = 'lzw')
-p1
-dev.off()
+# svg(filename = "Plots/LT_OverallDrivers_TaxoIndices.svg", width = 6, height = 10, bg = "white")
+# tiff(filename = "Plots/LT_OverallDrivers_TaxoIndices.tiff", width = 6, height = 10, units = 'in', res = 600, compression = 'lzw')
+# p1
+# dev.off()
 
 # Change response names to match other plots (consistency)
 nrow(Group2)
@@ -114,37 +114,8 @@ p2 <- ggplot(Group2, aes(x = Estimate, y = fDriver)) +
   xlab("")
 p2
 
-svg(filename = "Plots/LT_OverallDrivers_funcIndices.svg", width = 6, height = 10, bg = "white")
-tiff(filename = "Plots/LT_OverallDrivers_FuncIndices.tiff", width = 6, height = 10, units = 'in', res = 600, compression = 'lzw')
-p2
-dev.off()
-
-# svg(filename = "Plots/Overall_drivers_FuncIndices.svg", width = 8, height = 12, bg = "white")
-# p2 <- ggplot(Group2, aes(x = Estimate, y = fDriver)) +
-#   scale_color_identity() +
-#   geom_point(
-#     shape = 21, size = 4, fill = "white",
-#     aes(color = ifelse(Estimate >= 0, "#95ccba", "#f2cc84"))
-#   ) +
-#   geom_errorbar(
-#     width = 0, linewidth = 1,
-#     aes(xmin = (`2.5 %`), xmax = (`97.5 %`), color = ifelse(Estimate >= 0, "#95ccba", "#f2cc84"))
-#   ) +
-#   facet_wrap(~ fResponse, nrow = 5, scales = "free_x") +
-#   theme_bw() +
-#   theme(
-#     panel.grid = element_blank(),
-#     strip.background = element_blank(),
-#     plot.margin = unit(c(0, 0.5, 0.5, 0), "cm"),
-#     legend.position = "none",
-#     text = element_text(size = 12),  # Adjust the size of all text elements
-#     axis.title = element_blank(),    # Remove axis titles
-#     axis.text = element_text(size = 12),  # Adjust the size of tick mark labels
-#     strip.text = element_text(size = 12, face = "bold")  # Adjust the size and face of facet labels
-#   ) +
-#   geom_vline(xintercept = 0, lty = 3) +
-#   ylab("") +
-#   xlab("")
+# svg(filename = "Plots/LT_OverallDrivers_funcIndices.svg", width = 6, height = 10, bg = "white")
+# tiff(filename = "Plots/LT_OverallDrivers_FuncIndices.tiff", width = 6, height = 10, units = 'in', res = 600, compression = 'lzw')
 # p2
 # dev.off()
 
@@ -261,10 +232,10 @@ combined_1 <- ggdraw() +
   draw_plot(combined_1) +
   draw_plot_label(label = x_axis_label, y = 0.03, x = 0.45, fontface = "plain", size = 12)
 print(combined_1)
-# save plots
-tiff(filename = "Plots/LT_Overall_Driver_Ests_TaxoFuncIndices.tiff", width = 8, height = 12, units = 'in', res = 600, compression = 'lzw')
-combined_1
-dev.off()
+# # save plots
+# tiff(filename = "Plots/LT_Overall_Driver_Ests_TaxoFuncIndices.tiff", width = 8, height = 12, units = 'in', res = 600, compression = 'lzw')
+# combined_1
+# dev.off()
 
 # Combine ggplot 2
 (combined_2 <- cowplot::plot_grid(p3, p4, align = "hv", axis = "bt", ncol = 2))
@@ -274,14 +245,14 @@ combined_2 <- ggdraw() +
   draw_plot_label(label = x_axis_label, y = 0.03, x = 0.45, fontface = "plain", size = 12)
 print(combined_2)
 # save plots
-tiff(filename = "Plots/LT_Overall_Driver_Ests_TaxoGroups.tiff", width = 8, height = 12, units = 'in', res = 600, compression = 'lzw')
-combined_2
-dev.off()
+# tiff(filename = "Plots/LT_Overall_Driver_Ests_TaxoGroups.tiff", width = 8, height = 12, units = 'in', res = 600, compression = 'lzw')
+# combined_2
+# dev.off()
 
 # extra plot
-tiff(filename = "Plots/LT_Overall_Driver_Ests_Extra.tiff", width = 4, height = 9, units = 'in', res = 600, compression = 'lzw')
-p5
-dev.off()
+# tiff(filename = "Plots/LT_Overall_Driver_Ests_Extra.tiff", width = 4, height = 9, units = 'in', res = 600, compression = 'lzw')
+# p5
+# dev.off()
 
 ##### CLEAN UP --------------------
 library(pacman)

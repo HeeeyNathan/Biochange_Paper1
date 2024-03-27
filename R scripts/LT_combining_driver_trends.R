@@ -22,10 +22,8 @@ siteTrends <- do.call(rbind,siteTrends)
 names(siteTrends)[which(names(siteTrends)=="siteID")] <- "site_id"
 siteTrends
 saveRDS(siteTrends,file="outputs/glsTrends_site_level_drivers.rds")
-# write.csv(siteTrends,file="outputs/glsTrends_site_level_all.csv")
 
 #check we have all data
-
 #get lists of tasks
 TaskID <- read.csv("data/LT_DriverTrends_TaskIDs.csv",as.is=T)
 sort(unique(TaskID$Response))

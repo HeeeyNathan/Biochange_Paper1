@@ -8,7 +8,7 @@ library(car) # for logit()
 library(xtable) # for tables
 library(RColorBrewer)
 
-source("HighstatLibV10.R")
+source("Additional functions/HighstatLibV10.R")
 
 ##### read in data & format #####
 d1 <- read.csv("Data/LT_siteYr_AllData_wNAs_modified.csv", header=T)
@@ -55,12 +55,6 @@ allYrs$ID <- rownames(allYrs)
 allYrs <- dplyr::left_join(allYrs, sPredictors, by = "ID")
 allYrs <- subset(allYrs, select = -c(ID)) # remove ID variable
 
-# # Check variable colinnearity
-# pairs(allYrs[, c(77:91)], lower.panel = panel.smooth, upper.panel = panel.cor, diag.panel = panel.hist, main = "Pearson Correlation Matrix") # Check env data for collinearity
-# pairs(allYrs[, c(79:91)], lower.panel = panel.smooth, upper.panel = panel.cor, diag.panel = panel.hist, main = "Pearson Correlation Matrix") # Check env data for collinearity
-# pairs(allYrs[, c(80, 83, 86:91)], lower.panel = panel.smooth, upper.panel = panel.cor, diag.panel = panel.hist, main = "Pearson Correlation Matrix") # Check env data for collinearity
-# pairs(allYrs[, c(80, 83, 86:91)], lower.panel = panel.smooth, upper.panel = panel.cor, diag.panel = panel.hist, main = "Pearson Correlation Matrix") # Check env data for collinearity
-
 # Construct PCA to check the environmental variables and their relationships
 allYrs_pca = princomp(na.omit(allYrs[, c(81, 84, 87:92)]), scores = TRUE) #computes PCA - gives us all the PCA results
 summary(allYrs_pca)
@@ -71,24 +65,6 @@ abline(h = 0, lty = 3) #plots origin line horizontal
 points(allYrs_pca$scores[, 1], allYrs_pca$scores[, 2], col = "red", cex = 0.6, pch = 3) #adds text for samples
 vec = envfit(allYrs_pca, na.omit(allYrs[, c(81, 84, 87:92)]), choices = c(1, 2)) #computes the environmental variable vectors
 plot(vec, col = "blue", cex = 1) #plots vectors (environmetal variables)
-
-# Check broken stick model
-biplot(allYrs_pca)
-allYrs_pca_scores <- (scores(allYrs_pca)[,1])
-corr1 <- cor(na.omit(allYrs[, c(81, 84, 87:92)]), scores(allYrs_pca)[,1]) # correlation between original variables and principal components
-round(corr1, 3)
-corr2 <- cor(na.omit(allYrs[, c(81, 84, 87:92)]), scores(allYrs_pca)[,2]) # correlation between original variables and principal components
-round(corr2, 3)
-screeplot(allYrs_pca, bstick = TRUE, npcs = length(allYrs_pca$sdev))
-(ev <- allYrs_pca$sdev^2)
-n <- length (ev)
-bsm <- data.frame(j=seq(1:n), p=0)
-bsm$p[1] <- 1/n
-for (i in 2:n) {bsm$p[i] = bsm$p[i-1] + (1/(n+1-i))}
-bsm$p <- 100*bsm$p/n
-bsm
-barplot(t(cbind(100*ev/sum(ev),bsm$p[n:1])), beside=TRUE, main="Broken stick model", col=c("blue",2), las=2)
-legend("topright", c("% eigenvalue", "Broken stick model"), pch=15, col=c("blue",2), bty="n")
 
 # isolate pc axis for use as covariate in model
 pc1_scores <- as.data.frame(allYrs_pca$scores[, 1]) # reverse signs to help with interpretation later
@@ -119,7 +95,7 @@ library(lme4)
 
 ### get response for this task ##
 TaskID <- read.csv("Data/LT_ResponseTrends_TaskIDs.csv", as.is = T)
-task.id = as.integer(Sys.getenv("SLURM_ARRAY_TASK_ID", "26"))
+task.id = as.integer(Sys.getenv("SLURM_ARRAY_TASK_ID", "1"))
 myResponse <- TaskID$Response[which(TaskID$TaskID==task.id)]
 
 # choose which response for this task
@@ -225,7 +201,7 @@ qqline(residuals, col = "red")
 # qqline(residuals, col = "red")
 
 # #### save output ###
-# 
+
 saveRDS(summ, file=paste0("Outputs/Drivers_all_sites/drivers__",myResponse,"__Lithuania_new.RDS"))
 
 ##### CLEAN UP --------------------
