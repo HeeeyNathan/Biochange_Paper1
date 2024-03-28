@@ -1,7 +1,6 @@
 # script to combine site-level trends together in a single meta-analysis
 
 ### get response for this task ######
-
 TaskID <- read.csv("Data/LT_ResponseTrends_TaskIDs.csv",as.is=T)
 task.id = as.integer(Sys.getenv("SLURM_ARRAY_TASK_ID", "1"))
 myResponse <- TaskID$Response[which(TaskID$TaskID==task.id)]
@@ -66,7 +65,6 @@ abline(h = 0, lty = 2, col = "red")
 
 ### save output ####
 saveRDS(fit1,file=paste0("Outputs/Metaanalysis_trends/metaanalysis_noRandom_",myResponse,".rds"))
-#write.csv(fit1,file=paste0("Outputs/metaanalysis_noRandom_",myResponse,".csv"))
 
 ##### CLEAN UP --------------------
 library(pacman)

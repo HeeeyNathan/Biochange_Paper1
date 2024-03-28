@@ -3,21 +3,11 @@ rm(list=ls())
 library(lubridate)
 library(pacman)
 
-source("HighstatLibV10.R")
+source("Additional functions/HighstatLibV10.R")
 
 #load data
 d1 <- read.csv("Data/LT_siteYr_AllData_wNAs_modified.csv", header=T) 
 allYrs <- d1[!is.na(d1$site_id_wMissing),]
-# write.csv(allYrs, "Data/LT_siteYr_AllData_noNAs.csv", row.names = F)
-
-# #explore data
-# colnames(allYrs)
-# pairs(allYrs[, c(11, 22)], lower.panel = panel.smooth2, upper.panel = panel.cor, diag.panel = panel.hist) # abundance
-# pairs(allYrs[, c(11, 21, 19, 27, 17, 24)], lower.panel = panel.smooth2, upper.panel = panel.cor, diag.panel = panel.hist) # taxonomic indices
-# pairs(allYrs[, c(11, 46, 47, 48, 49, 50, 52, 54, 56)], lower.panel = panel.smooth2, upper.panel = panel.cor, diag.panel = panel.hist) # functional indices indices
-# pairs(allYrs[, c(17, 27, 46, 50, 21, 47, 52, 19, 48, 54, 24, 56)], lower.panel = panel.smooth2, upper.panel = panel.cor, diag.panel = panel.hist) # taxonomic vs functional indices
-# pairs(allYrs[, c(28, 34, 37, 40, 43)], lower.panel = panel.smooth2, upper.panel = panel.cor, diag.panel = panel.hist) # taxonomic group spp_richness
-# pairs(allYrs[, c(29, 35, 38, 41, 44)], lower.panel = panel.smooth2, upper.panel = panel.cor, diag.panel = panel.hist) # taxonomic group abundance
 
 # choose which country for this task
 TaskID <- read.csv("Data/LT_ResponseTrends_TaskIDs.csv", as.is = T)
@@ -195,12 +185,6 @@ if(myResponse %in% c("abundance", "ept_abundance", "diptera_abundance",
 hist(allYrs$Response)
 
 #### two-stage models ####
-# # write a function similar to the bf funciton in brms but for gls
-# gls_formula <- function (formula, ..., correlation) 
-# {
-#   gls(formula, ..., correlation = correlation)
-# }
-
 ### fitting gls #####
 library(nlme)
 library(mgcv)
@@ -270,7 +254,6 @@ rownames(trends) <- 1:41
 trends
 
 saveRDS(trends, file=paste0("Outputs/Site_trends/trends__",myResponse,"__",myCountry,".RDS"))
-#write.csv(trends, file=paste0("outputs/trends__",myResponse,"__",myCountry,".csv"))
 
 # # ONLY USE FOR CRUSTACEA
 # ## Crustacea were not found at all sites and there was an issue with model convergence because of this. 
