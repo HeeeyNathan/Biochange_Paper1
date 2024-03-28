@@ -9,7 +9,7 @@ library(car) # for logit()
 library(xtable) # for tables
 library(RColorBrewer)
 
-source("HighstatLibV10.R")
+source("Additional functions/HighstatLibV10.R")
 
 ##### read in data & format #####
 d1 <- read.csv("Data/LT_siteYr_AllData_wNAs_modified.csv", header=T)
@@ -66,22 +66,7 @@ vec = envfit(allYrs_pca, na.omit(allYrs[, c("salkalinity", "sEC",
 plot(vec, col = "#ECB246", cex = 1.5, font = 2, pos = 4) #plots vectors (environmetal variables)
 
 # Check broken stick model
-biplot(allYrs_pca)
-allYrs_pca_scores <- (scores(allYrs_pca)[,1])
-corr1 <- cor(na.omit(allYrs[, c(80, 83, 86:91)]), scores(allYrs_pca)[,1]) # correlation between original variables and principal components
-round(corr1, 3)
-corr2 <- cor(na.omit(allYrs[, c(80, 83, 86:91)]), scores(allYrs_pca)[,2]) # correlation between original variables and principal components
-round(corr2, 3)
 screeplot(allYrs_pca, bstick = TRUE, npcs = length(allYrs_pca$sdev))
-(ev <- allYrs_pca$sdev^2)
-n <- length (ev)
-bsm <- data.frame(j=seq(1:n), p=0)
-bsm$p[1] <- 1/n
-for (i in 2:n) {bsm$p[i] = bsm$p[i-1] + (1/(n+1-i))}
-bsm$p <- 100*bsm$p/n
-bsm
-barplot(t(cbind(100*ev/sum(ev),bsm$p[n:1])), beside=TRUE, main="Broken stick model", col=c("#95ccba",2), las=2)
-legend("topright", c("% eigenvalue", "Broken stick model"), pch=15, col=c("#95ccba",2), bty="n")
 
 # isolate pc axis for use as covariate in model
 pc1_scores <- as.data.frame(allYrs_pca$scores[, 1]) # reverse signs to help with interpretation later
@@ -97,7 +82,7 @@ allYrs <- subset(allYrs, select = -c(ID)) # remove ID variable
 # choose which country for this task
 TaskID <- read.csv("Data/LT_DriverTrends_TaskIDs.csv", as.is = T)
 
-task.id = as.integer(Sys.getenv("SLURM_ARRAY_TASK_ID", "14"))
+task.id = as.integer(Sys.getenv("SLURM_ARRAY_TASK_ID", "1"))
 myCountry <- TaskID$country[which(TaskID$TaskID==task.id)]
 allYrs <- subset(allYrs,country==myCountry)
 
