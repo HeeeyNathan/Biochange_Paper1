@@ -10,7 +10,7 @@ Ests <- Ests[, -1]
 d1 <- read.csv("Data/LT_siteYr_AllData_wNAs_modified.csv", header=T) 
 allYrs <- d1[!is.na(d1$site_id_wMissing),]
 
-tiff(filename = "Plots/LT_slopeDistributions_Nutrients.tiff", width = 12, height = 8, units = 'in', res = 600, compression = 'lzw')
+tiff(filename = "Plots/LT_slopeDistributions_Nutrients.tiff", width = 12, height = 8, units = 'in', res = 450, compression = 'lzw')
 # svg(filename = "Plots/LT_slopeDistributions_TaxoFuncIndices.svg", width = 12, height = 10, bg = "white")
 
 par(mar=c(4,0.4,0.4,0.4), mfrow=c(1,2))

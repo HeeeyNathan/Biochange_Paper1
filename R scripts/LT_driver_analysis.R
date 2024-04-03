@@ -311,10 +311,10 @@ PlotRiverTypes <- function(wh, mod) {
   mtext(wh, 4, outer=FALSE, line=2)
 }
 
-# Figure 4 - selected metrics by river type
+# Figure 6 - selected metrics by river type
 # select taxon indices
 tiff(filename = "Plots/Figure_6_RivType_Drivers.tiff", width = 10, height = 10, units = 'in', res = 600, compression = 'lzw')
-VarToPlot <- c(1:2, 4, 10, 7)
+VarToPlot <- c(1:2, 4, 3, 7, 10)
 par(mfrow=c(length(VarToPlot),5), mar=c(2,0.5,2,2), oma=c(2,6,2,2))
 sapply(names(Models.lme1)[VarToPlot], PlotRiverTypes, mod=Models.lme1)
 mtext("River Type", 3, outer=TRUE, font = 2)

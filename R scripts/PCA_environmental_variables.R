@@ -2,7 +2,8 @@
 library(pacman)
 library(vegan)
 library(RColorBrewer)
-library(dplyr)
+library(tidyverse)
+library(psych)
 source("Additional functions/HighstatLibV10.R")
 
 ##### read in data & format #####
@@ -11,12 +12,6 @@ allYrs <- d1[!is.na(d1$site_id_wMissing),]
 
 # Remove the year 2019 from all non-within-site analyses
 allYrs <- allYrs[allYrs$year != "2019",]
-
-# tranform predictor variables (if necessary)
-hist(allYrs$flow)
-hist(allYrs$temp)
-
-allYrs$flow <- log10(allYrs$flow)
 
 # Change river type variables
 allYrs$river_type[allYrs$river_type == 1] <- "type1"
@@ -126,6 +121,12 @@ svg("Plots/BrokStick_environmental_pca.svg", height = 5, width = 5)
 barplot(t(cbind(100*ev/sum(ev),bsm$p[n:1])), beside=TRUE, main="Broken stick model", col=c("#95ccba",2), las=2)
 legend("topright", c("% eigenvalue", "Broken stick model"), pch=15, col=c("#95ccba",2), bty="n")
 dev.off()
+
+# Summary statistics
+summary_table <- d1[complete.cases(d1[, c(58:72)]),]
+summary_table <- as_tibble(summary_table[, c(5, 58:72)])
+summary_stats <- describe(summary_table[,-1], na.rm = TRUE) # Exclude first column (site_code) and remove NAs
+# write.csv(summary_stats, "Outputs/summary_stats_env.csv")
 
 ##### CLEAN UP --------------------
 library(pacman)

@@ -92,7 +92,7 @@ allYrs <- dplyr::left_join(allYrs, pc1_scores, by = "ID")
 allYrs <- subset(allYrs, select = -c(ID)) # remove ID variable
 
 # Create plot
-tiff(filename = "Plots/LT_slopeDistributions_Drivers_updated.tiff", width = 12, height = 6, units = 'in', res = 900, compression = 'lzw')
+tiff(filename = "Plots/LT_slopeDistributions_Drivers_updated.tiff", width = 12, height = 6, units = 'in', res = 600, compression = 'lzw')
 # svg(filename = "Plots/LT_slopeDistributions_TaxoFuncIndices.svg", width = 12, height = 10, bg = "white")
 
 # set plotting parametres
