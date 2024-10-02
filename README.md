@@ -2,7 +2,7 @@
 This repository contains data and code relating to the study:
 
 ### **Recovery or reorganisation? Long-term increases in riverine taxonomic and functional diversity are confounded by compositional dynamics** 
-### Submitted to Global Change Biology (2024). DOI: To be added upon manuscript acceptance
+### Published in Hydrobiologia (2024). DOI: https://doi.org/10.1007/s10750-024-05665-5
 
 #### Authors:
 Nathan J. Baker, Francesca Pilotto, Ellen A. R. Welti, Diana Osadčaja, Vaidas Palinauskas
